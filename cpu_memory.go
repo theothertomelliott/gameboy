@@ -30,16 +30,31 @@ func (m Memory16) Read() uint16 {
 	return 0
 }
 
-func (c *CPU) MemoryAt(pos In16) Value8 {
+func (c *CPU) MemoryAt(pos Param) Value8 {
+	if pos16, ok := pos.(In16); ok {
+		return Memory8{
+			value: &c.RAM[pos16.Read()],
+		}
+	}
+	if pos8, ok := pos.(Value8); ok {
+		return Memory8{
+			value: &c.RAM[pos8.Read()],
+		}
+	}
+	return nil
+}
+
+func (c *CPU) MemoryAtH(pos Param) Value8 {
+	pos8 := pos.(Value8)
 	return Memory8{
-		value: &c.RAM[pos.Read()],
+		value: &c.RAM[0xFF00|uint16(pos8.Read())],
 	}
 }
 
 func (c *CPU) MemoryAt16(pos In16) Value16 {
 	low := c.RAM[pos.Read()]
 	high := c.RAM[pos.Read()+1]
-	value := uint16(low) & (uint16(high) << 8)
+	value := uint16(low) | (uint16(high) << 8)
 	return Memory16{
 		value: &value,
 	}

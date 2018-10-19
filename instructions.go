@@ -49,10 +49,32 @@ func (c *CPU) NOP(...Param) {}
 //   Same as: LDI (HL),A
 //  LD (HL+),A
 //   Same as: LDI (HL),A
+// LD n,nn
+// Use with:
+//  n = BC,DE,HL,SP
+//  nn = 16 bit immediate value
+//
+// LD SP,HL
+// Description:
+// Put HL into Stack Pointer (SP).
+//
+// 3. LD HL,SP+n
+// Description: Same as: LDHL SP,n
+//
+// 5. LD (nn),SP
+// Description:
+//  Put Stack Pointer (SP) at address n.
+// Use with:
+//  nn = two byte immediate address.
 func (c *CPU) LD(params ...Param) {
-	dst := params[0].(Value8)
-	src := params[1].(Value8)
-	dst.Write(src.Read())
+	if dst, is8 := params[0].(Value8); is8 {
+		src := params[1].(Value8)
+		dst.Write(src.Read())
+	}
+	if dst, is16 := params[0].(Value16); is16 {
+		src := params[1].(Value16)
+		dst.Write(src.Read())
+	}
 }
 
 // LDI loads src into dst and increments dst
@@ -85,29 +107,8 @@ func (c *CPU) LDD(params ...Param) {
 // Description:
 // Put memory address $FF00+n into A.
 func (c *CPU) LDH(params ...Param) {
-
+	c.LD(params...)
 }
-
-// LD16 loads src into dst
-//
-// LD n,nn
-// Use with:
-//  n = BC,DE,HL,SP
-//  nn = 16 bit immediate value
-//
-// LD SP,HL
-// Description:
-// Put HL into Stack Pointer (SP).
-//
-// 3. LD HL,SP+n
-// Description: Same as: LDHL SP,n
-//
-// 5. LD (nn),SP
-// Description:
-//  Put Stack Pointer (SP) at address n.
-// Use with:
-//  nn = two byte immediate address.
-func (c *CPU) LD16(dst, src *uint16) {}
 
 // LDHL puts a + b effective address into HL
 //
@@ -121,20 +122,40 @@ func (c *CPU) LD16(dst, src *uint16) {}
 //  N - Reset.
 //  H - Set or reset according to operation.
 //  C - Set or reset according to operation.
-func (c *CPU) LDHL(a, b *uint64) {}
+func (c *CPU) LDHL(params ...Param) {
+	sp := params[0].(Value16)
+	n := params[1].(Value8)
+
+	c.F.SetZ(false)
+	c.F.SetN(false)
+
+	// TODO: Set carry and half carry flag
+
+	c.HL.Write(sp.Read() + uint16(n.Read()))
+}
 
 // PUSH pushes nn onto the stack.
 // The stack pointer is decremented twice.
 //
 // Use with:
 //  nn = AF,BC,DE,HL
-func (c *CPU) PUSH(nn *uint16) {}
+func (c *CPU) PUSH(params ...Param) {
+	nn := params[0].(Value16)
+	m := c.MemoryAt16(c.SP)
+	m.Write(nn.Read())
+	c.SP.Inc(-2)
+}
 
 // POP pops from the stack into nn
 //
 // Use with:
 // nn = AF,BC,DE,HL
-func (c *CPU) POP(nn *uint16) {}
+func (c *CPU) POP(params ...Param) {
+	nn := params[0].(Value16)
+	m := c.MemoryAt16(c.SP)
+	nn.Write(m.Read())
+	c.SP.Inc(2)
+}
 
 // ADD adds n to A
 // Use with:
@@ -144,9 +165,9 @@ func (c *CPU) POP(nn *uint16) {}
 //  N - Reset.
 //  H - Set if carry from bit 3.
 //  C - Set if carry from bit 7.
-func (c *CPU) ADD(n *byte) {}
+func (c *CPU) ADD(...Param) {}
 
-// ADDC adds src+carry flag to A
+// ADC adds src+carry flag to A
 //
 // Use with:
 //  n = A,B,C,D,E,H,L,(HL),#
@@ -155,7 +176,7 @@ func (c *CPU) ADD(n *byte) {}
 //   N - Reset.
 //   H - Set if carry from bit 3.
 //   C - Set if carry from bit 7.
-func (c *CPU) ADDC(n *byte) {}
+func (c *CPU) ADC(...Param) {}
 
 // SUB subtracts n from A
 //
@@ -166,7 +187,7 @@ func (c *CPU) ADDC(n *byte) {}
 //  N - Set.
 //  H - Set if no borrow from bit 4.
 //  C - Set if no borrow.
-func (c *CPU) SUB(n *byte) {}
+func (c *CPU) SUB(...Param) {}
 
 // SBC subtracts n+carry flag from A
 // Use with:
@@ -176,7 +197,7 @@ func (c *CPU) SUB(n *byte) {}
 //   N - Set.
 //   H - Set if no borrow from bit 4.
 //   C - Set if no borrow.
-func (c *CPU) SBC(n *byte) {}
+func (c *CPU) SBC(...Param) {}
 
 // AND locally ANDs n with A and stores the result in A
 //
@@ -187,7 +208,7 @@ func (c *CPU) SBC(n *byte) {}
 //  N - Reset.
 //  H - Set.
 //  C - Reset.
-func (c *CPU) AND(n *byte) {}
+func (c *CPU) AND(...Param) {}
 
 // OR locally ORs n with A and stores the result in A
 //
@@ -198,7 +219,7 @@ func (c *CPU) AND(n *byte) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Reset.
-func (c *CPU) OR(n *byte) {}
+func (c *CPU) OR(...Param) {}
 
 // XOR locally XORs n with A and stores the result in A
 //
@@ -209,7 +230,7 @@ func (c *CPU) OR(n *byte) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Reset.
-func (c *CPU) XOR(n *byte) {}
+func (c *CPU) XOR(...Param) {}
 
 // CP compares A with n. This is basically A-n but the results are thrown away.
 //
@@ -220,7 +241,7 @@ func (c *CPU) XOR(n *byte) {}
 //  N - Set.
 //  H - Set if no borrow from bit 4.
 //  C - Set for no borrow. (Set if A < n.)
-func (c *CPU) CP(n *byte) {}
+func (c *CPU) CP(...Param) {}
 
 // INC increments n
 //
@@ -263,19 +284,19 @@ func (c *CPU) ADDHL(...Param) {}
 //  N - Reset.
 //  H - Set or reset according to operation.
 //  C - Set or reset according to operation.
-func (c *CPU) ADDSP(n *byte) {}
+func (c *CPU) ADDSP(...Param) {}
 
 // INC16 increments nn
 //
 // Use with:
 //  nn = BC,DE,HL,SP
-func (c *CPU) INC16(n *uint16) {}
+func (c *CPU) INC16(...Param) {}
 
 // DEC16 decrements nn
 //
 // Use with:
 //  nn = BC,DE,HL,SP
-func (c *CPU) DEC16(nn *uint16) {}
+func (c *CPU) DEC16(...Param) {}
 
 // SWAP swaps the uppper and lower nibbles of n
 //
@@ -286,7 +307,7 @@ func (c *CPU) DEC16(nn *uint16) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Reset.
-func (c *CPU) SWAP(n *byte) {}
+func (c *CPU) SWAP(...Param) {}
 
 // DAA decimal adjusts A.
 // This instruction adjusts register A so that the
@@ -298,7 +319,7 @@ func (c *CPU) SWAP(n *byte) {}
 //  N - Not affected.
 //  H - Reset.
 //  C - Set or reset according to operation.
-func (c *CPU) DAA() {}
+func (c *CPU) DAA(...Param) {}
 
 // CPL complements register A (flips all bits)
 //
@@ -307,7 +328,7 @@ func (c *CPU) DAA() {}
 //  N - Set.
 //  H - Set.
 //  C - Not affected.
-func (c *CPU) CPL() {}
+func (c *CPU) CPL(...Param) {}
 
 // CCF complements the carry flag
 // If C flag is set, then reset it.
@@ -318,7 +339,7 @@ func (c *CPU) CPL() {}
 //  N - Reset.
 //  H - Reset.
 //  C - Complemented.
-func (c *CPU) CCF() {}
+func (c *CPU) CCF(...Param) {}
 
 // SCF sets the carry flag
 //
@@ -327,26 +348,26 @@ func (c *CPU) CCF() {}
 //  N - Reset.
 //  H - Reset.
 //  C - Set.
-func (c *CPU) SCF() {}
+func (c *CPU) SCF(...Param) {}
 
 // HALT powers down the CPU until an interrupt occurs
 // Used to reduce energy consumption
-func (c *CPU) HALT() {}
+func (c *CPU) HALT(...Param) {}
 
 // STOP halts the CPU and LCD until a button is pressed
-func (c *CPU) STOP() {}
+func (c *CPU) STOP(...Param) {}
 
 // DI disables interrupts but not
 // immediately. Interrupts are disabled after
 // instruction after DI is executed.
-func (c *CPU) DI() {}
+func (c *CPU) DI(...Param) {}
 
 // EI enables interrupts. This intruction enables interrupts
 // but not immediately. Interrupts are enabled after
 // instruction after EI is executed.
-func (c *CPU) EI() {}
+func (c *CPU) EI(...Param) {}
 
-// RCLA rotates A left.
+// RLCA rotates A left.
 // The carry flag is set to the previous bit 7.
 //
 // Flags affected:
@@ -354,7 +375,7 @@ func (c *CPU) EI() {}
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 7 data.
-func (c *CPU) RCLA(...Param) {}
+func (c *CPU) RLCA(...Param) {}
 
 // RLA rotates A left through carry flag.
 //
@@ -448,7 +469,7 @@ func (c *CPU) SLA(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 0 data.
-func (c *CPU) SRA(n *byte) {}
+func (c *CPU) SRA(...Param) {}
 
 // SRL shifts n right into Carry. MSB set to 0.
 //
@@ -459,7 +480,7 @@ func (c *CPU) SRA(n *byte) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 0 data.
-func (c *CPU) SRL(n *byte) {}
+func (c *CPU) SRL(...Param) {}
 
 // BIT tests bit b in register r.
 //
@@ -470,25 +491,25 @@ func (c *CPU) SRL(n *byte) {}
 //  N - Reset.
 //  H - Set.
 //  C - Not affected.
-func (c *CPU) BIT(b, r *byte) {}
+func (c *CPU) BIT(...Param) {}
 
 // SET sets bit b in register r.
 //
 // Use with:
 //  b = 0 - 7, r = A,B,C,D,E,H,L,(HL)
-func (c *CPU) SET(b, r *byte) {}
+func (c *CPU) SET(...Param) {}
 
 // RES resets bit b in register r.
 //
 // Use with:
 //  b = 0 - 7, r = A,B,C,D,E,H,L,(HL)
-func (c *CPU) RES(b, r *byte) {}
+func (c *CPU) RES(...Param) {}
 
 // JP jumps to address nn
 //
 // Use with:
 //  nn = two byte immediate value. (LS byte first.)
-func (c *CPU) JP(nn *uint16) {}
+func (c *CPU) JP(...Param) {}
 
 // JPC jumps to address nn if following condition is true:
 // cc = NZ, Jump if Z flag is reset.
@@ -498,16 +519,16 @@ func (c *CPU) JP(nn *uint16) {}
 //
 // Use with:
 //  nn = two byte immediate value. (LS byte first.)
-func (c *CPU) JPC(cc, nn *uint16) {}
+func (c *CPU) JPC(...Param) {}
 
 // JPHL jumps to the address contained in HL
-func (c *CPU) JPHL() {}
+func (c *CPU) JPHL(...Param) {}
 
 // JR adds n to current address and jumps to it.
 //
 // Use with:
 //  n = one byte signed immediate value
-func (c *CPU) JR(n *byte) {}
+func (c *CPU) JR(...Param) {}
 
 // JRC will, if following condition is true, add n to current
 // address and jump to it.
@@ -515,14 +536,14 @@ func (c *CPU) JR(n *byte) {}
 // cc = Z, Jump if Z flag is set.
 // cc = NC, Jump if C flag is reset.
 // cc = C, Jump if C flag is set.
-func (c *CPU) JRC(cc *uint16, n *byte) {}
+func (c *CPU) JRC(...Param) {}
 
 // CALL pushes address of next instruction onto stack and then
 // jumps to address n.
 //
 // Use with:
 //  nn = two byte immediate value. (LS byte first.)
-func (c *CPU) CALL(nn *uint16) {}
+func (c *CPU) CALL(...Param) {}
 
 // CALLC calls address n if following condition is true:
 // cc = NZ, Call if Z flag is reset.
@@ -532,25 +553,28 @@ func (c *CPU) CALL(nn *uint16) {}
 //
 // Use with:
 //  nn = two byte immediate value. (LS byte first.)
-func (c *CPU) CALLC(cc *uint16, nn *uint16) {}
+func (c *CPU) CALLC(...Param) {}
 
 // RST pushes present address onto stack.
 // Jumps to address $0000 + n.
 //
 // Use with:
 //  n = $00,$08,$10,$18,$20,$28,$30,$38
-func (c *CPU) RST(n *byte) {}
+func (c *CPU) RST(...Param) {}
 
 // RET pops two bytes from stack & jumps to that address.
-func (c *CPU) RET() {}
+func (c *CPU) RET(...Param) {}
 
 // RETC returns if following condition is true:
 // cc = NZ, Return if Z flag is reset.
 // cc = Z, Return if Z flag is set.
 // cc = NC, Return if C flag is reset.
 // cc = C, Return if C flag is set.
-func (c *CPU) RETC(cc *uint16) {}
+func (c *CPU) RETC(...Param) {}
 
 // RETI pops two bytes from stack & jumps to that address then
 // enables interrupts.
-func (c *CPU) RETI() {}
+func (c *CPU) RETI(...Param) {}
+
+// PREFIX is a placeholder for prefixing an opcode
+func (c *CPU) PREFIX(...Param) {}

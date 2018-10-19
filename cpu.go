@@ -14,7 +14,8 @@ type CPU struct {
 	DE *RegisterPair
 	HL *RegisterPair
 
-	A, F *Register
+	A    *Register
+	F    *Register
 	B, C *Register
 	D, E *Register
 	H, L *Register
@@ -22,12 +23,16 @@ type CPU struct {
 	SP *Address
 	PC *Address
 
-	Flags uint8
-
 	D8  *Direct8
 	D16 *Direct16
 
 	RAM []byte
+
+	// Conditions - C is doubling as a register and a condition
+	NZ, Z, NC string
+
+	// CB is a placeholder for the prefix
+	CB struct{}
 }
 
 func NewCPU() *CPU {
@@ -79,9 +84,10 @@ func (a *Address) Write(value uint16) {
 	}
 }
 
-func (a *Address) Inc(amount uint16) {
+func (a *Address) Inc(amount int8) {
 	if a != nil {
-		a.value += amount
+		v := int32(a.value) + int32(amount)
+		a.value = uint16(v)
 	}
 }
 

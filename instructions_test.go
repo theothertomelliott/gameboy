@@ -20,6 +20,20 @@ func TestLD(t *testing.T) {
 	}
 }
 
+func TestLD16(t *testing.T) {
+	cpu := gameboy.NewCPU()
+
+	src := &gameboy.RegisterPair{}
+	src.Write(100)
+	dst := &gameboy.RegisterPair{}
+
+	cpu.LD(dst, src)
+
+	if dst.Read() != 100 {
+		t.Errorf("dst: expected %d, got %d", 100, dst.Read())
+	}
+}
+
 func TestLDI(t *testing.T) {
 	cpu := gameboy.NewCPU()
 
