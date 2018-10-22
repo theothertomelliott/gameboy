@@ -165,7 +165,21 @@ func (c *CPU) POP(params ...Param) {
 //  N - Reset.
 //  H - Set if carry from bit 3.
 //  C - Set if carry from bit 7.
-func (c *CPU) ADD(...Param) {}
+func (c *CPU) ADD(params ...Param) {
+	n := params[0].(Value8)
+	a := c.A.Read()
+	in := n.Read()
+	result := a + in
+	c.F.SetZ(result == 0)
+	c.F.SetN(false)
+
+	halfCarry := ((a & 0xF) + (in & 0xF)) > 0xF
+	carry := (uint16(a) + uint16(in)) > 0xFF
+	c.F.SetH(halfCarry)
+	c.F.SetC(carry)
+
+	c.A.Write(result)
+}
 
 // ADC adds src+carry flag to A
 //
@@ -176,7 +190,26 @@ func (c *CPU) ADD(...Param) {}
 //   N - Reset.
 //   H - Set if carry from bit 3.
 //   C - Set if carry from bit 7.
-func (c *CPU) ADC(...Param) {}
+func (c *CPU) ADC(params ...Param) {
+	n := params[0].(Value8)
+	a := c.A.Read()
+	in := n.Read()
+
+	var carryValue byte
+	if c.F.C() {
+		carryValue = 1
+	}
+
+	result := a + in + carryValue
+	c.F.SetZ(result == 0)
+	c.F.SetN(false)
+
+	halfCarry := ((a & 0xF) + (in & 0xF) + carryValue) > 0xF
+	carry := (uint16(a) + uint16(in) + uint16(carryValue)) > 0xFF
+	c.F.SetH(halfCarry)
+	c.F.SetC(carry)
+	c.A.Write(result)
+}
 
 // SUB subtracts n from A
 //
@@ -187,7 +220,21 @@ func (c *CPU) ADC(...Param) {}
 //  N - Set.
 //  H - Set if no borrow from bit 4.
 //  C - Set if no borrow.
-func (c *CPU) SUB(...Param) {}
+func (c *CPU) SUB(params ...Param) {
+	n := params[0].(Value8)
+	a := c.A.Read()
+	in := n.Read()
+	result := a - in
+	c.F.SetZ(result == 0)
+	c.F.SetN(true)
+
+	halfCarry := ((a & 0xF) - (in & 0xF)) > 0xF
+	carry := (uint16(a) - uint16(in)) > 0xFF
+	c.F.SetH(!halfCarry)
+	c.F.SetC(!carry)
+
+	c.A.Write(result)
+}
 
 // SBC subtracts n+carry flag from A
 // Use with:
@@ -197,7 +244,27 @@ func (c *CPU) SUB(...Param) {}
 //   N - Set.
 //   H - Set if no borrow from bit 4.
 //   C - Set if no borrow.
-func (c *CPU) SBC(...Param) {}
+func (c *CPU) SBC(params ...Param) {
+	n := params[0].(Value8)
+	a := c.A.Read()
+	in := n.Read()
+
+	var carryValue byte
+	if c.F.C() {
+		carryValue = 1
+	}
+
+	result := a - (in + carryValue)
+	c.F.SetZ(result == 0)
+	c.F.SetN(true)
+
+	halfCarry := ((a & 0xF) - (in & 0xF)) > 0xF
+	carry := (uint16(a) - uint16(in)) > 0xFF
+	c.F.SetH(!halfCarry)
+	c.F.SetC(!carry)
+
+	c.A.Write(result)
+}
 
 // AND locally ANDs n with A and stores the result in A
 //
@@ -208,7 +275,15 @@ func (c *CPU) SBC(...Param) {}
 //  N - Reset.
 //  H - Set.
 //  C - Reset.
-func (c *CPU) AND(...Param) {}
+func (c *CPU) AND(params ...Param) {
+	n := params[0].(Value8)
+	result := n.Read() & c.A.Read()
+	c.F.SetZ(result == 0)
+	c.F.SetN(false)
+	c.F.SetH(true)
+	c.F.SetC(false)
+	c.A.Write(result)
+}
 
 // OR locally ORs n with A and stores the result in A
 //
@@ -219,7 +294,15 @@ func (c *CPU) AND(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Reset.
-func (c *CPU) OR(...Param) {}
+func (c *CPU) OR(params ...Param) {
+	n := params[0].(Value8)
+	result := n.Read() | c.A.Read()
+	c.F.SetZ(result == 0)
+	c.F.SetN(false)
+	c.F.SetH(false)
+	c.F.SetC(false)
+	c.A.Write(result)
+}
 
 // XOR locally XORs n with A and stores the result in A
 //
@@ -230,7 +313,15 @@ func (c *CPU) OR(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Reset.
-func (c *CPU) XOR(...Param) {}
+func (c *CPU) XOR(params ...Param) {
+	n := params[0].(Value8)
+	result := n.Read() ^ c.A.Read()
+	c.F.SetZ(result == 0)
+	c.F.SetN(false)
+	c.F.SetH(false)
+	c.F.SetC(false)
+	c.A.Write(result)
+}
 
 // CP compares A with n. This is basically A-n but the results are thrown away.
 //
@@ -241,7 +332,19 @@ func (c *CPU) XOR(...Param) {}
 //  N - Set.
 //  H - Set if no borrow from bit 4.
 //  C - Set for no borrow. (Set if A < n.)
-func (c *CPU) CP(...Param) {}
+func (c *CPU) CP(params ...Param) {
+	n := params[0].(Value8)
+	a := c.A.Read()
+	in := n.Read()
+	result := a - in
+	c.F.SetZ(result == 0)
+	c.F.SetN(true)
+
+	halfCarry := ((a & 0xF) - (in & 0xF)) > 0xF
+	carry := (uint16(a) - uint16(in)) > 0xFF
+	c.F.SetH(!halfCarry)
+	c.F.SetC(!carry)
+}
 
 // INC increments n
 //
@@ -252,7 +355,9 @@ func (c *CPU) CP(...Param) {}
 //  N - Reset.
 //  H - Set if carry from bit 3.
 //  C - Not affected.
-func (c *CPU) INC(...Param) {}
+func (c *CPU) INC(...Param) {
+
+}
 
 // DEC decrements n
 //
@@ -285,18 +390,6 @@ func (c *CPU) ADDHL(...Param) {}
 //  H - Set or reset according to operation.
 //  C - Set or reset according to operation.
 func (c *CPU) ADDSP(...Param) {}
-
-// INC16 increments nn
-//
-// Use with:
-//  nn = BC,DE,HL,SP
-func (c *CPU) INC16(...Param) {}
-
-// DEC16 decrements nn
-//
-// Use with:
-//  nn = BC,DE,HL,SP
-func (c *CPU) DEC16(...Param) {}
 
 // SWAP swaps the uppper and lower nibbles of n
 //
