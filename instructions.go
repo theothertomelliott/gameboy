@@ -228,8 +228,8 @@ func (c *CPU) SUB(params ...Param) {
 	c.F.SetZ(result == 0)
 	c.F.SetN(true)
 
-	halfCarry := ((a & 0xF) - (in & 0xF)) > 0xF
-	carry := (uint16(a) - uint16(in)) > 0xFF
+	halfCarry := (a & 0xF) < (in & 0xF)
+	carry := uint16(a) < uint16(in)
 	c.F.SetH(!halfCarry)
 	c.F.SetC(!carry)
 
@@ -253,13 +253,13 @@ func (c *CPU) SBC(params ...Param) {
 	if c.F.C() {
 		carryValue = 1
 	}
-
-	result := a - (in + carryValue)
+	sub := (in + carryValue)
+	result := a - sub
 	c.F.SetZ(result == 0)
 	c.F.SetN(true)
 
-	halfCarry := ((a & 0xF) - (in & 0xF)) > 0xF
-	carry := (uint16(a) - uint16(in)) > 0xFF
+	halfCarry := (a & 0xF) < (sub & 0xF)
+	carry := uint16(a) < uint16(sub)
 	c.F.SetH(!halfCarry)
 	c.F.SetC(!carry)
 
@@ -340,8 +340,8 @@ func (c *CPU) CP(params ...Param) {
 	c.F.SetZ(result == 0)
 	c.F.SetN(true)
 
-	halfCarry := ((a & 0xF) - (in & 0xF)) > 0xF
-	carry := (uint16(a) - uint16(in)) > 0xFF
+	halfCarry := (a & 0xF) < (in & 0xF)
+	carry := uint16(a) < uint16(in)
 	c.F.SetH(!halfCarry)
 	c.F.SetC(!carry)
 }
@@ -355,8 +355,17 @@ func (c *CPU) CP(params ...Param) {
 //  N - Reset.
 //  H - Set if carry from bit 3.
 //  C - Not affected.
-func (c *CPU) INC(...Param) {
+func (c *CPU) INC(params ...Param) {
+	n := params[0].(Value8)
+	in := n.Read()
+	result := in + 1
+	c.F.SetZ(result == 0)
+	c.F.SetN(false)
 
+	halfCarry := (1 + (in & 0xF)) > 0xF
+	c.F.SetH(halfCarry)
+
+	n.Write(result)
 }
 
 // DEC decrements n
@@ -367,7 +376,18 @@ func (c *CPU) INC(...Param) {
 //  N - Set.
 //  H - Set if no borrow from bit 4.
 //  C - Not affected.
-func (c *CPU) DEC(...Param) {}
+func (c *CPU) DEC(params ...Param) {
+	n := params[0].(Value8)
+	in := n.Read()
+	result := in - 1
+	c.F.SetZ(result == 0)
+	c.F.SetN(true)
+
+	halfCarry := (in & 0xF) < 1
+	c.F.SetH(!halfCarry)
+
+	n.Write(result)
+}
 
 // ADDHL adds n to HL
 //
@@ -400,7 +420,13 @@ func (c *CPU) ADDSP(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Reset.
-func (c *CPU) SWAP(...Param) {}
+func (c *CPU) SWAP(params ...Param) {
+	n := params[0].(Value8)
+	high := (n.Read() & 0xF0) >> 4
+	low := (n.Read() & 0xF)
+
+	n.Write(low<<4 | high)
+}
 
 // DAA decimal adjusts A.
 // This instruction adjusts register A so that the
@@ -432,7 +458,11 @@ func (c *CPU) CPL(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Complemented.
-func (c *CPU) CCF(...Param) {}
+func (c *CPU) CCF(...Param) {
+	c.F.SetN(false)
+	c.F.SetH(false)
+	c.F.SetC(!c.F.C())
+}
 
 // SCF sets the carry flag
 //
@@ -441,7 +471,11 @@ func (c *CPU) CCF(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Set.
-func (c *CPU) SCF(...Param) {}
+func (c *CPU) SCF(...Param) {
+	c.F.SetN(false)
+	c.F.SetH(false)
+	c.F.SetC(true)
+}
 
 // HALT powers down the CPU until an interrupt occurs
 // Used to reduce energy consumption
@@ -602,7 +636,10 @@ func (c *CPU) RES(...Param) {}
 //
 // Use with:
 //  nn = two byte immediate value. (LS byte first.)
-func (c *CPU) JP(...Param) {}
+func (c *CPU) JP(params ...Param) {
+	nn := params[0].(Value16)
+	c.PC.Write(nn.Read())
+}
 
 // JPC jumps to address nn if following condition is true:
 // cc = NZ, Jump if Z flag is reset.
@@ -615,13 +652,18 @@ func (c *CPU) JP(...Param) {}
 func (c *CPU) JPC(...Param) {}
 
 // JPHL jumps to the address contained in HL
-func (c *CPU) JPHL(...Param) {}
+func (c *CPU) JPHL(...Param) {
+	c.PC.Write(c.HL.Read())
+}
 
 // JR adds n to current address and jumps to it.
 //
 // Use with:
 //  n = one byte signed immediate value
-func (c *CPU) JR(...Param) {}
+func (c *CPU) JR(params ...Param) {
+	n := params[0].(Value8)
+	c.PC.Write(c.PC.Read() + uint16(n.Read()))
+}
 
 // JRC will, if following condition is true, add n to current
 // address and jump to it.
@@ -636,7 +678,12 @@ func (c *CPU) JRC(...Param) {}
 //
 // Use with:
 //  nn = two byte immediate value. (LS byte first.)
-func (c *CPU) CALL(...Param) {}
+func (c *CPU) CALL(params ...Param) {
+	n := params[0].(Value8)
+	c.PC.Inc(1)
+	c.PUSH(c.PC)
+	c.SP.Write(uint16(n.Read()))
+}
 
 // CALLC calls address n if following condition is true:
 // cc = NZ, Call if Z flag is reset.
@@ -653,10 +700,17 @@ func (c *CPU) CALLC(...Param) {}
 //
 // Use with:
 //  n = $00,$08,$10,$18,$20,$28,$30,$38
-func (c *CPU) RST(...Param) {}
+func (c *CPU) RST(params ...Param) {
+	n := params[0].(Value8)
+	c.SP.Write(uint16(n.Read()))
+}
 
 // RET pops two bytes from stack & jumps to that address.
-func (c *CPU) RET(...Param) {}
+func (c *CPU) RET(...Param) {
+	m := c.MemoryAt16(c.SP)
+	c.PC.Write(m.Read())
+	c.SP.Inc(2)
+}
 
 // RETC returns if following condition is true:
 // cc = NZ, Return if Z flag is reset.
@@ -667,7 +721,10 @@ func (c *CPU) RETC(...Param) {}
 
 // RETI pops two bytes from stack & jumps to that address then
 // enables interrupts.
-func (c *CPU) RETI(...Param) {}
+func (c *CPU) RETI(...Param) {
+	c.RET()
+	// TODO: Enable interrupts
+}
 
 // PREFIX is a placeholder for prefixing an opcode
 func (c *CPU) PREFIX(...Param) {}

@@ -691,3 +691,117 @@ func TestCP(t *testing.T) {
 		})
 	}
 }
+
+func TestINC(t *testing.T) {
+	var tests = []struct {
+		name       string
+		in         byte
+		expected   byte
+		z, n, h, c bool
+	}{
+		{
+			name:     "zero",
+			expected: 1,
+		},
+		{
+			name:     "1 plus 1",
+			in:       1,
+			expected: 2,
+		},
+		{
+			name:     "half carry",
+			in:       0xF,
+			expected: 0x10,
+			h:        true,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			cpu := gameboy.NewCPU()
+			src := &gameboy.Register{}
+			src.Write(test.in)
+
+			cpu.INC(src)
+
+			if got := src.Read(); got != test.expected {
+				t.Errorf("n: expected %d, got %d", test.expected, got)
+			}
+
+			if got := cpu.F.Z(); got != test.z {
+				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
+			}
+			if got := cpu.F.N(); got != test.n {
+				t.Errorf("N Flag: expected %v, got %v", test.n, got)
+			}
+			if got := cpu.F.H(); got != test.h {
+				t.Errorf("H Flag: expected %v, got %v", test.h, got)
+			}
+			if got := cpu.F.C(); got != test.c {
+				t.Errorf("C Flag: expected %v, got %v", test.c, got)
+			}
+		})
+	}
+}
+
+func TestDEC(t *testing.T) {
+	var tests = []struct {
+		name       string
+		in         byte
+		expected   byte
+		z, n, h, c bool
+	}{
+		{
+			name:     "1 - 1",
+			in:       1,
+			expected: 0,
+			z:        true,
+			n:        true,
+			h:        true,
+		},
+		{
+			name:     "half carry",
+			in:       0xF0,
+			expected: 0xEF,
+			h:        false,
+			n:        true,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			cpu := gameboy.NewCPU()
+			src := &gameboy.Register{}
+			src.Write(test.in)
+
+			cpu.DEC(src)
+
+			if got := src.Read(); got != test.expected {
+				t.Errorf("n: expected %d, got %d", test.expected, got)
+			}
+
+			if got := cpu.F.Z(); got != test.z {
+				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
+			}
+			if got := cpu.F.N(); got != test.n {
+				t.Errorf("N Flag: expected %v, got %v", test.n, got)
+			}
+			if got := cpu.F.H(); got != test.h {
+				t.Errorf("H Flag: expected %v, got %v", test.h, got)
+			}
+			if got := cpu.F.C(); got != test.c {
+				t.Errorf("C Flag: expected %v, got %v", test.c, got)
+			}
+		})
+	}
+}
+
+func TestSwap(t *testing.T) {
+	cpu := gameboy.NewCPU()
+	in := &gameboy.Register{}
+	in.Write(0xAB)
+
+	cpu.SWAP(in)
+
+	if in.Read() != 0xBA {
+		t.Errorf("input was not swapped, got %d", in.Read())
+	}
+}
