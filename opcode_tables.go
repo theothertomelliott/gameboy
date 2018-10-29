@@ -1578,12 +1578,12 @@ func unprefixedOpcodes(c *CPU) map[Opcode]Op {
 			c.MemoryAt(c.BC),
 			c.A,
 		),
-		0x20: NewOp(c.JR, []int{
+		0x20: NewOp(c.JRC, []int{
 			12,
 
 			8,
 		},
-			c.NZ,
+			CaseNZ,
 			c.D8,
 		),
 		0x21: NewOp(c.LD, []int{
@@ -1623,12 +1623,12 @@ func unprefixedOpcodes(c *CPU) map[Opcode]Op {
 			4,
 		},
 		),
-		0x28: NewOp(c.JR, []int{
+		0x28: NewOp(c.JRC, []int{
 			12,
 
 			8,
 		},
-			c.Z,
+			CaseZ,
 			c.D8,
 		),
 		0x29: NewOp(c.ADD, []int{
@@ -1673,12 +1673,12 @@ func unprefixedOpcodes(c *CPU) map[Opcode]Op {
 		},
 			c.BC,
 		),
-		0x30: NewOp(c.JR, []int{
+		0x30: NewOp(c.JRC, []int{
 			12,
 
 			8,
 		},
-			c.NC,
+			CaseNC,
 			c.D8,
 		),
 		0x31: NewOp(c.LD, []int{
@@ -1718,12 +1718,12 @@ func unprefixedOpcodes(c *CPU) map[Opcode]Op {
 			4,
 		},
 		),
-		0x38: NewOp(c.JR, []int{
+		0x38: NewOp(c.JRC, []int{
 			12,
 
 			8,
 		},
-			c.C,
+			CaseC,
 			c.D8,
 		),
 		0x39: NewOp(c.ADD, []int{
@@ -2537,24 +2537,24 @@ func unprefixedOpcodes(c *CPU) map[Opcode]Op {
 		},
 			c.C,
 		),
-		0xc0: NewOp(c.RET, []int{
+		0xc0: NewOp(c.RETC, []int{
 			20,
 
 			8,
 		},
-			c.NZ,
+			CaseNZ,
 		),
 		0xc1: NewOp(c.POP, []int{
 			12,
 		},
 			c.BC,
 		),
-		0xc2: NewOp(c.JP, []int{
+		0xc2: NewOp(c.JPC, []int{
 			16,
 
 			12,
 		},
-			c.NZ,
+			CaseNZ,
 			c.D16,
 		),
 		0xc3: NewOp(c.JP, []int{
@@ -2562,12 +2562,12 @@ func unprefixedOpcodes(c *CPU) map[Opcode]Op {
 		},
 			c.D16,
 		),
-		0xc4: NewOp(c.CALL, []int{
+		0xc4: NewOp(c.CALLC, []int{
 			24,
 
 			12,
 		},
-			c.NZ,
+			CaseNZ,
 			c.D16,
 		),
 		0xc5: NewOp(c.PUSH, []int{
@@ -2586,23 +2586,23 @@ func unprefixedOpcodes(c *CPU) map[Opcode]Op {
 		},
 			0x00,
 		),
-		0xc8: NewOp(c.RET, []int{
+		0xc8: NewOp(c.RETC, []int{
 			20,
 
 			8,
 		},
-			c.Z,
+			CaseZ,
 		),
 		0xc9: NewOp(c.RET, []int{
 			16,
 		},
 		),
-		0xca: NewOp(c.JP, []int{
+		0xca: NewOp(c.JPC, []int{
 			16,
 
 			12,
 		},
-			c.Z,
+			CaseZ,
 			c.D16,
 		),
 		0xcb: NewOp(c.PREFIX, []int{
@@ -2610,12 +2610,12 @@ func unprefixedOpcodes(c *CPU) map[Opcode]Op {
 		},
 			c.CB,
 		),
-		0xcc: NewOp(c.CALL, []int{
+		0xcc: NewOp(c.CALLC, []int{
 			24,
 
 			12,
 		},
-			c.Z,
+			CaseZ,
 			c.D16,
 		),
 		0xcd: NewOp(c.CALL, []int{
@@ -2639,32 +2639,32 @@ func unprefixedOpcodes(c *CPU) map[Opcode]Op {
 		},
 			c.C,
 		),
-		0xd0: NewOp(c.RET, []int{
+		0xd0: NewOp(c.RETC, []int{
 			20,
 
 			8,
 		},
-			c.NC,
+			CaseNC,
 		),
 		0xd1: NewOp(c.POP, []int{
 			12,
 		},
 			c.DE,
 		),
-		0xd2: NewOp(c.JP, []int{
+		0xd2: NewOp(c.JPC, []int{
 			16,
 
 			12,
 		},
-			c.NC,
+			CaseNC,
 			c.D16,
 		),
-		0xd4: NewOp(c.CALL, []int{
+		0xd4: NewOp(c.CALLC, []int{
 			24,
 
 			12,
 		},
-			c.NC,
+			CaseNC,
 			c.D16,
 		),
 		0xd5: NewOp(c.PUSH, []int{
@@ -2682,31 +2682,31 @@ func unprefixedOpcodes(c *CPU) map[Opcode]Op {
 		},
 			0x10,
 		),
-		0xd8: NewOp(c.RET, []int{
+		0xd8: NewOp(c.RETC, []int{
 			20,
 
 			8,
 		},
-			c.C,
+			CaseC,
 		),
 		0xd9: NewOp(c.RETI, []int{
 			16,
 		},
 		),
-		0xda: NewOp(c.JP, []int{
+		0xda: NewOp(c.JPC, []int{
 			16,
 
 			12,
 		},
-			c.C,
+			CaseC,
 			c.D16,
 		),
-		0xdc: NewOp(c.CALL, []int{
+		0xdc: NewOp(c.CALLC, []int{
 			24,
 
 			12,
 		},
-			c.C,
+			CaseC,
 			c.D16,
 		),
 		0xde: NewOp(c.SBC, []int{

@@ -1,86 +1,80 @@
 package gameboy
 
-type Memory8 struct {
-	value *byte
+type Memory struct {
+	cpu   *CPU
+	index uint16
 }
 
-func (m Memory8) Write(value byte) {
-	*m.value = value
+func (m *Memory) Write8(value byte) {
+	m.cpu.RAM[m.index] = value
 }
 
-func (m Memory8) Read() byte {
-	if m.value != nil {
-		return *m.value
-	}
-	return 0
+func (m *Memory) Read8() byte {
+	return m.cpu.RAM[m.index]
 }
 
-type Memory16 struct {
-	value *uint16
+func (m *Memory) Write16(value uint16) {
+	m.cpu.RAM[m.index] = byte(value & 0xFF)
+	m.cpu.RAM[m.index+1] = byte((value & 0xFF00) >> 8)
 }
 
-func (m Memory16) Write(value uint16) {
-	*m.value = value
+func (m *Memory) Read16() uint16 {
+	return uint16(m.cpu.RAM[m.index]) + uint16(m.cpu.RAM[m.index])<<8
 }
 
-func (m Memory16) Read() uint16 {
-	if m.value != nil {
-		return *m.value
-	}
-	return 0
-}
-
-func (c *CPU) MemoryAt(pos Param) Value8 {
-	if pos16, ok := pos.(In16); ok {
-		return Memory8{
-			value: &c.RAM[pos16.Read()],
+func (c *CPU) MemoryAt(pos Param) *Memory {
+	if pos16, ok := pos.(Value16); ok {
+		return &Memory{
+			index: pos16.Read16(),
+			cpu:   c,
 		}
 	}
 	if pos8, ok := pos.(Value8); ok {
-		return Memory8{
-			value: &c.RAM[pos8.Read()],
+		return &Memory{
+			index: uint16(pos8.Read8()),
+			cpu:   c,
 		}
 	}
 	return nil
 }
 
-func (c *CPU) MemoryAtH(pos Param) Value8 {
+func (c *CPU) MemoryAtH(pos Param) *Memory {
 	pos8 := pos.(Value8)
-	return Memory8{
-		value: &c.RAM[0xFF00|uint16(pos8.Read())],
+	return &Memory{
+		index: 0xFF00 | uint16(pos8.Read8()),
+		cpu:   c,
 	}
 }
 
-func (c *CPU) MemoryAt16(pos In16) Value16 {
-	low := c.RAM[pos.Read()]
-	high := c.RAM[pos.Read()+1]
-	value := uint16(low) | (uint16(high) << 8)
-	return Memory16{
-		value: &value,
-	}
-}
+var _ Value8 = &Direct8{}
 
 type Direct8 struct {
 	CPU *CPU
 }
 
-func (d Direct8) Read() byte {
+func (d Direct8) Read8() byte {
 	c := d.CPU
 	defer func() {
 		c.PC.Inc(1)
 	}()
-	return c.RAM[c.PC.Read()]
+	return c.RAM[c.PC.Read16()]
 }
+
+func (d Direct8) Write8(byte) {}
+
+var _ Value16 = &Direct16{}
 
 type Direct16 struct {
 	CPU *CPU
 }
 
-func (d Direct16) Read() uint16 {
+func (d Direct16) Read16() uint16 {
 	c := d.CPU
-	low := c.RAM[c.PC.Read()]
+	low := c.RAM[c.PC.Read16()]
 	c.PC.Inc(1)
-	high := c.RAM[c.PC.Read()]
+	high := c.RAM[c.PC.Read16()]
 	c.PC.Inc(1)
 	return uint16(high) << 8 & uint16(low)
 }
+
+func (d Direct16) Write16(uint16) {}

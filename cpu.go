@@ -1,5 +1,10 @@
 package gameboy
 
+import (
+	"fmt"
+	"time"
+)
+
 // Built while watching the ultimate Game Boy Talk
 // https://www.youtube.com/watch?v=HyzD8pNlpwI
 
@@ -27,9 +32,6 @@ type CPU struct {
 	D16 *Direct16
 
 	RAM []byte
-
-	// Conditions - C is doubling as a register and a condition
-	NZ, Z, NC string
 
 	// CB is a placeholder for the prefix
 	CB struct{}
@@ -64,6 +66,8 @@ func NewCPU() *CPU {
 		CPU: cpu,
 	}
 
+	cpu.RAM = make([]byte, 0xFFFF)
+
 	return cpu
 }
 
@@ -71,14 +75,14 @@ type Address struct {
 	value uint16
 }
 
-func (a *Address) Read() uint16 {
+func (a *Address) Read16() uint16 {
 	if a != nil {
 		return a.value
 	}
 	return 0
 }
 
-func (a *Address) Write(value uint16) {
+func (a *Address) Write16(value uint16) {
 	if a != nil {
 		a.value = value
 	}
@@ -91,12 +95,43 @@ func (a *Address) Inc(amount int8) {
 	}
 }
 
-// Based on http://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html
-func (c *CPU) RunCycle() {
-	switch c.RAM[c.PC.Read()] {
-	case 0xCB:
-		c.handleCBPrefixed()
-	default:
-		c.handleUnprefixed()
+func (c *CPU) Run() {
+	for true {
+		c.Cycle()
+		// TODO: Exit when interrupted
+		time.Sleep(time.Microsecond)
 	}
+}
+
+// Based on http://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html
+func (c *CPU) Cycle() {
+	var table map[Opcode]Op
+	opcode := Opcode(c.RAM[c.PC.Read16()])
+	var isCB bool
+	switch opcode {
+	case 0xCB:
+		c.PC.Inc(1)
+		opcode = Opcode(c.RAM[c.PC.Read16()])
+		table = cbprefixedOpcodes(c)
+		isCB = true
+	default:
+		table = unprefixedOpcodes(c)
+	}
+	op := table[opcode]
+
+	defer func() {
+		if r := recover(); r != nil {
+			if isCB {
+				fmt.Print("0xCB ")
+			}
+			fmt.Printf("%#x\n", opcode)
+			panic(r)
+		}
+	}()
+
+	if op.Instruction != nil {
+		op.Instruction(op.Params...)
+	}
+	c.PC.Inc(1)
+	// TODO: Cycles
 }

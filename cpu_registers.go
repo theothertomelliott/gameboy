@@ -10,31 +10,31 @@ type (
 	}
 )
 
-func (r *Register) Write(value byte) {
+func (r *Register) Write8(value byte) {
 	r.value = value
 }
 
-func (r *Register) Read() byte {
+func (r *Register) Read8() byte {
 	if r != nil {
 		return r.value
 	}
 	return 0
 }
 
-func (r *RegisterPair) Write(value uint16) {
+func (r *RegisterPair) Write16(value uint16) {
 	if r.Low == nil {
 		r.Low = &Register{}
 	}
 	if r.High == nil {
 		r.High = &Register{}
 	}
-	r.Low.Write(byte(value & 0xFF))
-	r.High.Write(byte(value>>8) & 0xFF)
+	r.Low.Write8(byte(value & 0xFF))
+	r.High.Write8(byte(value>>8) & 0xFF)
 }
 
-func (r *RegisterPair) Read() uint16 {
+func (r *RegisterPair) Read16() uint16 {
 	if r != nil {
-		return uint16(r.Low.Read()) | (uint16(r.High.Read()) << 8)
+		return uint16(r.Low.Read8()) | (uint16(r.High.Read8()) << 8)
 	}
 	return 0
 }

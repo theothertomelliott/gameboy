@@ -15,6 +15,45 @@ type Opcode struct {
 	Operand2 Operand `operand2`
 }
 
+func (o *Opcode) UnmarshalJSON(d []byte) error {
+	type Alias Opcode
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(o),
+	}
+	err := json.Unmarshal(d, aux)
+	if err != nil {
+		return err
+	}
+
+	if o.isConditional() {
+		o.Mnemonic = fmt.Sprintf("%sC", o.Mnemonic)
+		switch o.Operand1 {
+		case "c.Z":
+			o.Operand1 = "CaseZ"
+		case "c.NZ":
+			o.Operand1 = "CaseNZ"
+		case "c.C":
+			o.Operand1 = "CaseC"
+		case "c.NC":
+			o.Operand1 = "CaseNC"
+		}
+	}
+	return nil
+}
+
+func (o *Opcode) isConditional() bool {
+	switch o.Mnemonic {
+	case "JP", "JR", "CALL":
+		return o.Operand1 != "" && o.Operand2 != ""
+	case "RET":
+		return o.Operand1 != ""
+	default:
+		return false
+	}
+}
+
 type Operand string
 
 func (o *Operand) UnmarshalJSON(d []byte) error {

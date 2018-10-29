@@ -1,5 +1,14 @@
 package gameboy
 
+type ConditionalCase int
+
+const (
+	CaseZ ConditionalCase = iota
+	CaseNZ
+	CaseC
+	CaseNC
+)
+
 type Param interface{}
 
 type Instruction func(...Param)

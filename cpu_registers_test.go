@@ -8,18 +8,18 @@ import (
 
 func TestRegister8(t *testing.T) {
 	src := &gameboy.Register{}
-	src.Write(100)
-	if src.Read() != 100 {
-		t.Errorf("expected %d, got %d", 100, src.Read())
+	src.Write8(100)
+	if src.Read8() != 100 {
+		t.Errorf("expected %d, got %d", 100, src.Read8())
 	}
 }
 
 func TestRegister16(t *testing.T) {
 	src := &gameboy.RegisterPair{}
-	src.Write(100)
+	src.Write16(100)
 	t.Logf("%#v: %v, %v", src, src.Low, src.High)
-	if src.Read() != 100 {
-		t.Errorf("expected %d, got %d", 100, src.Read())
+	if src.Read16() != 100 {
+		t.Errorf("expected %d, got %d", 100, src.Read16())
 	}
 }
 
@@ -64,7 +64,7 @@ func TestRegisterFlagRead(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			src := &gameboy.Register{}
-			src.Write(test.value)
+			src.Write8(test.value)
 			if src.Z() != test.z {
 				t.Errorf("Z: expected %v, got %v", test.z, src.Z())
 			}
@@ -117,7 +117,7 @@ func TestRegisterFlagSet(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			src := &gameboy.Register{}
-			src.Write(test.value)
+			src.Write8(test.value)
 
 			src.SetZ(test.z)
 			src.SetN(test.n)

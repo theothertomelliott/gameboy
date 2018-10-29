@@ -68,12 +68,18 @@ func (c *CPU) NOP(...Param) {}
 //  nn = two byte immediate address.
 func (c *CPU) LD(params ...Param) {
 	if dst, is8 := params[0].(Value8); is8 {
-		src := params[1].(Value8)
-		dst.Write(src.Read())
+		if src, is8 := params[1].(Value8); is8 {
+			dst.Write8(src.Read8())
+			return
+		}
 	}
 	if dst, is16 := params[0].(Value16); is16 {
+		if params[1] == c.C {
+			dst.Write16(0xFF00 + uint16(c.C.Read8()))
+			return
+		}
 		src := params[1].(Value16)
-		dst.Write(src.Read())
+		dst.Write16(src.Read16())
 	}
 }
 
@@ -86,15 +92,15 @@ func (c *CPU) LD(params ...Param) {
 func (c *CPU) LDI(params ...Param) {
 	dst := params[0].(Value8)
 	src := params[1].(Value8)
-	dst.Write(src.Read() + 1)
+	dst.Write8(src.Read8() + 1)
 }
 
 // LDD loads src into dst and decrements src
 func (c *CPU) LDD(params ...Param) {
 	dst := params[0].(Value8)
 	src := params[1].(Value8)
-	dst.Write(src.Read())
-	dst.Write(dst.Read() - 1)
+	dst.Write8(src.Read8())
+	dst.Write8(dst.Read8() - 1)
 }
 
 // LDH loads src into memory address $FF00+dst
@@ -131,7 +137,7 @@ func (c *CPU) LDHL(params ...Param) {
 
 	// TODO: Set carry and half carry flag
 
-	c.HL.Write(sp.Read() + uint16(n.Read()))
+	c.HL.Write16(sp.Read16() + uint16(n.Read8()))
 }
 
 // PUSH pushes nn onto the stack.
@@ -141,8 +147,8 @@ func (c *CPU) LDHL(params ...Param) {
 //  nn = AF,BC,DE,HL
 func (c *CPU) PUSH(params ...Param) {
 	nn := params[0].(Value16)
-	m := c.MemoryAt16(c.SP)
-	m.Write(nn.Read())
+	m := c.MemoryAt(c.SP)
+	m.Write16(nn.Read16())
 	c.SP.Inc(-2)
 }
 
@@ -152,8 +158,8 @@ func (c *CPU) PUSH(params ...Param) {
 // nn = AF,BC,DE,HL
 func (c *CPU) POP(params ...Param) {
 	nn := params[0].(Value16)
-	m := c.MemoryAt16(c.SP)
-	nn.Write(m.Read())
+	m := c.MemoryAt(c.SP)
+	nn.Write16(m.Read16())
 	c.SP.Inc(2)
 }
 
@@ -165,20 +171,69 @@ func (c *CPU) POP(params ...Param) {
 //  N - Reset.
 //  H - Set if carry from bit 3.
 //  C - Set if carry from bit 7.
+//
+// 1. ADD HL,n
+// Description:
+//  Add n to HL.
+// Use with:
+//  n = BC,DE,HL,SP
+// Flags affected:
+//  Z - Not affected.
+//  N - Reset.
+//  H - Set if carry from bit 11.
+//  C - Set if carry from bit 15.
+//
+// 2. ADD SP,n
+// Description:
+//  Add n to Stack Pointer (SP).
+// Use with:
+//  n = one byte signed immediate value (#).
+// Flags affected:
+//  Z - Reset.
+//  N - Reset.
+//  H - Set or reset according to operation.
+//  C - Set or reset according to operation.
 func (c *CPU) ADD(params ...Param) {
-	n := params[0].(Value8)
-	a := c.A.Read()
-	in := n.Read()
-	result := a + in
-	c.F.SetZ(result == 0)
-	c.F.SetN(false)
+	// 16 bit
+	if dst, is16Bit := params[0].(Value16); is16Bit {
+		x := dst.Read16()
+		var y uint16
+		if src, is16Bit := params[1].(Value16); is16Bit {
+			y = src.Read16()
+		}
+		if src, is8Bit := params[1].(Value8); is8Bit {
+			y = uint16(src.Read8())
+		}
+		result := x + y
+		c.F.SetZ(result == 0)
+		c.F.SetN(false)
 
-	halfCarry := ((a & 0xF) + (in & 0xF)) > 0xF
-	carry := (uint16(a) + uint16(in)) > 0xFF
-	c.F.SetH(halfCarry)
-	c.F.SetC(carry)
+		halfCarry := ((x & 0xFFF) + (y & 0xFFF)) > 0xFFF
+		carry := (uint32(x) + uint32(y)) > 0xFFFF
+		c.F.SetH(halfCarry)
+		c.F.SetC(carry)
 
-	c.A.Write(result)
+		dst.Write16(result)
+		return
+	}
+
+	// 8 bit
+	if dst, is8Bit := params[0].(Value8); is8Bit {
+		n := params[1].(Value8)
+		x := n.Read8()
+		y := dst.Read8()
+		result := y + x
+		c.F.SetZ(result == 0)
+		c.F.SetN(false)
+
+		halfCarry := ((y & 0xF) + (x & 0xF)) > 0xF
+		carry := (uint16(y) + uint16(x)) > 0xFF
+		c.F.SetH(halfCarry)
+		c.F.SetC(carry)
+
+		dst.Write8(result)
+		return
+	}
 }
 
 // ADC adds src+carry flag to A
@@ -192,8 +247,8 @@ func (c *CPU) ADD(params ...Param) {
 //   C - Set if carry from bit 7.
 func (c *CPU) ADC(params ...Param) {
 	n := params[0].(Value8)
-	a := c.A.Read()
-	in := n.Read()
+	a := c.A.Read8()
+	in := n.Read8()
 
 	var carryValue byte
 	if c.F.C() {
@@ -208,7 +263,7 @@ func (c *CPU) ADC(params ...Param) {
 	carry := (uint16(a) + uint16(in) + uint16(carryValue)) > 0xFF
 	c.F.SetH(halfCarry)
 	c.F.SetC(carry)
-	c.A.Write(result)
+	c.A.Write8(result)
 }
 
 // SUB subtracts n from A
@@ -222,8 +277,8 @@ func (c *CPU) ADC(params ...Param) {
 //  C - Set if no borrow.
 func (c *CPU) SUB(params ...Param) {
 	n := params[0].(Value8)
-	a := c.A.Read()
-	in := n.Read()
+	a := c.A.Read8()
+	in := n.Read8()
 	result := a - in
 	c.F.SetZ(result == 0)
 	c.F.SetN(true)
@@ -233,7 +288,7 @@ func (c *CPU) SUB(params ...Param) {
 	c.F.SetH(!halfCarry)
 	c.F.SetC(!carry)
 
-	c.A.Write(result)
+	c.A.Write8(result)
 }
 
 // SBC subtracts n+carry flag from A
@@ -246,8 +301,8 @@ func (c *CPU) SUB(params ...Param) {
 //   C - Set if no borrow.
 func (c *CPU) SBC(params ...Param) {
 	n := params[0].(Value8)
-	a := c.A.Read()
-	in := n.Read()
+	a := c.A.Read8()
+	in := n.Read8()
 
 	var carryValue byte
 	if c.F.C() {
@@ -263,7 +318,7 @@ func (c *CPU) SBC(params ...Param) {
 	c.F.SetH(!halfCarry)
 	c.F.SetC(!carry)
 
-	c.A.Write(result)
+	c.A.Write8(result)
 }
 
 // AND locally ANDs n with A and stores the result in A
@@ -277,12 +332,12 @@ func (c *CPU) SBC(params ...Param) {
 //  C - Reset.
 func (c *CPU) AND(params ...Param) {
 	n := params[0].(Value8)
-	result := n.Read() & c.A.Read()
+	result := n.Read8() & c.A.Read8()
 	c.F.SetZ(result == 0)
 	c.F.SetN(false)
 	c.F.SetH(true)
 	c.F.SetC(false)
-	c.A.Write(result)
+	c.A.Write8(result)
 }
 
 // OR locally ORs n with A and stores the result in A
@@ -296,12 +351,12 @@ func (c *CPU) AND(params ...Param) {
 //  C - Reset.
 func (c *CPU) OR(params ...Param) {
 	n := params[0].(Value8)
-	result := n.Read() | c.A.Read()
+	result := n.Read8() | c.A.Read8()
 	c.F.SetZ(result == 0)
 	c.F.SetN(false)
 	c.F.SetH(false)
 	c.F.SetC(false)
-	c.A.Write(result)
+	c.A.Write8(result)
 }
 
 // XOR locally XORs n with A and stores the result in A
@@ -315,12 +370,12 @@ func (c *CPU) OR(params ...Param) {
 //  C - Reset.
 func (c *CPU) XOR(params ...Param) {
 	n := params[0].(Value8)
-	result := n.Read() ^ c.A.Read()
+	result := n.Read8() ^ c.A.Read8()
 	c.F.SetZ(result == 0)
 	c.F.SetN(false)
 	c.F.SetH(false)
 	c.F.SetC(false)
-	c.A.Write(result)
+	c.A.Write8(result)
 }
 
 // CP compares A with n. This is basically A-n but the results are thrown away.
@@ -334,8 +389,8 @@ func (c *CPU) XOR(params ...Param) {
 //  C - Set for no borrow. (Set if A < n.)
 func (c *CPU) CP(params ...Param) {
 	n := params[0].(Value8)
-	a := c.A.Read()
-	in := n.Read()
+	a := c.A.Read8()
+	in := n.Read8()
 	result := a - in
 	c.F.SetZ(result == 0)
 	c.F.SetN(true)
@@ -355,17 +410,33 @@ func (c *CPU) CP(params ...Param) {
 //  N - Reset.
 //  H - Set if carry from bit 3.
 //  C - Not affected.
+//
+// 3. INC nn
+// Description:
+//  Increment register nn.
+// Use with:
+//  nn = BC,DE,HL,SP
+// Flags affected:
+//  None.
 func (c *CPU) INC(params ...Param) {
-	n := params[0].(Value8)
-	in := n.Read()
-	result := in + 1
-	c.F.SetZ(result == 0)
-	c.F.SetN(false)
 
-	halfCarry := (1 + (in & 0xF)) > 0xF
-	c.F.SetH(halfCarry)
+	if n, is8Bit := params[0].(Value8); is8Bit {
+		in := n.Read8()
+		result := in + 1
+		c.F.SetZ(result == 0)
+		c.F.SetN(false)
 
-	n.Write(result)
+		halfCarry := (1 + (in & 0xF)) > 0xF
+		c.F.SetH(halfCarry)
+
+		n.Write8(result)
+	}
+
+	if n, is16Bit := params[0].(Value16); is16Bit {
+		in := n.Read16()
+		result := in + 1
+		n.Write16(result)
+	}
 }
 
 // DEC decrements n
@@ -376,40 +447,33 @@ func (c *CPU) INC(params ...Param) {
 //  N - Set.
 //  H - Set if no borrow from bit 4.
 //  C - Not affected.
+//
+// 4. DEC nn
+// Description:
+//  Decrement register nn.
+// Use with:
+//  nn = BC,DE,HL,SP
+// Flags affected:
+//  None.
 func (c *CPU) DEC(params ...Param) {
-	n := params[0].(Value8)
-	in := n.Read()
-	result := in - 1
-	c.F.SetZ(result == 0)
-	c.F.SetN(true)
+	if n, is8Bit := params[0].(Value8); is8Bit {
+		in := n.Read8()
+		result := in - 1
+		c.F.SetZ(result == 0)
+		c.F.SetN(true)
 
-	halfCarry := (in & 0xF) < 1
-	c.F.SetH(!halfCarry)
+		halfCarry := (in & 0xF) < 1
+		c.F.SetH(!halfCarry)
 
-	n.Write(result)
+		n.Write8(result)
+	}
+
+	if n, is16Bit := params[0].(Value16); is16Bit {
+		in := n.Read16()
+		result := in - 1
+		n.Write16(result)
+	}
 }
-
-// ADDHL adds n to HL
-//
-// Use with:
-//  n = BC,DE,HL,SP
-// Flags affected:
-//  Z - Not affected.
-//  N - Reset.
-//  H - Set if carry from bit 11.
-//  C - Set if carry from bit 15.
-func (c *CPU) ADDHL(...Param) {}
-
-// ADDSP adds n to the stack pointer
-//
-// Use with:
-//  n = one byte signed immediate value (#).
-// Flags affected:
-//  Z - Reset.
-//  N - Reset.
-//  H - Set or reset according to operation.
-//  C - Set or reset according to operation.
-func (c *CPU) ADDSP(...Param) {}
 
 // SWAP swaps the uppper and lower nibbles of n
 //
@@ -422,10 +486,10 @@ func (c *CPU) ADDSP(...Param) {}
 //  C - Reset.
 func (c *CPU) SWAP(params ...Param) {
 	n := params[0].(Value8)
-	high := (n.Read() & 0xF0) >> 4
-	low := (n.Read() & 0xF)
+	high := (n.Read8() & 0xF0) >> 4
+	low := (n.Read8() & 0xF)
 
-	n.Write(low<<4 | high)
+	n.Write8(low<<4 | high)
 }
 
 // DAA decimal adjusts A.
@@ -447,7 +511,9 @@ func (c *CPU) DAA(...Param) {}
 //  N - Set.
 //  H - Set.
 //  C - Not affected.
-func (c *CPU) CPL(...Param) {}
+func (c *CPU) CPL(...Param) {
+	c.A.Write8(c.A.Read8() ^ 0xFF)
+}
 
 // CCF complements the carry flag
 // If C flag is set, then reset it.
@@ -638,7 +704,7 @@ func (c *CPU) RES(...Param) {}
 //  nn = two byte immediate value. (LS byte first.)
 func (c *CPU) JP(params ...Param) {
 	nn := params[0].(Value16)
-	c.PC.Write(nn.Read())
+	c.PC.Write16(nn.Read16())
 }
 
 // JPC jumps to address nn if following condition is true:
@@ -649,11 +715,15 @@ func (c *CPU) JP(params ...Param) {
 //
 // Use with:
 //  nn = two byte immediate value. (LS byte first.)
-func (c *CPU) JPC(...Param) {}
+func (c *CPU) JPC(params ...Param) {
+	if c.conditionMet(params...) {
+		c.JP(params[1:]...)
+	}
+}
 
 // JPHL jumps to the address contained in HL
 func (c *CPU) JPHL(...Param) {
-	c.PC.Write(c.HL.Read())
+	c.PC.Write16(c.HL.Read16())
 }
 
 // JR adds n to current address and jumps to it.
@@ -662,7 +732,7 @@ func (c *CPU) JPHL(...Param) {
 //  n = one byte signed immediate value
 func (c *CPU) JR(params ...Param) {
 	n := params[0].(Value8)
-	c.PC.Write(c.PC.Read() + uint16(n.Read()))
+	c.PC.Write16(c.PC.Read16() + uint16(n.Read8()))
 }
 
 // JRC will, if following condition is true, add n to current
@@ -671,7 +741,11 @@ func (c *CPU) JR(params ...Param) {
 // cc = Z, Jump if Z flag is set.
 // cc = NC, Jump if C flag is reset.
 // cc = C, Jump if C flag is set.
-func (c *CPU) JRC(...Param) {}
+func (c *CPU) JRC(params ...Param) {
+	if c.conditionMet(params...) {
+		c.JR(params[1:]...)
+	}
+}
 
 // CALL pushes address of next instruction onto stack and then
 // jumps to address n.
@@ -679,10 +753,10 @@ func (c *CPU) JRC(...Param) {}
 // Use with:
 //  nn = two byte immediate value. (LS byte first.)
 func (c *CPU) CALL(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(Value16)
 	c.PC.Inc(1)
 	c.PUSH(c.PC)
-	c.SP.Write(uint16(n.Read()))
+	c.SP.Write16(uint16(n.Read16()))
 }
 
 // CALLC calls address n if following condition is true:
@@ -693,7 +767,11 @@ func (c *CPU) CALL(params ...Param) {
 //
 // Use with:
 //  nn = two byte immediate value. (LS byte first.)
-func (c *CPU) CALLC(...Param) {}
+func (c *CPU) CALLC(params ...Param) {
+	if c.conditionMet(params...) {
+		c.CALL(params[1:]...)
+	}
+}
 
 // RST pushes present address onto stack.
 // Jumps to address $0000 + n.
@@ -701,14 +779,15 @@ func (c *CPU) CALLC(...Param) {}
 // Use with:
 //  n = $00,$08,$10,$18,$20,$28,$30,$38
 func (c *CPU) RST(params ...Param) {
-	n := params[0].(Value8)
-	c.SP.Write(uint16(n.Read()))
+	c.PUSH(c.PC)
+	i := params[0].(int)
+	c.SP.Write16(uint16(i))
 }
 
 // RET pops two bytes from stack & jumps to that address.
 func (c *CPU) RET(...Param) {
-	m := c.MemoryAt16(c.SP)
-	c.PC.Write(m.Read())
+	m := c.MemoryAt(c.SP)
+	c.PC.Write16(m.Read16())
 	c.SP.Inc(2)
 }
 
@@ -717,7 +796,11 @@ func (c *CPU) RET(...Param) {
 // cc = Z, Return if Z flag is set.
 // cc = NC, Return if C flag is reset.
 // cc = C, Return if C flag is set.
-func (c *CPU) RETC(...Param) {}
+func (c *CPU) RETC(params ...Param) {
+	if c.conditionMet(params...) {
+		c.RET(params...)
+	}
+}
 
 // RETI pops two bytes from stack & jumps to that address then
 // enables interrupts.
@@ -728,3 +811,21 @@ func (c *CPU) RETI(...Param) {
 
 // PREFIX is a placeholder for prefixing an opcode
 func (c *CPU) PREFIX(...Param) {}
+
+func (c *CPU) conditionMet(params ...Param) bool {
+	if len(params) == 0 {
+		return false
+	}
+	switch params[0] {
+	case CaseC:
+		return c.F.C()
+	case CaseNC:
+		return !c.F.C()
+	case CaseZ:
+		return c.F.Z()
+	case CaseNZ:
+		return !c.F.Z()
+	default:
+		return false
+	}
+}
