@@ -71,6 +71,13 @@ func NewCPU() *CPU {
 	return cpu
 }
 
+// LoadROM places the provided ROM data into RAM
+func (c *CPU) LoadROM(data []byte) {
+	for index, value := range data {
+		c.RAM[index] = value
+	}
+}
+
 type Address struct {
 	value uint16
 }
