@@ -19,7 +19,7 @@ func (m *Memory) Write16(value uint16) {
 }
 
 func (m *Memory) Read16() uint16 {
-	return uint16(m.cpu.RAM[m.index]) + uint16(m.cpu.RAM[m.index])<<8
+	return uint16(m.cpu.RAM[m.index]) + uint16(m.cpu.RAM[m.index+1])<<8
 }
 
 func (c *CPU) MemoryAt(pos Param) *Memory {
@@ -54,13 +54,13 @@ type Direct8 struct {
 
 func (d Direct8) Read8() byte {
 	c := d.CPU
-	defer func() {
-		c.PC.Inc(1)
-	}()
+	defer c.PC.Inc(1)
 	return c.RAM[c.PC.Read16()]
 }
 
-func (d Direct8) Write8(byte) {}
+func (d Direct8) Write8(byte) {
+	panic("write to direct memory")
+}
 
 var _ Value16 = &Direct16{}
 
@@ -70,11 +70,12 @@ type Direct16 struct {
 
 func (d Direct16) Read16() uint16 {
 	c := d.CPU
+	defer c.PC.Inc(2)
 	low := c.RAM[c.PC.Read16()]
-	c.PC.Inc(1)
-	high := c.RAM[c.PC.Read16()]
-	c.PC.Inc(1)
-	return uint16(high) << 8 & uint16(low)
+	high := c.RAM[c.PC.Read16()+1]
+	return uint16(high)<<8 | uint16(low)
 }
 
-func (d Direct16) Write16(uint16) {}
+func (d Direct16) Write16(uint16) {
+	panic("write to direct memory")
+}
