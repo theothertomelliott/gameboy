@@ -37,6 +37,13 @@ type CPU struct {
 	CB struct{}
 }
 
+const (
+	// Interrupt flag locations
+	// See: http://bgb.bircd.org/pandocs.htm#interrupts
+	IE = 0xFFFF // Interrupt Enable (R/W)
+	IF = 0xFF0F // Interrupt Flag (R/W)
+)
+
 func NewCPU() *CPU {
 	cpu := &CPU{
 		A: &Register{}, F: &Register{},
@@ -66,7 +73,7 @@ func NewCPU() *CPU {
 		CPU: cpu,
 	}
 
-	cpu.RAM = make([]byte, 0xFFFF)
+	cpu.RAM = make([]byte, 0x10000)
 
 	return cpu
 }

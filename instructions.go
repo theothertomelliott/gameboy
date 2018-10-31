@@ -560,12 +560,16 @@ func (c *CPU) STOP(...Param) {}
 // DI disables interrupts but not
 // immediately. Interrupts are disabled after
 // instruction after DI is executed.
-func (c *CPU) DI(...Param) {}
+func (c *CPU) DI(...Param) {
+	c.RAM[IE] = 0x0
+}
 
 // EI enables interrupts. This intruction enables interrupts
 // but not immediately. Interrupts are enabled after
 // instruction after EI is executed.
-func (c *CPU) EI(...Param) {}
+func (c *CPU) EI(...Param) {
+	c.RAM[IE] = 0xFF
+}
 
 // RLCA rotates A left.
 // The carry flag is set to the previous bit 7.
@@ -825,8 +829,8 @@ func (c *CPU) RETC(params ...Param) {
 // RETI pops two bytes from stack & jumps to that address then
 // enables interrupts.
 func (c *CPU) RETI(...Param) {
+	c.EI()
 	c.RET()
-	// TODO: Enable interrupts
 }
 
 // PREFIX is a placeholder for prefixing an opcode

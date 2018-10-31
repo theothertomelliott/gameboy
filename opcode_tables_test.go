@@ -32,7 +32,7 @@ func executeOp(t *testing.T, cpu *CPU, op Op) {
 		cpu.SP.Write16(500)
 		cpu.PC.Write16(500)
 		// Reset RAM and registers
-		cpu.RAM = make([]byte, 0xFFFF)
+		cpu.RAM = make([]byte, 0x10000)
 		cpu.AF.Write16(0)
 		cpu.BC.Write16(0)
 		cpu.DE.Write16(0)
