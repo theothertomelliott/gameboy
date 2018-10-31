@@ -79,7 +79,8 @@ func (c *CPU) LD(params ...Param) {
 			return
 		}
 		src := params[1].(Value16)
-		dst.Write16(src.Read16())
+		value := src.Read16()
+		dst.Write16(value)
 	}
 }
 

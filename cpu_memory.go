@@ -1,48 +1,63 @@
 package gameboy
 
+// Memory references a position on memory.
+// The index is fixed on the first read, so MemoryAt may be called to provide a reference
+// to the memory addressed by a register, for example, so it may be reused later.
 type Memory struct {
-	cpu   *CPU
-	index uint16
+	cpu    *CPU
+	index  Param
+	offset uint16
+
+	cachedPos *uint16 // Cache of position
+}
+
+func (m *Memory) pos() uint16 {
+	if m.cachedPos != nil {
+		return *m.cachedPos
+	}
+
+	var pos uint16
+	if index8, is8Bit := m.index.(Value8); is8Bit {
+		pos = m.offset + uint16(index8.Read8())
+	}
+	if index16, is16Bit := m.index.(Value16); is16Bit {
+		pos = m.offset + uint16(index16.Read16())
+	}
+	m.cachedPos = &pos
+	return pos
 }
 
 func (m *Memory) Write8(value byte) {
-	m.cpu.RAM[m.index] = value
+	m.cpu.RAM[m.pos()] = value
 }
 
 func (m *Memory) Read8() byte {
-	return m.cpu.RAM[m.index]
+	return m.cpu.RAM[m.pos()]
 }
 
 func (m *Memory) Write16(value uint16) {
-	m.cpu.RAM[m.index] = byte(value & 0xFF)
-	m.cpu.RAM[m.index+1] = byte((value & 0xFF00) >> 8)
+	pos := m.pos()
+	m.cpu.RAM[pos] = byte(value & 0xFF)
+	m.cpu.RAM[pos+1] = byte((value & 0xFF00) >> 8)
 }
 
 func (m *Memory) Read16() uint16 {
-	return uint16(m.cpu.RAM[m.index]) + uint16(m.cpu.RAM[m.index+1])<<8
+	pos := m.pos()
+	return uint16(m.cpu.RAM[pos]) + uint16(m.cpu.RAM[pos+1])<<8
 }
 
 func (c *CPU) MemoryAt(pos Param) *Memory {
-	if pos16, ok := pos.(Value16); ok {
-		return &Memory{
-			index: pos16.Read16(),
-			cpu:   c,
-		}
+	return &Memory{
+		index: pos,
+		cpu:   c,
 	}
-	if pos8, ok := pos.(Value8); ok {
-		return &Memory{
-			index: uint16(pos8.Read8()),
-			cpu:   c,
-		}
-	}
-	return nil
 }
 
 func (c *CPU) MemoryAtH(pos Param) *Memory {
-	pos8 := pos.(Value8)
 	return &Memory{
-		index: 0xFF00 | uint16(pos8.Read8()),
-		cpu:   c,
+		index:  pos,
+		offset: 0xFF00,
+		cpu:    c,
 	}
 }
 

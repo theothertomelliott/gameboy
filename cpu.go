@@ -135,10 +135,9 @@ func (c *CPU) Cycle() {
 			panic(r)
 		}
 	}()
-
+	c.PC.Inc(1)
 	if op.Instruction != nil {
 		op.Instruction(op.Params...)
 	}
-	c.PC.Inc(1)
 	// TODO: Cycles
 }
