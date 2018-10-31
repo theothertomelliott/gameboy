@@ -1056,3 +1056,34 @@ func TestCPL(t *testing.T) {
 		t.Errorf("input was not flipped, got %d", cpu.A.Read8())
 	}
 }
+
+func TestBit(t *testing.T) {
+	cpu := gameboy.NewCPU()
+	cpu.A.Write8(0x04)
+	cpu.BIT(5, cpu.A)
+	if cpu.F.Z() {
+		t.Errorf("expected zero on bit 5")
+	}
+	cpu.BIT(2, cpu.A)
+	if !cpu.F.Z() {
+		t.Errorf("expected one on bit 3")
+	}
+}
+
+func TestSet(t *testing.T) {
+	cpu := gameboy.NewCPU()
+	cpu.A.Write8(0x04)
+	cpu.SET(1, cpu.A)
+	if got := cpu.A.Read8(); got != 0x6 {
+		t.Errorf("value not as expected, got %d", got)
+	}
+}
+
+func TestRES(t *testing.T) {
+	cpu := gameboy.NewCPU()
+	cpu.A.Write8(0x04)
+	cpu.RES(2, cpu.A)
+	if got := cpu.A.Read8(); got != 0 {
+		t.Errorf("value not as expected, got %d", got)
+	}
+}

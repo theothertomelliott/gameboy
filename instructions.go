@@ -136,9 +136,16 @@ func (c *CPU) LDHL(params ...Param) {
 	c.F.SetZ(false)
 	c.F.SetN(false)
 
-	// TODO: Set carry and half carry flag
+	vSP := sp.Read16()
+	vN := uint16(n.Read8())
 
-	c.HL.Write16(sp.Read16() + uint16(n.Read8()))
+	halfCarry := vSP&0xFFF+vN&0xFFF > 0xFFF
+	carry := uint32(vSP)+uint32(vN) > 0xFFFF
+
+	c.F.SetH(halfCarry)
+	c.F.SetC(carry)
+
+	c.HL.Write16(vSP + vN)
 }
 
 // PUSH pushes nn onto the stack.
@@ -420,7 +427,6 @@ func (c *CPU) CP(params ...Param) {
 // Flags affected:
 //  None.
 func (c *CPU) INC(params ...Param) {
-
 	if n, is8Bit := params[0].(Value8); is8Bit {
 		in := n.Read8()
 		result := in + 1
@@ -685,19 +691,37 @@ func (c *CPU) SRL(...Param) {}
 //  N - Reset.
 //  H - Set.
 //  C - Not affected.
-func (c *CPU) BIT(...Param) {}
+func (c *CPU) BIT(params ...Param) {
+	pos := byte(params[0].(int))
+	value := params[1].(Value8).Read8()
+	mask := (byte(1) << pos)
+	result := (value & mask) > 0
+	c.F.SetZ(result)
+}
 
 // SET sets bit b in register r.
 //
 // Use with:
 //  b = 0 - 7, r = A,B,C,D,E,H,L,(HL)
-func (c *CPU) SET(...Param) {}
+func (c *CPU) SET(params ...Param) {
+	pos := byte(params[0].(int))
+	r := params[1].(Value8)
+	value := r.Read8()
+	value |= (1 << pos)
+	r.Write8(value)
+}
 
 // RES resets bit b in register r.
 //
 // Use with:
 //  b = 0 - 7, r = A,B,C,D,E,H,L,(HL)
-func (c *CPU) RES(...Param) {}
+func (c *CPU) RES(params ...Param) {
+	pos := byte(params[0].(int))
+	r := params[1].(Value8)
+	value := r.Read8()
+	value &^= (1 << pos)
+	r.Write8(value)
+}
 
 // JP jumps to address nn
 //
@@ -720,11 +744,6 @@ func (c *CPU) JPC(params ...Param) {
 	if c.conditionMet(params...) {
 		c.JP(params[1:]...)
 	}
-}
-
-// JPHL jumps to the address contained in HL
-func (c *CPU) JPHL(...Param) {
-	c.PC.Write16(c.HL.Read16())
 }
 
 // JR adds n to current address and jumps to it.
