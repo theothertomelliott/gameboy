@@ -579,7 +579,9 @@ func (c *CPU) EI(...Param) {
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 7 data.
-func (c *CPU) RLCA(...Param) {}
+func (c *CPU) RLCA(...Param) {
+	c.RLC(c.A)
+}
 
 // RLA rotates A left through carry flag.
 //
@@ -588,7 +590,9 @@ func (c *CPU) RLCA(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 7 data.
-func (c *CPU) RLA(...Param) {}
+func (c *CPU) RLA(...Param) {
+	c.RL(c.A)
+}
 
 // RRCA rotates A right.
 // Old bit 0 to Carry flag.
@@ -598,7 +602,9 @@ func (c *CPU) RLA(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 0 data.
-func (c *CPU) RRCA(...Param) {}
+func (c *CPU) RRCA(...Param) {
+	c.RRC(c.A)
+}
 
 // RRA rotates A right through carry flag.
 //
@@ -607,7 +613,9 @@ func (c *CPU) RRCA(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 0 data.
-func (c *CPU) RRA(...Param) {}
+func (c *CPU) RRA(...Param) {
+	c.RR(c.A)
+}
 
 // RLC rotates n left. Old bit 7 to Carry flag.
 //
@@ -662,7 +670,13 @@ func (c *CPU) RR(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 7 data.
-func (c *CPU) SLA(...Param) {}
+func (c *CPU) SLA(params ...Param) {
+	n := params[0].(Value8)
+	shifted := uint16(n.Read8()) << 1
+	c.F.SetZ(shifted == 0)
+	c.F.SetC(shifted > 0xFF)
+	n.Write8(byte(shifted & 0xFF))
+}
 
 // SRA shifts n right into Carry. MSB doesn't change.
 //
@@ -673,7 +687,15 @@ func (c *CPU) SLA(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 0 data.
-func (c *CPU) SRA(...Param) {}
+func (c *CPU) SRA(params ...Param) {
+	n := params[0].(Value8)
+	value := n.Read8()
+	msb := value & (0x1 << 7)
+	c.F.SetC(value&0x1 > 0)
+	shifted := value >> 1
+	c.F.SetZ(shifted == 0)
+	n.Write8(byte(shifted | msb))
+}
 
 // SRL shifts n right into Carry. MSB set to 0.
 //
@@ -684,7 +706,14 @@ func (c *CPU) SRA(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 0 data.
-func (c *CPU) SRL(...Param) {}
+func (c *CPU) SRL(params ...Param) {
+	n := params[0].(Value8)
+	value := n.Read8()
+	c.F.SetC(value&0x1 > 0)
+	shifted := value >> 1
+	c.F.SetZ(shifted == 0)
+	n.Write8(shifted)
+}
 
 // BIT tests bit b in register r.
 //

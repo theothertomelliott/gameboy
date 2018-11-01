@@ -64,39 +64,47 @@ func TestLDD(t *testing.T) {
 
 func TestAND(t *testing.T) {
 	var tests = []struct {
-		name       string
-		in         byte
-		a          byte
-		expected   byte
-		z, n, h, c bool
+		name     string
+		in       byte
+		a        byte
+		expected byte
+		flags    expectedFlags
 	}{
 		{
 			name: "zero",
-			z:    true,
-			h:    true,
+			flags: expectedFlags{
+				z: true,
+				h: true,
+			},
 		},
 		{
 			name:     "a pair of 1s is ANDed",
 			in:       1,
 			a:        1,
 			expected: 1,
-			h:        true,
+			flags: expectedFlags{
+				h: true,
+			},
 		},
 		{
 			name:     "not OR",
 			in:       1,
 			a:        2,
 			expected: 0,
-			z:        true,
-			h:        true,
+			flags: expectedFlags{
+				z: true,
+				h: true,
+			},
 		},
 		{
 			name:     "All bits set",
 			in:       0xFF,
 			a:        0xFF,
 			expected: 0xFF,
-			z:        false,
-			h:        true,
+			flags: expectedFlags{
+				z: false,
+				h: true,
+			},
 		},
 	}
 	for _, test := range tests {
@@ -111,34 +119,24 @@ func TestAND(t *testing.T) {
 			if got := cpu.A.Read8(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
-
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
 
 func TestOR(t *testing.T) {
 	var tests = []struct {
-		name       string
-		in         byte
-		a          byte
-		expected   byte
-		z, n, h, c bool
+		name     string
+		in       byte
+		a        byte
+		expected byte
+		flags    expectedFlags
 	}{
 		{
 			name: "zero",
-			z:    true,
+			flags: expectedFlags{
+				z: true,
+			},
 		},
 		{
 			name:     "a pair of 1s is retained",
@@ -171,34 +169,24 @@ func TestOR(t *testing.T) {
 			if got := cpu.A.Read8(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
-
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
 
 func TestXOR(t *testing.T) {
 	var tests = []struct {
-		name       string
-		in         byte
-		a          byte
-		expected   byte
-		z, n, h, c bool
+		name     string
+		in       byte
+		a        byte
+		expected byte
+		flags    expectedFlags
 	}{
 		{
 			name: "zero",
-			z:    true,
+			flags: expectedFlags{
+				z: true,
+			},
 		},
 		{
 			name:     "is XOR",
@@ -211,7 +199,9 @@ func TestXOR(t *testing.T) {
 			in:       0xFF,
 			a:        0xFF,
 			expected: 0,
-			z:        true,
+			flags: expectedFlags{
+				z: true,
+			},
 		},
 	}
 	for _, test := range tests {
@@ -226,34 +216,24 @@ func TestXOR(t *testing.T) {
 			if got := cpu.A.Read8(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
-
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
 
 func TestADD(t *testing.T) {
 	var tests = []struct {
-		name       string
-		dst        byte
-		src        byte
-		expected   byte
-		z, n, h, c bool
+		name     string
+		dst      byte
+		src      byte
+		expected byte
+		flags    expectedFlags
 	}{
 		{
 			name: "zero",
-			z:    true,
+			flags: expectedFlags{
+				z: true,
+			},
 		},
 		{
 			name:     "1 plus 1",
@@ -266,32 +246,40 @@ func TestADD(t *testing.T) {
 			src:      0xF,
 			dst:      1,
 			expected: 0x10,
-			h:        true,
+			flags: expectedFlags{
+				h: true,
+			},
 		},
 		{
 			name:     "carry and half carry",
 			dst:      0xFF,
 			src:      1,
 			expected: 0,
-			z:        true,
-			h:        true,
-			c:        true,
+			flags: expectedFlags{
+				z: true,
+				h: true,
+				c: true,
+			},
 		},
 		{
 			name:     "carry and half carry (not on boundary",
 			dst:      0xFE,
 			src:      3,
 			expected: 1,
-			h:        true,
-			c:        true,
+			flags: expectedFlags{
+				h: true,
+				c: true,
+			},
 		},
 		{
 			name:     "carry only",
 			dst:      0xF0,
 			src:      0x10,
 			expected: 0,
-			z:        true,
-			c:        true,
+			flags: expectedFlags{
+				z: true,
+				c: true,
+			},
 		},
 	}
 	for _, test := range tests {
@@ -307,34 +295,24 @@ func TestADD(t *testing.T) {
 			if got := dst.Read8(); got != test.expected {
 				t.Errorf("dst: expected %d, got %d", test.expected, got)
 			}
-
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
 
 func TestADD16(t *testing.T) {
 	var tests = []struct {
-		name       string
-		dst        uint16
-		src        uint16
-		expected   uint16
-		z, n, h, c bool
+		name     string
+		dst      uint16
+		src      uint16
+		expected uint16
+		flags    expectedFlags
 	}{
 		{
 			name: "zero",
-			z:    true,
+			flags: expectedFlags{
+				z: true,
+			},
 		},
 		{
 			name:     "1 plus 1",
@@ -347,24 +325,30 @@ func TestADD16(t *testing.T) {
 			dst:      0xFFF,
 			src:      1,
 			expected: 0x1000,
-			h:        true,
+			flags: expectedFlags{
+				h: true,
+			},
 		},
 		{
 			name:     "carry + half carruy",
 			dst:      0xFFFF,
 			src:      0x1,
 			expected: 0x0000,
-			z:        true,
-			h:        true,
-			c:        true,
+			flags: expectedFlags{
+				z: true,
+				h: true,
+				c: true,
+			},
 		},
 		{
 			name:     "carry",
 			dst:      0xF000,
 			src:      0x1000,
 			expected: 0x0000,
-			z:        true,
-			c:        true,
+			flags: expectedFlags{
+				z: true,
+				c: true,
+			},
 		},
 	}
 	for _, test := range tests {
@@ -381,34 +365,24 @@ func TestADD16(t *testing.T) {
 			if got := dst.Read16(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
-
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
 
 func TestADDSP(t *testing.T) {
 	var tests = []struct {
-		name       string
-		dst        uint16
-		src        byte
-		expected   uint16
-		z, n, h, c bool
+		name     string
+		dst      uint16
+		src      byte
+		expected uint16
+		flags    expectedFlags
 	}{
 		{
 			name: "zero",
-			z:    true,
+			flags: expectedFlags{
+				z: true,
+			},
 		},
 		{
 			name:     "1 plus 1",
@@ -421,16 +395,20 @@ func TestADDSP(t *testing.T) {
 			dst:      0xFFF,
 			src:      1,
 			expected: 0x1000,
-			h:        true,
+			flags: expectedFlags{
+				h: true,
+			},
 		},
 		{
 			name:     "carry + half carruy",
 			dst:      0xFFFF,
 			src:      0x1,
 			expected: 0x0000,
-			z:        true,
-			h:        true,
-			c:        true,
+			flags: expectedFlags{
+				z: true,
+				h: true,
+				c: true,
+			},
 		},
 	}
 	for _, test := range tests {
@@ -448,34 +426,25 @@ func TestADDSP(t *testing.T) {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
 
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
 
 func TestADC(t *testing.T) {
 	var tests = []struct {
-		name       string
-		in         byte
-		a          byte
-		cIn        bool
-		expected   byte
-		z, n, h, c bool
+		name     string
+		in       byte
+		a        byte
+		cIn      bool
+		expected byte
+		flags    expectedFlags
 	}{
 		{
 			name: "zero",
-			z:    true,
+			flags: expectedFlags{
+				z: true,
+			},
 		},
 		{
 			name:     "1 plus 1",
@@ -488,24 +457,30 @@ func TestADC(t *testing.T) {
 			in:       0xF,
 			a:        1,
 			expected: 0x10,
-			h:        true,
+			flags: expectedFlags{
+				h: true,
+			},
 		},
 		{
 			name:     "carry and half carry",
 			in:       0xFF,
 			a:        1,
 			expected: 0,
-			z:        true,
-			h:        true,
-			c:        true,
+			flags: expectedFlags{
+				z: true,
+				h: true,
+				c: true,
+			},
 		},
 		{
 			name:     "carry only",
 			in:       0xF0,
 			a:        0x10,
 			expected: 0,
-			z:        true,
-			c:        true,
+			flags: expectedFlags{
+				z: true,
+				c: true,
+			},
 		},
 		{
 			name:     "adds the carry",
@@ -513,8 +488,10 @@ func TestADC(t *testing.T) {
 			a:        1,
 			cIn:      true,
 			expected: 1,
-			h:        true,
-			c:        true,
+			flags: expectedFlags{
+				h: true,
+				c: true,
+			},
 		},
 	}
 	for _, test := range tests {
@@ -534,83 +511,84 @@ func TestADC(t *testing.T) {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
 
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
 
 func TestSUB(t *testing.T) {
 	var tests = []struct {
-		name       string
-		in         byte
-		a          byte
-		expected   byte
-		z, n, h, c bool
+		name     string
+		in       byte
+		a        byte
+		expected byte
+		flags    expectedFlags
 	}{
 		{
 			name: "zero",
-			z:    true,
-			n:    true,
-			h:    true,
-			c:    true,
+			flags: expectedFlags{
+				z: true,
+				n: true,
+				h: true,
+				c: true,
+			},
 		},
 		{
 			name:     "2 minus 1",
 			in:       1,
 			a:        2,
 			expected: 1,
-			n:        true,
-			h:        true,
-			c:        true,
+			flags: expectedFlags{
+				n: true,
+				h: true,
+				c: true,
+			},
 		},
 		{
 			name:     "half carry",
 			in:       0x1,
 			a:        0xF0,
 			expected: 0xEF,
-			n:        true,
-			h:        false,
-			c:        true,
+			flags: expectedFlags{
+				n: true,
+				h: false,
+				c: true,
+			},
 		},
 		{
 			name:     "borrow and half borrow",
 			in:       0x1,
 			a:        0x00,
 			expected: 0xFF,
-			z:        false,
-			n:        true,
-			h:        false,
-			c:        false,
+			flags: expectedFlags{
+				z: false,
+				n: true,
+				h: false,
+				c: false,
+			},
 		},
 		{
 			name:     "borrow and half borrow (not on boundary)",
 			in:       0x3,
 			a:        0x01,
 			expected: 0xFE,
-			z:        false,
-			n:        true,
-			h:        false,
-			c:        false,
+			flags: expectedFlags{
+				z: false,
+				n: true,
+				h: false,
+				c: false,
+			},
 		},
 		{
 			name:     "carry only",
 			in:       0x10,
 			a:        0x00,
 			expected: 0xF0,
-			n:        true,
-			h:        true,
-			c:        false,
+			flags: expectedFlags{
+				n: true,
+				h: true,
+				c: false,
+			},
 		},
 	}
 	for _, test := range tests {
@@ -625,85 +603,85 @@ func TestSUB(t *testing.T) {
 			if got := cpu.A.Read8(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
-
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
 
 func TestSBC(t *testing.T) {
 	var tests = []struct {
-		name       string
-		in         byte
-		a          byte
-		cIn        bool
-		expected   byte
-		z, n, h, c bool
+		name     string
+		in       byte
+		a        byte
+		cIn      bool
+		expected byte
+		flags    expectedFlags
 	}{
 		{
 			name: "zero",
-			z:    true,
-			n:    true,
-			h:    true,
-			c:    true,
+			flags: expectedFlags{
+				z: true,
+				n: true,
+				h: true,
+				c: true,
+			},
 		},
 		{
 			name:     "2 minus 1",
 			in:       1,
 			a:        2,
 			expected: 1,
-			n:        true,
-			h:        true,
-			c:        true,
+			flags: expectedFlags{
+				n: true,
+				h: true,
+				c: true,
+			},
 		},
 		{
 			name:     "half carry",
 			in:       0x1,
 			a:        0xF0,
 			expected: 0xEF,
-			n:        true,
-			h:        false,
-			c:        true,
+			flags: expectedFlags{
+				n: true,
+				h: false,
+				c: true,
+			},
 		},
 		{
 			name:     "borrow and half borrow",
 			in:       0x1,
 			a:        0x00,
 			expected: 0xFF,
-			z:        false,
-			n:        true,
-			h:        false,
-			c:        false,
+			flags: expectedFlags{
+				z: false,
+				n: true,
+				h: false,
+				c: false,
+			},
 		},
 		{
 			name:     "borrow and half borrow (not on boundary)",
 			in:       0x3,
 			a:        0x01,
 			expected: 0xFE,
-			z:        false,
-			n:        true,
-			h:        false,
-			c:        false,
+			flags: expectedFlags{
+				z: false,
+				n: true,
+				h: false,
+				c: false,
+			},
 		},
 		{
 			name:     "carry only",
 			in:       0x10,
 			a:        0x00,
 			expected: 0xF0,
-			n:        true,
-			h:        true,
-			c:        false,
+			flags: expectedFlags{
+				n: true,
+				h: true,
+				c: false,
+			},
 		},
 		{
 			name:     "includes the carry",
@@ -711,10 +689,12 @@ func TestSBC(t *testing.T) {
 			in:       0x2,
 			a:        0x01,
 			expected: 0xFE,
-			z:        false,
-			n:        true,
-			h:        false,
-			c:        false,
+			flags: expectedFlags{
+				z: false,
+				n: true,
+				h: false,
+				c: false,
+			},
 		},
 	}
 	for _, test := range tests {
@@ -730,78 +710,78 @@ func TestSBC(t *testing.T) {
 			if got := cpu.A.Read8(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
-
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
 
 func TestCP(t *testing.T) {
 	var tests = []struct {
-		name       string
-		in         byte
-		a          byte
-		z, n, h, c bool
+		name  string
+		in    byte
+		a     byte
+		flags expectedFlags
 	}{
 		{
 			name: "zero",
-			z:    true,
-			n:    true,
-			h:    true,
-			c:    true,
+			flags: expectedFlags{
+				z: true,
+				n: true,
+				h: true,
+				c: true,
+			},
 		},
 		{
 			name: "2 minus 1",
 			in:   1,
 			a:    2,
-			n:    true,
-			h:    true,
-			c:    true,
+			flags: expectedFlags{
+				n: true,
+				h: true,
+				c: true,
+			},
 		},
 		{
 			name: "half carry",
 			in:   0x1,
 			a:    0xF0,
-			n:    true,
-			h:    false,
-			c:    true,
+			flags: expectedFlags{
+				n: true,
+				h: false,
+				c: true,
+			},
 		},
 		{
 			name: "borrow and half borrow",
 			in:   0x1,
 			a:    0x00,
-			z:    false,
-			n:    true,
-			h:    false,
-			c:    false,
+			flags: expectedFlags{
+				z: false,
+				n: true,
+				h: false,
+				c: false,
+			},
 		},
 		{
 			name: "borrow and half borrow (not on boundary)",
 			in:   0x3,
 			a:    0x01,
-			z:    false,
-			n:    true,
-			h:    false,
-			c:    false,
+			flags: expectedFlags{
+				z: false,
+				n: true,
+				h: false,
+				c: false,
+			},
 		},
 		{
 			name: "carry only",
 			in:   0x10,
 			a:    0x00,
-			n:    true,
-			h:    true,
-			c:    false,
+			flags: expectedFlags{
+				n: true,
+				h: true,
+				c: false,
+			},
 		},
 	}
 	for _, test := range tests {
@@ -816,29 +796,17 @@ func TestCP(t *testing.T) {
 			if got := cpu.A.Read8(); got != test.a {
 				t.Errorf("A: expected %d, got %d", test.a, got)
 			}
-
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
 
 func TestINC(t *testing.T) {
 	var tests = []struct {
-		name       string
-		in         byte
-		expected   byte
-		z, n, h, c bool
+		name     string
+		in       byte
+		expected byte
+		flags    expectedFlags
 	}{
 		{
 			name:     "zero",
@@ -853,7 +821,9 @@ func TestINC(t *testing.T) {
 			name:     "half carry",
 			in:       0xF,
 			expected: 0x10,
-			h:        true,
+			flags: expectedFlags{
+				h: true,
+			},
 		},
 	}
 	for _, test := range tests {
@@ -867,29 +837,17 @@ func TestINC(t *testing.T) {
 			if got := src.Read8(); got != test.expected {
 				t.Errorf("n: expected %d, got %d", test.expected, got)
 			}
-
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
 
 func TestINC16(t *testing.T) {
 	var tests = []struct {
-		name       string
-		in         uint16
-		expected   uint16
-		z, n, h, c bool
+		name     string
+		in       uint16
+		expected uint16
+		flags    expectedFlags
 	}{
 		{
 			name:     "zero",
@@ -922,44 +880,36 @@ func TestINC16(t *testing.T) {
 			if got := src.Read16(); got != test.expected {
 				t.Errorf("n: expected %d, got %d", test.expected, got)
 			}
-
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
 
 func TestDEC(t *testing.T) {
 	var tests = []struct {
-		name       string
-		in         byte
-		expected   byte
-		z, n, h, c bool
+		name     string
+		in       byte
+		expected byte
+		flags    expectedFlags
 	}{
 		{
 			name:     "1 - 1",
 			in:       1,
 			expected: 0,
-			z:        true,
-			n:        true,
-			h:        true,
+			flags: expectedFlags{
+				z: true,
+				n: true,
+				h: true,
+			},
 		},
 		{
 			name:     "half carry",
 			in:       0xF0,
 			expected: 0xEF,
-			h:        false,
-			n:        true,
+			flags: expectedFlags{
+				h: false,
+				n: true,
+			},
 		},
 	}
 	for _, test := range tests {
@@ -974,28 +924,17 @@ func TestDEC(t *testing.T) {
 				t.Errorf("n: expected %d, got %d", test.expected, got)
 			}
 
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
 
 func TestDEC16(t *testing.T) {
 	var tests = []struct {
-		name       string
-		in         uint16
-		expected   uint16
-		z, n, h, c bool
+		name     string
+		in       uint16
+		expected uint16
+		flags    expectedFlags
 	}{
 		{
 			name:     "1 - 1",
@@ -1020,18 +959,7 @@ func TestDEC16(t *testing.T) {
 				t.Errorf("n: expected %d, got %d", test.expected, got)
 			}
 
-			if got := cpu.F.Z(); got != test.z {
-				t.Errorf("Z Flag: expected %v, got %v", test.z, got)
-			}
-			if got := cpu.F.N(); got != test.n {
-				t.Errorf("N Flag: expected %v, got %v", test.n, got)
-			}
-			if got := cpu.F.H(); got != test.h {
-				t.Errorf("H Flag: expected %v, got %v", test.h, got)
-			}
-			if got := cpu.F.C(); got != test.c {
-				t.Errorf("C Flag: expected %v, got %v", test.c, got)
-			}
+			test.flags.compare(t, cpu)
 		})
 	}
 }
@@ -1084,6 +1012,163 @@ func TestRES(t *testing.T) {
 	cpu.A.Write8(0x04)
 	cpu.RES(2, cpu.A)
 	if got := cpu.A.Read8(); got != 0 {
-		t.Errorf("value not as expected, got %d", got)
+		t.Errorf("value not as expected, got 0x%X", got)
+	}
+}
+
+func TestSLA(t *testing.T) {
+	var tests = []struct {
+		name     string
+		in       byte
+		expected byte
+		flags    expectedFlags
+	}{
+		{
+			name: "zero",
+			flags: expectedFlags{
+				z: true,
+			},
+		},
+		{
+			name:     "no carry",
+			in:       0x1,
+			expected: 0x2,
+		},
+		{
+			name:     "carry",
+			in:       0xFF,
+			expected: 0xFE,
+			flags: expectedFlags{
+				c: true,
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			cpu := gameboy.NewCPU()
+			cpu.A.Write8(test.in)
+			cpu.SLA(cpu.A)
+			if got := cpu.A.Read8(); got != test.expected {
+				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
+			}
+			test.flags.compare(t, cpu)
+		})
+	}
+}
+
+func TestSRA(t *testing.T) {
+	var tests = []struct {
+		name     string
+		in       byte
+		expected byte
+		flags    expectedFlags
+	}{
+		{
+			name: "zero",
+			flags: expectedFlags{
+				z: true,
+			},
+		},
+		{
+			name:     "no carry",
+			in:       0x2,
+			expected: 0x1,
+		},
+		{
+			name:     "carry",
+			in:       0x01,
+			expected: 0x00,
+			flags: expectedFlags{
+				z: true,
+				c: true,
+			},
+		},
+		{
+			name:     "MSB unchanged",
+			in:       0xFF,
+			expected: 0xFF,
+			flags: expectedFlags{
+				c: true,
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			cpu := gameboy.NewCPU()
+			cpu.A.Write8(test.in)
+			cpu.SRA(cpu.A)
+			if got := cpu.A.Read8(); got != test.expected {
+				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
+			}
+			test.flags.compare(t, cpu)
+		})
+	}
+}
+
+func TestSRL(t *testing.T) {
+	var tests = []struct {
+		name     string
+		in       byte
+		expected byte
+		flags    expectedFlags
+	}{
+		{
+			name: "zero",
+			flags: expectedFlags{
+				z: true,
+			},
+		},
+		{
+			name:     "no carry",
+			in:       0x2,
+			expected: 0x1,
+		},
+		{
+			name:     "carry",
+			in:       0x01,
+			expected: 0x00,
+			flags: expectedFlags{
+				z: true,
+				c: true,
+			},
+		},
+		{
+			name:     "MSB set to zero",
+			in:       0xFF,
+			expected: 0x7F,
+			flags: expectedFlags{
+				c: true,
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			cpu := gameboy.NewCPU()
+			cpu.A.Write8(test.in)
+			cpu.SRL(cpu.A)
+			if got := cpu.A.Read8(); got != test.expected {
+				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
+			}
+			test.flags.compare(t, cpu)
+		})
+	}
+}
+
+type expectedFlags struct {
+	z, n, h, c bool
+}
+
+func (e expectedFlags) compare(t *testing.T, cpu *gameboy.CPU) {
+	if got := cpu.F.Z(); got != e.z {
+		t.Errorf("Z Flag: expected %v, got %v", e.z, got)
+	}
+	if got := cpu.F.N(); got != e.n {
+		t.Errorf("N Flag: expected %v, got %v", e.n, got)
+	}
+	if got := cpu.F.H(); got != e.h {
+		t.Errorf("H Flag: expected %v, got %v", e.h, got)
+	}
+	if got := cpu.F.C(); got != e.c {
+		t.Errorf("C Flag: expected %v, got %v", e.c, got)
 	}
 }
