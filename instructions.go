@@ -509,7 +509,12 @@ func (c *CPU) SWAP(params ...Param) {
 //  N - Not affected.
 //  H - Reset.
 //  C - Set or reset according to operation.
-func (c *CPU) DAA(...Param) {}
+func (c *CPU) DAA(...Param) {
+	v := c.A.Read8()
+	units := v % 10
+	tens := v / 10
+	c.A.Write8(units | (tens << 4))
+}
 
 // CPL complements register A (flips all bits)
 //

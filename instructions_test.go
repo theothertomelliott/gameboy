@@ -1336,6 +1336,15 @@ func TestRR(t *testing.T) {
 	}
 }
 
+func TestDAA(t *testing.T) {
+	cpu := gameboy.NewCPU()
+	cpu.A.Write8(55)
+	cpu.DAA()
+	if got := cpu.A.Read8(); got != 0x55 {
+		t.Errorf("value not as expected, got 0x%X", got)
+	}
+}
+
 type expectedFlags struct {
 	z, n, h, c bool
 }
