@@ -46,13 +46,6 @@ type CPU struct {
 	isStopped bool
 }
 
-const (
-	// Interrupt flag locations
-	// See: http://bgb.bircd.org/pandocs.htm#interrupts
-	IE = 0xFFFF // Interrupt Enable (R/W)
-	IF = 0xFF0F // Interrupt Flag (R/W)
-)
-
 // NewClock creates time.Ticker with suitable speed
 // that can be used with cpu.Run
 func NewClock() *time.Ticker {
