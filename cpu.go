@@ -53,6 +53,13 @@ const (
 	IF = 0xFF0F // Interrupt Flag (R/W)
 )
 
+// NewClock creates time.Ticker with suitable speed
+// that can be used with cpu.Run
+func NewClock() *time.Ticker {
+	return time.NewTicker(time.Microsecond)
+}
+
+// NewCPU creates a CPU in a zeroed initial state.
 func NewCPU() *CPU {
 	cpu := &CPU{
 		A: &Register{}, F: &Register{},
@@ -120,24 +127,28 @@ func (a *Address) Inc(amount int8) {
 
 func (c *CPU) Run(clock <-chan time.Time) {
 	for _ = range clock {
+		if c.cycles > 0 {
+			c.cycles--
+			continue
+		}
 		if c.isHalted {
 			// If interrupts are disabled (DI) then
 			// halt doesn't suspend operation but it does cause
 			// the program counter to stop counting for one
 			// instruction
-			continue
-		}
-		if c.cycles > 0 {
-			c.cycles--
+			if c.RAM[IE] == 0x0 {
+				c.PC.Inc(1)
+				c.cycles = 1
+			}
 			continue
 		}
 
-		c.Cycle()
+		c.execute()
 	}
 }
 
-// Based on http://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html
-func (c *CPU) Cycle() {
+// execute handles the next operation
+func (c *CPU) execute() {
 	var table map[Opcode]Op
 	opcode := Opcode(c.RAM[c.PC.Read16()])
 	var isCB bool
