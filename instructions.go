@@ -552,10 +552,14 @@ func (c *CPU) SCF(...Param) {
 
 // HALT powers down the CPU until an interrupt occurs
 // Used to reduce energy consumption
-func (c *CPU) HALT(...Param) {}
+func (c *CPU) HALT(...Param) {
+	c.isHalted = true
+}
 
 // STOP halts the CPU and LCD until a button is pressed
-func (c *CPU) STOP(...Param) {}
+func (c *CPU) STOP(...Param) {
+	c.isStopped = true
+}
 
 // DI disables interrupts but not
 // immediately. Interrupts are disabled after
@@ -626,7 +630,15 @@ func (c *CPU) RRA(...Param) {
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 7 data.
-func (c *CPU) RLC(...Param) {}
+func (c *CPU) RLC(params ...Param) {
+	n := params[0].(Value8)
+	value := n.Read8()
+	msb := value & (0x1 << 7)
+	result := value<<1 | (msb >> 7)
+	c.F.SetZ(result == 0)
+	c.F.SetC(msb > 0)
+	n.Write8(result)
+}
 
 // RL rotates n left through carry flag.
 //
@@ -637,7 +649,19 @@ func (c *CPU) RLC(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 7 data.
-func (c *CPU) RL(...Param) {}
+func (c *CPU) RL(params ...Param) {
+	n := params[0].(Value8)
+	value := n.Read8()
+	msb := value & (0x1 << 7)
+	result := value << 1
+	// Add carry bit
+	if c.F.C() {
+		result++
+	}
+	c.F.SetZ(result == 0)
+	c.F.SetC(msb > 0)
+	n.Write8(result)
+}
 
 // RRC rotates n right. Old bit 0 to Carry flag.
 //
@@ -648,7 +672,15 @@ func (c *CPU) RL(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 0 data.
-func (c *CPU) RRC(...Param) {}
+func (c *CPU) RRC(params ...Param) {
+	n := params[0].(Value8)
+	value := n.Read8()
+	lsb := value & 0x1
+	result := value>>1 | lsb
+	c.F.SetZ(result == 0)
+	c.F.SetC(lsb > 0)
+	n.Write8(result)
+}
 
 // RR rotates n right through Carry flag.
 //
@@ -659,7 +691,19 @@ func (c *CPU) RRC(...Param) {}
 //  N - Reset.
 //  H - Reset.
 //  C - Contains old bit 0 data.
-func (c *CPU) RR(...Param) {}
+func (c *CPU) RR(params ...Param) {
+	n := params[0].(Value8)
+	value := n.Read8()
+	lsb := value & 0x1
+	result := value >> 1
+	// Add carry bit
+	if c.F.C() {
+		result = result | (0x1 << 7)
+	}
+	c.F.SetZ(result == 0)
+	c.F.SetC(lsb > 0)
+	n.Write8(result)
+}
 
 // SLA shifts n left into Carry. LSB of n set to 0
 //

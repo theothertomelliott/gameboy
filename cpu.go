@@ -35,6 +35,15 @@ type CPU struct {
 
 	// CB is a placeholder for the prefix
 	CB struct{}
+
+	// Cycles remaining to be used for operation
+	cycles int
+
+	// if true, no processing will be completed until an interrupt
+	isHalted bool
+
+	// if true, the CPU and LCD are halted until a button is pressed
+	isStopped bool
 }
 
 const (
@@ -109,11 +118,21 @@ func (a *Address) Inc(amount int8) {
 	}
 }
 
-func (c *CPU) Run() {
-	for true {
+func (c *CPU) Run(clock <-chan time.Time) {
+	for _ = range clock {
+		if c.isHalted {
+			// If interrupts are disabled (DI) then
+			// halt doesn't suspend operation but it does cause
+			// the program counter to stop counting for one
+			// instruction
+			continue
+		}
+		if c.cycles > 0 {
+			c.cycles--
+			continue
+		}
+
 		c.Cycle()
-		// TODO: Exit when interrupted
-		time.Sleep(time.Microsecond)
 	}
 }
 
@@ -146,5 +165,5 @@ func (c *CPU) Cycle() {
 	if op.Instruction != nil {
 		op.Instruction(op.Params...)
 	}
-	// TODO: Cycles
+	c.cycles = op.Cycles[0] - 1
 }

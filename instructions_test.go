@@ -1154,6 +1154,188 @@ func TestSRL(t *testing.T) {
 	}
 }
 
+func TestRLC(t *testing.T) {
+	var tests = []struct {
+		name     string
+		in       byte
+		expected byte
+		flags    expectedFlags
+	}{
+		{
+			name: "zero",
+			flags: expectedFlags{
+				z: true,
+			},
+		},
+		{
+			name:     "rotates left",
+			in:       0x1,
+			expected: 0x2,
+		},
+		{
+			name:     "full rotation and carry bit",
+			in:       0xFF,
+			expected: 0xFF,
+			flags: expectedFlags{
+				c: true,
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			cpu := gameboy.NewCPU()
+			cpu.A.Write8(test.in)
+			cpu.RLC(cpu.A)
+			if got := cpu.A.Read8(); got != test.expected {
+				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
+			}
+			test.flags.compare(t, cpu)
+		})
+	}
+}
+
+func TestRL(t *testing.T) {
+	var tests = []struct {
+		name     string
+		in       byte
+		carry    bool
+		expected byte
+		flags    expectedFlags
+	}{
+		{
+			name: "zero",
+			flags: expectedFlags{
+				z: true,
+			},
+		},
+		{
+			name:     "rotates left",
+			in:       0x1,
+			expected: 0x2,
+		},
+		{
+			name:     "full rotation through carry bit",
+			in:       0xFF,
+			expected: 0xFE,
+			flags: expectedFlags{
+				c: true,
+			},
+		},
+		{
+			name:     "full rotation through carry bit (set)",
+			in:       0xFF,
+			carry:    true,
+			expected: 0xFF,
+			flags: expectedFlags{
+				c: true,
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			cpu := gameboy.NewCPU()
+			cpu.F.SetC(test.carry)
+			cpu.A.Write8(test.in)
+			cpu.RL(cpu.A)
+			if got := cpu.A.Read8(); got != test.expected {
+				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
+			}
+			test.flags.compare(t, cpu)
+		})
+	}
+}
+
+func TestRRC(t *testing.T) {
+	var tests = []struct {
+		name     string
+		in       byte
+		expected byte
+		flags    expectedFlags
+	}{
+		{
+			name: "zero",
+			flags: expectedFlags{
+				z: true,
+			},
+		},
+		{
+			name:     "rotates right",
+			in:       0x2,
+			expected: 0x1,
+		},
+		{
+			name:     "full rotation and carry bit",
+			in:       0xFF,
+			expected: 0x7F,
+			flags: expectedFlags{
+				c: true,
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			cpu := gameboy.NewCPU()
+			cpu.A.Write8(test.in)
+			cpu.RRC(cpu.A)
+			if got := cpu.A.Read8(); got != test.expected {
+				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
+			}
+			test.flags.compare(t, cpu)
+		})
+	}
+}
+
+func TestRR(t *testing.T) {
+	var tests = []struct {
+		name     string
+		in       byte
+		carry    bool
+		expected byte
+		flags    expectedFlags
+	}{
+		{
+			name: "zero",
+			flags: expectedFlags{
+				z: true,
+			},
+		},
+		{
+			name:     "rotates right",
+			in:       0x2,
+			expected: 0x1,
+		},
+		{
+			name:     "full rotation through carry bit",
+			in:       0xFF,
+			expected: 0x7F,
+			flags: expectedFlags{
+				c: true,
+			},
+		},
+		{
+			name:     "full rotation through carry bit (set)",
+			in:       0xFF,
+			carry:    true,
+			expected: 0xFF,
+			flags: expectedFlags{
+				c: true,
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			cpu := gameboy.NewCPU()
+			cpu.F.SetC(test.carry)
+			cpu.A.Write8(test.in)
+			cpu.RR(cpu.A)
+			if got := cpu.A.Read8(); got != test.expected {
+				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
+			}
+			test.flags.compare(t, cpu)
+		})
+	}
+}
+
 type expectedFlags struct {
 	z, n, h, c bool
 }

@@ -2,6 +2,7 @@ package gameboy_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/theothertomelliott/gameboy"
 )
@@ -9,10 +10,10 @@ import (
 // TestPrograms runs some simple programs and verifies the state of the CPU after
 func TestPrograms(t *testing.T) {
 	var tests = []struct {
-		name     string
-		rom      []byte
-		expected expectation
-		cycles   int
+		name       string
+		rom        []byte
+		expected   expectation
+		operations int
 	}{
 		{
 			name: "empty",
@@ -20,34 +21,51 @@ func TestPrograms(t *testing.T) {
 		{
 			name: "LD",
 			rom: []byte{
-				0x01, 0x11, 0x22, // LD BC, 0x2211
+				0x01, 0x11, 0x22, // LD BC, 0x2211 (12)
 			},
 			expected: expectation{
 				B: 0x11,
 				C: 0x22,
 			},
-			cycles: 1,
+			operations: 12,
 		},
 		{
 			name: "0x2 + 0x1",
 			rom: []byte{
-				0x3E, 0x2, // LD A, 0x2
-				0x06, 0x1, // LD B, 0x1
-				0x80, // ADD A, B
+				0x3E, 0x2, // LD A, 0x2 (8)
+				0x06, 0x1, // LD B, 0x1 (16)
+				0x80, // ADD A, B (8)
 			},
 			expected: expectation{
 				A: 0x3,
 				B: 0x1,
 			},
-			cycles: 3,
+			operations: 8 + 16 + 8,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			cpu := gameboy.NewCPU()
 			cpu.LoadROM(test.rom)
-			for i := 0; i < test.cycles; i++ {
-				cpu.Cycle()
+
+			var clock = make(chan time.Time)
+			go func() {
+				for i := 0; i < test.operations; i++ {
+					clock <- time.Now()
+				}
+				close(clock)
+			}()
+
+			var exited = make(chan struct{})
+			go func() {
+				cpu.Run(clock)
+				exited <- struct{}{}
+			}()
+
+			select {
+			case <-exited:
+			case <-time.After(time.Second):
+				t.Errorf("Timed out waiting for CPU to exit")
 			}
 			test.expected.compare(t, cpu)
 		})
