@@ -87,7 +87,7 @@ func TestPrograms(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			fmt.Println(test.name)
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.LoadROM(test.rom)
 
 			var clock = make(chan time.Time)
@@ -137,7 +137,7 @@ func (e expectation) compare(t *testing.T, cpu *gameboy.CPU) {
 	// Check memory
 	for index, ram := range e.RAM {
 		for offset, value := range ram {
-			if value != cpu.RAM[index+uint16(offset)] {
+			if value != cpu.MMU.RAM[index+uint16(offset)] {
 				t.Errorf("RAM at 0x%x did not match expected value, got %v", index, sprintRAM(cpu, int(index), len(ram)))
 				break
 			}
@@ -153,7 +153,7 @@ func (e expectation) compareReg(t *testing.T, name string, r *gameboy.Register, 
 
 func sprintRAM(cpu *gameboy.CPU, index, length int) []string {
 	var out []string
-	data := cpu.RAM[index : index+length]
+	data := cpu.MMU.RAM[index : index+length]
 	for _, d := range data {
 		out = append(out, fmt.Sprintf("0x%X", d))
 	}

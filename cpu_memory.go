@@ -28,22 +28,19 @@ func (m *Memory) pos() uint16 {
 }
 
 func (m *Memory) Write8(value byte) {
-	m.cpu.RAM[m.pos()] = value
+	m.cpu.MMU.Write8(m.pos(), value)
 }
 
 func (m *Memory) Read8() byte {
-	return m.cpu.RAM[m.pos()]
+	return m.cpu.MMU.Read8(m.pos())
 }
 
 func (m *Memory) Write16(value uint16) {
-	pos := m.pos()
-	m.cpu.RAM[pos] = byte(value & 0xFF)
-	m.cpu.RAM[pos+1] = byte((value & 0xFF00) >> 8)
+	m.cpu.MMU.Write16(m.pos(), value)
 }
 
 func (m *Memory) Read16() uint16 {
-	pos := m.pos()
-	return uint16(m.cpu.RAM[pos]) + uint16(m.cpu.RAM[pos+1])<<8
+	return m.cpu.MMU.Read16(m.pos())
 }
 
 func (c *CPU) MemoryAt(pos Param) *Memory {
@@ -73,7 +70,7 @@ func (d *Direct8) Read8() byte {
 		return *d.value
 	}
 	c := d.CPU
-	v := c.RAM[c.PC.Read16()]
+	v := c.MMU.Read8(c.PC.Read16())
 	d.value = &v
 	c.PC.Inc(1)
 	return *d.value
@@ -99,9 +96,7 @@ func (d *Direct16) Read16() uint16 {
 		return *d.value
 	}
 	c := d.CPU
-	low := c.RAM[c.PC.Read16()]
-	high := c.RAM[c.PC.Read16()+1]
-	v := uint16(high)<<8 | uint16(low)
+	v := d.CPU.MMU.Read16(c.PC.Read16())
 	d.value = &v
 	c.PC.Inc(2)
 	return *d.value

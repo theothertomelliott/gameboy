@@ -14,6 +14,7 @@ import (
 // http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf
 
 type CPU struct {
+	MMU *MMU
 
 	// Registers
 	AF *RegisterPair
@@ -32,8 +33,6 @@ type CPU struct {
 
 	D8  *Direct8
 	D16 *Direct16
-
-	RAM []byte
 
 	// CB is a placeholder for the prefix
 	CB struct{}
@@ -55,9 +54,10 @@ func NewClock() *time.Ticker {
 }
 
 // NewCPU creates a CPU in a zeroed initial state.
-func NewCPU() *CPU {
+func NewCPU(mmu *MMU) *CPU {
 	cpu := &CPU{
-		A: &Register{}, F: &Register{},
+		MMU: mmu,
+		A:   &Register{}, F: &Register{},
 		B: &Register{}, C: &Register{},
 		D: &Register{}, E: &Register{},
 		H: &Register{}, L: &Register{},
@@ -84,15 +84,13 @@ func NewCPU() *CPU {
 		CPU: cpu,
 	}
 
-	cpu.RAM = make([]byte, 0x10000)
-
 	return cpu
 }
 
 // LoadROM places the provided ROM data into RAM
 func (c *CPU) LoadROM(data []byte) {
 	for index, value := range data {
-		c.RAM[index] = value
+		c.MMU.Write8(uint16(index), value)
 	}
 }
 
@@ -131,7 +129,7 @@ func (c *CPU) Run(clock <-chan time.Time) {
 			// halt doesn't suspend operation but it does cause
 			// the program counter to stop counting for one
 			// instruction
-			if c.RAM[IE] == 0x0 {
+			if c.MMU.Read8(IE) == 0x0 {
 				c.PC.Inc(1)
 				c.cycles = 1
 			}
@@ -148,12 +146,12 @@ func (c *CPU) execute() {
 	c.D16.Reset()
 
 	var table map[Opcode]Op
-	opcode := Opcode(c.RAM[c.PC.Read16()])
+	opcode := Opcode(c.MMU.Read8(c.PC.Read16()))
 	var isCB bool
 	switch opcode {
 	case 0xCB:
 		c.PC.Inc(1)
-		opcode = Opcode(c.RAM[c.PC.Read16()])
+		opcode = Opcode(c.MMU.Read8(c.PC.Read16()))
 		table = cbprefixedOpcodes(c)
 		isCB = true
 	default:

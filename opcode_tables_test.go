@@ -17,7 +17,7 @@ func TestCBPrefixedOpcodes(t *testing.T) {
 }
 
 func executeAllOpcodes(t *testing.T, opcodeMap func(c *CPU) map[Opcode]Op) {
-	cpu := NewCPU()
+	cpu := NewCPU(NewMMU())
 	for code, def := range opcodeMap(cpu) {
 		t.Run(fmt.Sprintf("0x%X", code), func(t *testing.T) {
 			executeOp(t, cpu, def)
@@ -32,7 +32,7 @@ func executeOp(t *testing.T, cpu *CPU, op Op) {
 		cpu.SP.Write16(500)
 		cpu.PC.Write16(500)
 		// Reset RAM and registers
-		cpu.RAM = make([]byte, 0x10000)
+		cpu.MMU.Clear()
 		cpu.AF.Write16(0)
 		cpu.BC.Write16(0)
 		cpu.DE.Write16(0)

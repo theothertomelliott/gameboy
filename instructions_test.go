@@ -7,7 +7,7 @@ import (
 )
 
 func TestLD(t *testing.T) {
-	cpu := gameboy.NewCPU()
+	cpu := gameboy.NewCPU(gameboy.NewMMU())
 
 	src := &gameboy.Register{}
 	src.Write8(100)
@@ -21,7 +21,7 @@ func TestLD(t *testing.T) {
 }
 
 func TestLD16(t *testing.T) {
-	cpu := gameboy.NewCPU()
+	cpu := gameboy.NewCPU(gameboy.NewMMU())
 
 	src := &gameboy.RegisterPair{}
 	src.Write16(100)
@@ -35,7 +35,7 @@ func TestLD16(t *testing.T) {
 }
 
 func TestLDI(t *testing.T) {
-	cpu := gameboy.NewCPU()
+	cpu := gameboy.NewCPU(gameboy.NewMMU())
 
 	src := &gameboy.Register{}
 	src.Write8(10)
@@ -49,7 +49,7 @@ func TestLDI(t *testing.T) {
 }
 
 func TestLDD(t *testing.T) {
-	cpu := gameboy.NewCPU()
+	cpu := gameboy.NewCPU(gameboy.NewMMU())
 
 	src := &gameboy.Register{}
 	src.Write8(10)
@@ -109,7 +109,7 @@ func TestAND(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.A.Write8(test.a)
 			src := &gameboy.Register{}
 			src.Write8(test.in)
@@ -159,7 +159,7 @@ func TestOR(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.A.Write8(test.a)
 			src := &gameboy.Register{}
 			src.Write8(test.in)
@@ -206,7 +206,7 @@ func TestXOR(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.A.Write8(test.a)
 			src := &gameboy.Register{}
 			src.Write8(test.in)
@@ -284,7 +284,7 @@ func TestADD(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			dst := &gameboy.Register{}
 			dst.Write8(test.dst)
 			src := &gameboy.Register{}
@@ -353,7 +353,7 @@ func TestADD16(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 
 			dst := &gameboy.RegisterPair{}
 			dst.Write16(test.dst)
@@ -413,7 +413,7 @@ func TestADDSP(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 
 			dst := &gameboy.RegisterPair{}
 			dst.Write16(test.dst)
@@ -496,7 +496,7 @@ func TestADC(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.A.Write8(test.a)
 			src := &gameboy.Register{}
 			src.Write8(test.in)
@@ -593,7 +593,7 @@ func TestSUB(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.A.Write8(test.a)
 			src := &gameboy.Register{}
 			src.Write8(test.in)
@@ -699,7 +699,7 @@ func TestSBC(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.A.Write8(test.a)
 			src := &gameboy.Register{}
 			src.Write8(test.in)
@@ -786,7 +786,7 @@ func TestCP(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.A.Write8(test.a)
 			src := &gameboy.Register{}
 			src.Write8(test.in)
@@ -828,7 +828,7 @@ func TestINC(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			src := &gameboy.Register{}
 			src.Write8(test.in)
 
@@ -871,7 +871,7 @@ func TestINC16(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			src := &gameboy.RegisterPair{}
 			src.Write16(test.in)
 
@@ -914,7 +914,7 @@ func TestDEC(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			src := &gameboy.Register{}
 			src.Write8(test.in)
 
@@ -949,7 +949,7 @@ func TestDEC16(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			src := &gameboy.RegisterPair{}
 			src.Write16(test.in)
 
@@ -965,7 +965,7 @@ func TestDEC16(t *testing.T) {
 }
 
 func TestSwap(t *testing.T) {
-	cpu := gameboy.NewCPU()
+	cpu := gameboy.NewCPU(gameboy.NewMMU())
 	in := &gameboy.Register{}
 	in.Write8(0xAB)
 
@@ -977,7 +977,7 @@ func TestSwap(t *testing.T) {
 }
 
 func TestCPL(t *testing.T) {
-	cpu := gameboy.NewCPU()
+	cpu := gameboy.NewCPU(gameboy.NewMMU())
 	cpu.A.Write8(0xF0)
 	cpu.CPL()
 	if cpu.A.Read8() != 0x0F {
@@ -986,7 +986,7 @@ func TestCPL(t *testing.T) {
 }
 
 func TestBit(t *testing.T) {
-	cpu := gameboy.NewCPU()
+	cpu := gameboy.NewCPU(gameboy.NewMMU())
 	cpu.A.Write8(0x04)
 	cpu.BIT(5, cpu.A)
 	if cpu.F.Z() {
@@ -999,7 +999,7 @@ func TestBit(t *testing.T) {
 }
 
 func TestSet(t *testing.T) {
-	cpu := gameboy.NewCPU()
+	cpu := gameboy.NewCPU(gameboy.NewMMU())
 	cpu.A.Write8(0x04)
 	cpu.SET(1, cpu.A)
 	if got := cpu.A.Read8(); got != 0x6 {
@@ -1008,7 +1008,7 @@ func TestSet(t *testing.T) {
 }
 
 func TestRES(t *testing.T) {
-	cpu := gameboy.NewCPU()
+	cpu := gameboy.NewCPU(gameboy.NewMMU())
 	cpu.A.Write8(0x04)
 	cpu.RES(2, cpu.A)
 	if got := cpu.A.Read8(); got != 0 {
@@ -1045,7 +1045,7 @@ func TestSLA(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.A.Write8(test.in)
 			cpu.SLA(cpu.A)
 			if got := cpu.A.Read8(); got != test.expected {
@@ -1094,7 +1094,7 @@ func TestSRA(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.A.Write8(test.in)
 			cpu.SRA(cpu.A)
 			if got := cpu.A.Read8(); got != test.expected {
@@ -1143,7 +1143,7 @@ func TestSRL(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.A.Write8(test.in)
 			cpu.SRL(cpu.A)
 			if got := cpu.A.Read8(); got != test.expected {
@@ -1183,7 +1183,7 @@ func TestRLC(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.A.Write8(test.in)
 			cpu.RLC(cpu.A)
 			if got := cpu.A.Read8(); got != test.expected {
@@ -1233,7 +1233,7 @@ func TestRL(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.F.SetC(test.carry)
 			cpu.A.Write8(test.in)
 			cpu.RL(cpu.A)
@@ -1274,7 +1274,7 @@ func TestRRC(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.A.Write8(test.in)
 			cpu.RRC(cpu.A)
 			if got := cpu.A.Read8(); got != test.expected {
@@ -1324,7 +1324,7 @@ func TestRR(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU()
+			cpu := gameboy.NewCPU(gameboy.NewMMU())
 			cpu.F.SetC(test.carry)
 			cpu.A.Write8(test.in)
 			cpu.RR(cpu.A)
@@ -1337,7 +1337,7 @@ func TestRR(t *testing.T) {
 }
 
 func TestDAA(t *testing.T) {
-	cpu := gameboy.NewCPU()
+	cpu := gameboy.NewCPU(gameboy.NewMMU())
 	cpu.A.Write8(55)
 	cpu.DAA()
 	if got := cpu.A.Read8(); got != 0x55 {
