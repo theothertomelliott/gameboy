@@ -64,33 +64,53 @@ func (c *CPU) MemoryAtH(pos Param) *Memory {
 var _ Value8 = &Direct8{}
 
 type Direct8 struct {
-	CPU *CPU
+	CPU   *CPU
+	value *byte
 }
 
-func (d Direct8) Read8() byte {
+func (d *Direct8) Read8() byte {
+	if d.value != nil {
+		return *d.value
+	}
 	c := d.CPU
-	defer c.PC.Inc(1)
-	return c.RAM[c.PC.Read16()]
+	v := c.RAM[c.PC.Read16()]
+	d.value = &v
+	c.PC.Inc(1)
+	return *d.value
 }
 
-func (d Direct8) Write8(byte) {
+func (d *Direct8) Write8(byte) {
 	panic("write to direct memory")
+}
+
+func (d *Direct8) Reset() {
+	d.value = nil
 }
 
 var _ Value16 = &Direct16{}
 
 type Direct16 struct {
-	CPU *CPU
+	CPU   *CPU
+	value *uint16
 }
 
-func (d Direct16) Read16() uint16 {
+func (d *Direct16) Read16() uint16 {
+	if d.value != nil {
+		return *d.value
+	}
 	c := d.CPU
-	defer c.PC.Inc(2)
 	low := c.RAM[c.PC.Read16()]
 	high := c.RAM[c.PC.Read16()+1]
-	return uint16(high)<<8 | uint16(low)
+	v := uint16(high)<<8 | uint16(low)
+	d.value = &v
+	c.PC.Inc(2)
+	return *d.value
 }
 
-func (d Direct16) Write16(uint16) {
+func (d *Direct16) Write16(uint16) {
 	panic("write to direct memory")
+}
+
+func (d *Direct16) Reset() {
+	d.value = nil
 }

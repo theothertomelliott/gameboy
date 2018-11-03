@@ -399,8 +399,7 @@ func (c *CPU) CP(params ...Param) {
 	n := params[0].(Value8)
 	a := c.A.Read8()
 	in := n.Read8()
-	result := a - in
-	c.F.SetZ(result == 0)
+	c.F.SetZ(a == in)
 	c.F.SetN(true)
 
 	halfCarry := (a & 0xF) < (in & 0xF)

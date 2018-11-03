@@ -8,11 +8,12 @@ import (
 )
 
 type Opcode struct {
-	Addr     string  `addr`
-	Mnemonic string  `mnemonic`
-	Cycles   []int   `cycles`
-	Operand1 Operand `operand1`
-	Operand2 Operand `operand2`
+	Addr        string  `json:"addr"`
+	Description string  `json:"-"`
+	Mnemonic    string  `json:"mnemonic"`
+	Cycles      []int   `json:"cycles"`
+	Operand1    Operand `json:"operand1"`
+	Operand2    Operand `json:"operand2"`
 }
 
 func (o *Opcode) UnmarshalJSON(d []byte) error {
@@ -25,6 +26,25 @@ func (o *Opcode) UnmarshalJSON(d []byte) error {
 	err := json.Unmarshal(d, aux)
 	if err != nil {
 		return err
+	}
+
+	textValues := struct {
+		Mnemonic string `json:"mnemonic"`
+		Operand1 string `json:"operand1"`
+		Operand2 string `json:"operand2"`
+	}{}
+	err = json.Unmarshal(d, &textValues)
+	if err != nil {
+		return err
+	}
+	if textValues.Operand1 == "" {
+		o.Description = textValues.Mnemonic
+	}
+	if textValues.Operand1 != "" {
+		o.Description = fmt.Sprintf("%v %v", textValues.Mnemonic, textValues.Operand1)
+	}
+	if textValues.Operand2 != "" {
+		o.Description = fmt.Sprintf("%v %v,%v", textValues.Mnemonic, textValues.Operand1, textValues.Operand2)
 	}
 
 	if o.isConditional() {

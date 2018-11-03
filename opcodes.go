@@ -19,12 +19,14 @@ type Op struct {
 	Instruction Instruction
 	Params      []Param
 	Cycles      []int
+	Description string
 }
 
-func NewOp(i Instruction, c []int, params ...Param) Op {
+func NewOp(description string, i Instruction, c []int, params ...Param) Op {
 	return Op{
 		Instruction: i,
 		Params:      params,
 		Cycles:      c,
+		Description: description,
 	}
 }

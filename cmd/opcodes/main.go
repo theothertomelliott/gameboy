@@ -37,7 +37,7 @@ package gameboy
 func {{$prefixType}}Opcodes(c *CPU) map[Opcode]Op {
 	return map[Opcode]Op{
 		{{- range $opcodes}}
-			{{.Addr}}: NewOp(c.{{.Mnemonic}}, []int{
+			{{.Addr}}: NewOp("{{.Description}}", c.{{.Mnemonic}}, []int{
 				{{- range .Cycles}}
 					{{.}},
 				{{end -}}

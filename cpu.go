@@ -2,6 +2,8 @@ package gameboy
 
 import (
 	"fmt"
+	"log"
+	"strings"
 	"time"
 )
 
@@ -142,6 +144,9 @@ func (c *CPU) Run(clock <-chan time.Time) {
 
 // execute handles the next operation
 func (c *CPU) execute() {
+	c.D8.Reset()
+	c.D16.Reset()
+
 	var table map[Opcode]Op
 	opcode := Opcode(c.RAM[c.PC.Read16()])
 	var isCB bool
@@ -167,7 +172,28 @@ func (c *CPU) execute() {
 	}()
 	c.PC.Inc(1)
 	if op.Instruction != nil {
+		log.Printf(
+			"0x%X:\t%v\t(%v)",
+			c.PC.Read16()-1,
+			op.Description,
+			strings.Join(paramsToString(op.Params...), ", "),
+		)
 		op.Instruction(op.Params...)
 	}
 	c.cycles = op.Cycles[0] - 1
+}
+
+func paramsToString(params ...Param) []string {
+	var out []string
+	for _, param := range params {
+		if n, is8Bit := param.(Value8); is8Bit {
+			out = append(out, fmt.Sprintf("0x%X", n.Read8()))
+			continue
+		}
+		if n, is16Bit := param.(Value16); is16Bit {
+			out = append(out, fmt.Sprintf("0x%X", n.Read16()))
+			continue
+		}
+	}
+	return out
 }
