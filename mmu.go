@@ -26,34 +26,32 @@ func NewMMU() *MMU {
 func (m *MMU) LoadCartridge(data []byte) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
-
-	// Write cartridge header to RAM
-	var index = 0
-	for index = 0x100; index < 0x150; index++ {
+	for index := 0x100; index < len(data); index++ {
 		m.RAM[index] = data[index]
 	}
-	// Write remainder of bank 0
-	for ; index < 0x4000; index++ {
-		m.RAM[index] = data[index]
-	}
-	// Fill banks
-	for ; index < len(data); index += 0x3FFF {
-		end := index + 0x3FFF
-		if end > len(data)-1 {
-			end = len(data) - 1
-		}
-		m.CartridgeBanks = append(m.CartridgeBanks, data[index:end])
-	}
+	// // Write cartridge header to RAM
+	// var index = 0
+	// for index = 0x100; index < 0x150; index++ {
+	// 	m.RAM[index] = data[index]
+	// }
+	// // Write remainder of bank 0
+	// for ; index < 0x4000; index++ {
+	// 	m.RAM[index] = data[index]
+	// }
+	// // Fill banks
+	// for ; index < len(data); index += 0x3FFF {
+	// 	end := index + 0x3FFF
+	// 	if end > len(data)-1 {
+	// 		end = len(data) - 1
+	// 	}
+	// 	m.CartridgeBanks = append(m.CartridgeBanks, data[index:end])
+	// }
 
-	// Add the first bank to RAM
-	m.switchBank(0)
+	// // Add the first bank to RAM
+	// m.switchBank(0)
 }
 
 func (m *MMU) switchBank(bank byte) {
-	if true {
-		return
-	}
-
 	if len(m.CartridgeBanks) > int(bank-1) {
 		for i := 0; i < len(m.CartridgeBanks[bank]); i++ {
 			m.RAM[0x4000+i] = m.CartridgeBanks[bank][i]

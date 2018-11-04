@@ -111,8 +111,6 @@ func (c *CPU) Run(clock <-chan time.Time) {
 	scanTick := time.NewTicker(time.Millisecond)
 	defer scanTick.Stop()
 
-	//c.init()
-
 	for _ = range clock {
 		if c.cycles > 0 {
 			c.cycles--
@@ -138,7 +136,8 @@ func (c *CPU) Run(clock <-chan time.Time) {
 	}
 }
 
-func (c *CPU) init() {
+// Init initializes the device to an appropriate state for loading without a boot ROM
+func (c *CPU) Init() {
 	c.PC.Write16(0x100)
 	c.AF.Write16(0x01)
 	c.F.Write8(0xB0)

@@ -48,6 +48,8 @@ func run() {
 			panic(err)
 		}
 		cpu.LoadROM(data)
+	} else {
+		cpu.Init()
 	}
 
 	data, err = ioutil.ReadFile(os.Args[1])
