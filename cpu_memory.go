@@ -13,6 +13,10 @@ type Memory struct {
 	cachedPos *uint16 // Cache of position
 }
 
+func (m *Memory) GetIndex() Param {
+	return m.index
+}
+
 func (m *Memory) String() string {
 	p := m.pos()
 	return fmt.Sprintf("0x%X(0x%X)", p, m.cpu.MMU.Read8(p))
@@ -54,14 +58,6 @@ func (c *CPU) MemoryAt(pos Param) *Memory {
 	return &Memory{
 		index: pos,
 		cpu:   c,
-	}
-}
-
-func (c *CPU) MemoryAtH(pos Param) *Memory {
-	return &Memory{
-		index:  pos,
-		offset: 0xFF00,
-		cpu:    c,
 	}
 }
 

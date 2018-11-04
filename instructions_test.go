@@ -34,34 +34,6 @@ func TestLD16(t *testing.T) {
 	}
 }
 
-func TestLDI(t *testing.T) {
-	cpu := gameboy.NewCPU(gameboy.NewMMU())
-
-	src := &gameboy.Register{}
-	src.Write8(10)
-	dst := &gameboy.Register{}
-
-	cpu.LDI(dst, src)
-
-	if dst.Read8() != 11 {
-		t.Errorf("dst: expected %d, got %d", 11, dst.Read8())
-	}
-}
-
-func TestLDD(t *testing.T) {
-	cpu := gameboy.NewCPU(gameboy.NewMMU())
-
-	src := &gameboy.Register{}
-	src.Write8(10)
-	dst := &gameboy.Register{}
-
-	cpu.LDD(dst, src)
-
-	if dst.Read8() != 9 {
-		t.Errorf("dst: expected %d, got %d", 9, dst.Read8())
-	}
-}
-
 func TestAND(t *testing.T) {
 	var tests = []struct {
 		name     string

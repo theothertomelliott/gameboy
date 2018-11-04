@@ -61,16 +61,16 @@ func NewCPU(mmu *MMU) *CPU {
 		SP: &Address{}, PC: &Address{},
 	}
 	cpu.AF = &RegisterPair{
-		Low: cpu.A, High: cpu.F,
+		Low: cpu.F, High: cpu.A,
 	}
 	cpu.BC = &RegisterPair{
-		Low: cpu.B, High: cpu.C,
+		Low: cpu.C, High: cpu.B,
 	}
 	cpu.DE = &RegisterPair{
-		Low: cpu.D, High: cpu.E,
+		Low: cpu.E, High: cpu.D,
 	}
 	cpu.HL = &RegisterPair{
-		Low: cpu.H, High: cpu.L,
+		Low: cpu.L, High: cpu.H,
 	}
 
 	return cpu
@@ -108,7 +108,7 @@ func (a *Address) Inc(amount int8) {
 }
 
 func (c *CPU) Run(clock <-chan time.Time) {
-	scanTick := time.NewTicker(time.Microsecond)
+	scanTick := time.NewTicker(time.Millisecond)
 	defer scanTick.Stop()
 
 	//c.init()
@@ -232,7 +232,7 @@ func (c *CPU) execute() {
 	if op.Instruction != nil {
 		paramsBefore := paramsToString(op.Params...)
 		op.Instruction(op.Params...)
-		if opcode != 0 && false {
+		if opcode != 0 {
 			fmt.Printf(
 				"0x%X:\t%v\t(%v) -> (%v)\n",
 				pcBefore,

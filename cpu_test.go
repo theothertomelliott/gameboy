@@ -25,8 +25,8 @@ func TestPrograms(t *testing.T) {
 				0x01, 0x11, 0x22, // LD BC, 0x2211 (12)
 			},
 			expected: expectation{
-				B: 0x11,
-				C: 0x22,
+				B: 0x22,
+				C: 0x11,
 			},
 			cycles: 12,
 		},
@@ -84,7 +84,7 @@ func TestPrograms(t *testing.T) {
 					0x8: []byte{0x1, 0x2, 0x3, 0x4, 0x5},
 				},
 			},
-			cycles: 500,
+			cycles: 1000,
 		},
 	}
 	for _, test := range tests {

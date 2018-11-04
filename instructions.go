@@ -93,7 +93,11 @@ func (c *CPU) LD(params ...Param) {
 func (c *CPU) LDI(params ...Param) {
 	dst := params[0].(Value8)
 	src := params[1].(Value8)
-	dst.Write8(src.Read8() + 1)
+	dst.Write8(src.Read8())
+	if mem, isMem := dst.(*Memory); isMem {
+		index := mem.GetIndex().(Value16)
+		index.Write16(index.Read16() + 1)
+	}
 }
 
 // LDD loads src into dst and decrements src
@@ -101,7 +105,10 @@ func (c *CPU) LDD(params ...Param) {
 	dst := params[0].(Value8)
 	src := params[1].(Value8)
 	dst.Write8(src.Read8())
-	dst.Write8(dst.Read8() - 1)
+	if mem, isMem := dst.(*Memory); isMem {
+		index := mem.GetIndex().(Value16)
+		index.Write16(index.Read16() - 1)
+	}
 }
 
 // LDH loads src into memory address $FF00+dst
