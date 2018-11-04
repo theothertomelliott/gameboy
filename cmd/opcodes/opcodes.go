@@ -47,6 +47,12 @@ func (o *Opcode) UnmarshalJSON(d []byte) error {
 		o.Description = fmt.Sprintf("%v %v,%v", textValues.Mnemonic, textValues.Operand1, textValues.Operand2)
 	}
 
+	// Set RLA to RL A
+	if o.Mnemonic == "RLA" {
+		o.Mnemonic = "RL"
+		o.Operand1 = "c.A"
+	}
+
 	if o.isConditional() {
 		o.Mnemonic = fmt.Sprintf("%sC", o.Mnemonic)
 		switch o.Operand1 {

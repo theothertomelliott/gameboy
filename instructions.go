@@ -474,11 +474,11 @@ func (c *CPU) INC(params ...Param) {
 func (c *CPU) DEC(params ...Param) {
 	if n, is8Bit := params[0].(Value8); is8Bit {
 		in := n.Read8()
+		c.F.SetZ(in == 1)
 		result := in - 1
 		if in == 0 {
 			result = 0xFF
 		}
-		c.F.SetZ(result == 0)
 		c.F.SetN(true)
 
 		halfCarry := (in & 0xF) < 1
@@ -603,6 +603,7 @@ func (c *CPU) EI(...Param) {
 //  C - Contains old bit 7 data.
 func (c *CPU) RLCA(...Param) {
 	c.RLC(c.A)
+	c.F.SetZ(false)
 }
 
 // RLA rotates A left through carry flag.
@@ -614,6 +615,7 @@ func (c *CPU) RLCA(...Param) {
 //  C - Contains old bit 7 data.
 func (c *CPU) RLA(...Param) {
 	c.RL(c.A)
+	c.F.SetZ(false)
 }
 
 // RRCA rotates A right.
@@ -626,6 +628,7 @@ func (c *CPU) RLA(...Param) {
 //  C - Contains old bit 0 data.
 func (c *CPU) RRCA(...Param) {
 	c.RRC(c.A)
+	c.F.SetZ(false)
 }
 
 // RRA rotates A right through carry flag.
@@ -637,6 +640,7 @@ func (c *CPU) RRCA(...Param) {
 //  C - Contains old bit 0 data.
 func (c *CPU) RRA(...Param) {
 	c.RR(c.A)
+	c.F.SetZ(false)
 }
 
 // RLC rotates n left. Old bit 7 to Carry flag.
@@ -654,6 +658,8 @@ func (c *CPU) RLC(params ...Param) {
 	msb := value & (0x1 << 7)
 	result := value<<1 | (msb >> 7)
 	c.F.SetZ(result == 0)
+	c.F.SetN(false)
+	c.F.SetH(false)
 	c.F.SetC(msb > 0)
 	n.Write8(result)
 }
@@ -677,6 +683,8 @@ func (c *CPU) RL(params ...Param) {
 		result++
 	}
 	c.F.SetZ(result == 0)
+	c.F.SetN(false)
+	c.F.SetH(false)
 	c.F.SetC(msb > 0)
 	n.Write8(result)
 }
@@ -696,6 +704,8 @@ func (c *CPU) RRC(params ...Param) {
 	lsb := value & 0x1
 	result := value>>1 | lsb
 	c.F.SetZ(result == 0)
+	c.F.SetN(false)
+	c.F.SetH(false)
 	c.F.SetC(lsb > 0)
 	n.Write8(result)
 }
@@ -719,6 +729,8 @@ func (c *CPU) RR(params ...Param) {
 		result = result | (0x1 << 7)
 	}
 	c.F.SetZ(result == 0)
+	c.F.SetN(false)
+	c.F.SetH(false)
 	c.F.SetC(lsb > 0)
 	n.Write8(result)
 }
@@ -736,6 +748,8 @@ func (c *CPU) SLA(params ...Param) {
 	n := params[0].(Value8)
 	shifted := uint16(n.Read8()) << 1
 	c.F.SetZ(shifted == 0)
+	c.F.SetN(false)
+	c.F.SetH(false)
 	c.F.SetC(shifted > 0xFF)
 	n.Write8(byte(shifted & 0xFF))
 }
@@ -756,6 +770,8 @@ func (c *CPU) SRA(params ...Param) {
 	c.F.SetC(value&0x1 > 0)
 	shifted := value >> 1
 	c.F.SetZ(shifted == 0)
+	c.F.SetN(false)
+	c.F.SetH(false)
 	n.Write8(byte(shifted | msb))
 }
 
@@ -774,6 +790,8 @@ func (c *CPU) SRL(params ...Param) {
 	c.F.SetC(value&0x1 > 0)
 	shifted := value >> 1
 	c.F.SetZ(shifted == 0)
+	c.F.SetN(false)
+	c.F.SetH(false)
 	n.Write8(shifted)
 }
 

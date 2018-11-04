@@ -120,11 +120,7 @@ func (c *CPU) Run(clock <-chan time.Time) {
 		}
 
 		// Fake scanlines
-		select {
-		case <-scanTick.C:
-			c.fakeScanlines()
-		default:
-		}
+		c.fakeScanlines()
 
 		if c.isHalted {
 			// If interrupts are disabled (DI) then
@@ -193,9 +189,21 @@ func (c *CPU) init() {
 	// [$FFFF] = $00 ; IE
 }
 
+var scanLineCycleCount int
+
 func (c *CPU) fakeScanlines() {
+	if scanLineCycleCount < 50 {
+		scanLineCycleCount++
+		return
+	}
+	scanLineCycleCount = 0
 	curline := c.MMU.Read8(CURLINE)
 	curline++
+	if curline > 144 {
+		c.MMU.Write8(VBLANK, 0xFF)
+	} else {
+		c.MMU.Write8(VBLANK, 0x00)
+	}
 	if curline > 153 {
 		curline = 0
 	}
@@ -203,6 +211,14 @@ func (c *CPU) fakeScanlines() {
 }
 
 func (c *CPU) GetOperation() (Opcode, Op) {
+	pcBefore := c.PC.Read16()
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Panic at: 0x%X\n", pcBefore)
+			panic(r)
+		}
+	}()
+
 	var table func(*CPU, Opcode) Op
 	opcode := Opcode(c.MMU.Read8(c.PC.Read16()))
 	switch opcode {
@@ -221,26 +237,29 @@ func (c *CPU) GetOperation() (Opcode, Op) {
 // execute handles the next operation
 func (c *CPU) execute() {
 	pcBefore := c.PC.Read16()
-	opcode, op := c.GetOperation()
+	flagsBefore := flagsToString(c.F)
+	_, op := c.GetOperation()
 
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Printf(op.Description)
+			fmt.Printf("0x%X: %v\n", pcBefore, op.Description)
 			panic(r)
 		}
 	}()
 	if op.Instruction != nil {
 		paramsBefore := paramsToString(op.Params...)
 		op.Instruction(op.Params...)
-		if opcode != 0 {
-			fmt.Printf(
-				"0x%X:\t%v\t(%v) -> (%v)\n",
-				pcBefore,
-				op.Description,
-				strings.Join(paramsBefore, ", "),
-				strings.Join(paramsToString(op.Params...), ", "),
-			)
-		}
+		//if opcode != 0 {
+		fmt.Printf(
+			"0x%X:\t%v\t(%v - %v) -> (%v - %v)\n",
+			pcBefore,
+			op.Description,
+			strings.Join(paramsBefore, ", "),
+			flagsBefore,
+			strings.Join(paramsToString(op.Params...), ", "),
+			flagsToString(c.F),
+		)
+		//}
 		c.cycles = op.Cycles[0] - 1
 	}
 }
@@ -266,4 +285,14 @@ func paramsToString(params ...Param) []string {
 		}
 	}
 	return out
+}
+
+func flagsToString(f *Register) string {
+	return fmt.Sprintf(
+		"Z=%v, N=%v, H=%v, C=%v",
+		f.Z(),
+		f.N(),
+		f.H(),
+		f.C(),
+	)
 }

@@ -1796,9 +1796,10 @@ func unprefixedOpcodes(c *CPU, code Opcode) Op {
 			c.D8(),
 		)
 	case 0x17:
-		return NewOp("RLA", c.RLA, []int{
+		return NewOp("RLA", c.RL, []int{
 			4,
 		},
+			c.A,
 		)
 	case 0x18:
 		return NewOp("JR r8", c.JR, []int{
