@@ -68,7 +68,7 @@ func TestPrograms(t *testing.T) {
 				0x3,  // INC BC
 
 				0x3E, 0x8, // LD A, 0x8
-				0xB8,             // CP B
+				0xB9,             // CP C
 				0xC2, 0x13, 0x00, // JP NZ, 0x13
 
 				// Clear registers
