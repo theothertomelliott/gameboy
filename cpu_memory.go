@@ -1,5 +1,7 @@
 package gameboy
 
+import "fmt"
+
 // Memory references a position on memory.
 // The index is fixed on the first read, so MemoryAt may be called to provide a reference
 // to the memory addressed by a register, for example, so it may be reused later.
@@ -9,6 +11,11 @@ type Memory struct {
 	offset uint16
 
 	cachedPos *uint16 // Cache of position
+}
+
+func (m *Memory) String() string {
+	p := m.pos()
+	return fmt.Sprintf("0x%X(0x%X)", p, m.cpu.MMU.Read8(p))
 }
 
 func (m *Memory) pos() uint16 {
@@ -58,54 +65,62 @@ func (c *CPU) MemoryAtH(pos Param) *Memory {
 	}
 }
 
-var _ Value8 = &Direct8{}
+var _ Value8 = Direct8(0)
+var _ Value16 = Direct16(0)
+var _ ValueSigned8 = DirectSigned8(0)
 
-type Direct8 struct {
-	CPU   *CPU
-	value *byte
+type Direct8 byte
+
+func (b Direct8) Read8() byte {
+	return byte(b)
 }
 
-func (d *Direct8) Read8() byte {
-	if d.value != nil {
-		return *d.value
-	}
-	c := d.CPU
+func (b Direct8) Write8(byte) {
+	panic("write to direct memory")
+}
+
+type DirectSigned8 int8
+
+func (b DirectSigned8) ReadSigned8() int8 {
+	return int8(b)
+}
+
+type Direct16 uint16
+
+func (b Direct16) Read16() uint16 {
+	return uint16(b)
+}
+
+func (b Direct16) Write16(uint16) {
+	panic("write to direct memory")
+}
+
+func (c *CPU) D8() Value8 {
 	v := c.MMU.Read8(c.PC.Read16())
-	d.value = &v
 	c.PC.Inc(1)
-	return *d.value
+	return Direct8(v)
 }
 
-func (d *Direct8) Write8(byte) {
-	panic("write to direct memory")
+func (c *CPU) R8() ValueSigned8 {
+	v := c.MMU.Read8(c.PC.Read16())
+	c.PC.Inc(1)
+	return DirectSigned8(v)
 }
 
-func (d *Direct8) Reset() {
-	d.value = nil
-}
-
-var _ Value16 = &Direct16{}
-
-type Direct16 struct {
-	CPU   *CPU
-	value *uint16
-}
-
-func (d *Direct16) Read16() uint16 {
-	if d.value != nil {
-		return *d.value
-	}
-	c := d.CPU
-	v := d.CPU.MMU.Read16(c.PC.Read16())
-	d.value = &v
+func (c *CPU) D16() Value16 {
+	v := c.MMU.Read16(c.PC.Read16())
 	c.PC.Inc(2)
-	return *d.value
+	return Direct16(v)
 }
 
-func (d *Direct16) Write16(uint16) {
-	panic("write to direct memory")
+func (c *CPU) A8() Value16 {
+	v := c.MMU.Read16(c.PC.Read16())
+	c.PC.Inc(1)
+	return Direct16(0xFF00 | v)
 }
 
-func (d *Direct16) Reset() {
-	d.value = nil
+func (c *CPU) A16() Value16 {
+	v := c.MMU.Read16(c.PC.Read16())
+	c.PC.Inc(2)
+	return Direct16(v)
 }

@@ -1,2861 +1,3368 @@
 package gameboy
 
-func cbprefixedOpcodes(c *CPU) map[Opcode]Op {
-	return map[Opcode]Op{
-		0x0: NewOp("RLC B", c.RLC, []int{
+import "fmt"
+
+func cbprefixedOpcodes(c *CPU, code Opcode) Op {
+	switch code {
+	case 0x0:
+		return NewOp("RLC B", c.RLC, []int{
 			8,
 		},
 			c.B,
-		),
-		0x1: NewOp("RLC C", c.RLC, []int{
+		)
+	case 0x1:
+		return NewOp("RLC C", c.RLC, []int{
 			8,
 		},
 			c.C,
-		),
-		0x10: NewOp("RL B", c.RL, []int{
+		)
+	case 0x10:
+		return NewOp("RL B", c.RL, []int{
 			8,
 		},
 			c.B,
-		),
-		0x11: NewOp("RL C", c.RL, []int{
+		)
+	case 0x11:
+		return NewOp("RL C", c.RL, []int{
 			8,
 		},
 			c.C,
-		),
-		0x12: NewOp("RL D", c.RL, []int{
+		)
+	case 0x12:
+		return NewOp("RL D", c.RL, []int{
 			8,
 		},
 			c.D,
-		),
-		0x13: NewOp("RL E", c.RL, []int{
+		)
+	case 0x13:
+		return NewOp("RL E", c.RL, []int{
 			8,
 		},
 			c.E,
-		),
-		0x14: NewOp("RL H", c.RL, []int{
+		)
+	case 0x14:
+		return NewOp("RL H", c.RL, []int{
 			8,
 		},
 			c.H,
-		),
-		0x15: NewOp("RL L", c.RL, []int{
+		)
+	case 0x15:
+		return NewOp("RL L", c.RL, []int{
 			8,
 		},
 			c.L,
-		),
-		0x16: NewOp("RL (HL)", c.RL, []int{
+		)
+	case 0x16:
+		return NewOp("RL (HL)", c.RL, []int{
 			16,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0x17: NewOp("RL A", c.RL, []int{
+		)
+	case 0x17:
+		return NewOp("RL A", c.RL, []int{
 			8,
 		},
 			c.A,
-		),
-		0x18: NewOp("RR B", c.RR, []int{
+		)
+	case 0x18:
+		return NewOp("RR B", c.RR, []int{
 			8,
 		},
 			c.B,
-		),
-		0x19: NewOp("RR C", c.RR, []int{
+		)
+	case 0x19:
+		return NewOp("RR C", c.RR, []int{
 			8,
 		},
 			c.C,
-		),
-		0x1a: NewOp("RR D", c.RR, []int{
+		)
+	case 0x1a:
+		return NewOp("RR D", c.RR, []int{
 			8,
 		},
 			c.D,
-		),
-		0x1b: NewOp("RR E", c.RR, []int{
+		)
+	case 0x1b:
+		return NewOp("RR E", c.RR, []int{
 			8,
 		},
 			c.E,
-		),
-		0x1c: NewOp("RR H", c.RR, []int{
+		)
+	case 0x1c:
+		return NewOp("RR H", c.RR, []int{
 			8,
 		},
 			c.H,
-		),
-		0x1d: NewOp("RR L", c.RR, []int{
+		)
+	case 0x1d:
+		return NewOp("RR L", c.RR, []int{
 			8,
 		},
 			c.L,
-		),
-		0x1e: NewOp("RR (HL)", c.RR, []int{
+		)
+	case 0x1e:
+		return NewOp("RR (HL)", c.RR, []int{
 			16,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0x1f: NewOp("RR A", c.RR, []int{
+		)
+	case 0x1f:
+		return NewOp("RR A", c.RR, []int{
 			8,
 		},
 			c.A,
-		),
-		0x2: NewOp("RLC D", c.RLC, []int{
+		)
+	case 0x2:
+		return NewOp("RLC D", c.RLC, []int{
 			8,
 		},
 			c.D,
-		),
-		0x20: NewOp("SLA B", c.SLA, []int{
+		)
+	case 0x20:
+		return NewOp("SLA B", c.SLA, []int{
 			8,
 		},
 			c.B,
-		),
-		0x21: NewOp("SLA C", c.SLA, []int{
+		)
+	case 0x21:
+		return NewOp("SLA C", c.SLA, []int{
 			8,
 		},
 			c.C,
-		),
-		0x22: NewOp("SLA D", c.SLA, []int{
+		)
+	case 0x22:
+		return NewOp("SLA D", c.SLA, []int{
 			8,
 		},
 			c.D,
-		),
-		0x23: NewOp("SLA E", c.SLA, []int{
+		)
+	case 0x23:
+		return NewOp("SLA E", c.SLA, []int{
 			8,
 		},
 			c.E,
-		),
-		0x24: NewOp("SLA H", c.SLA, []int{
+		)
+	case 0x24:
+		return NewOp("SLA H", c.SLA, []int{
 			8,
 		},
 			c.H,
-		),
-		0x25: NewOp("SLA L", c.SLA, []int{
+		)
+	case 0x25:
+		return NewOp("SLA L", c.SLA, []int{
 			8,
 		},
 			c.L,
-		),
-		0x26: NewOp("SLA (HL)", c.SLA, []int{
+		)
+	case 0x26:
+		return NewOp("SLA (HL)", c.SLA, []int{
 			16,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0x27: NewOp("SLA A", c.SLA, []int{
+		)
+	case 0x27:
+		return NewOp("SLA A", c.SLA, []int{
 			8,
 		},
 			c.A,
-		),
-		0x28: NewOp("SRA B", c.SRA, []int{
+		)
+	case 0x28:
+		return NewOp("SRA B", c.SRA, []int{
 			8,
 		},
 			c.B,
-		),
-		0x29: NewOp("SRA C", c.SRA, []int{
+		)
+	case 0x29:
+		return NewOp("SRA C", c.SRA, []int{
 			8,
 		},
 			c.C,
-		),
-		0x2a: NewOp("SRA D", c.SRA, []int{
+		)
+	case 0x2a:
+		return NewOp("SRA D", c.SRA, []int{
 			8,
 		},
 			c.D,
-		),
-		0x2b: NewOp("SRA E", c.SRA, []int{
+		)
+	case 0x2b:
+		return NewOp("SRA E", c.SRA, []int{
 			8,
 		},
 			c.E,
-		),
-		0x2c: NewOp("SRA H", c.SRA, []int{
+		)
+	case 0x2c:
+		return NewOp("SRA H", c.SRA, []int{
 			8,
 		},
 			c.H,
-		),
-		0x2d: NewOp("SRA L", c.SRA, []int{
+		)
+	case 0x2d:
+		return NewOp("SRA L", c.SRA, []int{
 			8,
 		},
 			c.L,
-		),
-		0x2e: NewOp("SRA (HL)", c.SRA, []int{
+		)
+	case 0x2e:
+		return NewOp("SRA (HL)", c.SRA, []int{
 			16,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0x2f: NewOp("SRA A", c.SRA, []int{
+		)
+	case 0x2f:
+		return NewOp("SRA A", c.SRA, []int{
 			8,
 		},
 			c.A,
-		),
-		0x3: NewOp("RLC E", c.RLC, []int{
+		)
+	case 0x3:
+		return NewOp("RLC E", c.RLC, []int{
 			8,
 		},
 			c.E,
-		),
-		0x30: NewOp("SWAP B", c.SWAP, []int{
+		)
+	case 0x30:
+		return NewOp("SWAP B", c.SWAP, []int{
 			8,
 		},
 			c.B,
-		),
-		0x31: NewOp("SWAP C", c.SWAP, []int{
+		)
+	case 0x31:
+		return NewOp("SWAP C", c.SWAP, []int{
 			8,
 		},
 			c.C,
-		),
-		0x32: NewOp("SWAP D", c.SWAP, []int{
+		)
+	case 0x32:
+		return NewOp("SWAP D", c.SWAP, []int{
 			8,
 		},
 			c.D,
-		),
-		0x33: NewOp("SWAP E", c.SWAP, []int{
+		)
+	case 0x33:
+		return NewOp("SWAP E", c.SWAP, []int{
 			8,
 		},
 			c.E,
-		),
-		0x34: NewOp("SWAP H", c.SWAP, []int{
+		)
+	case 0x34:
+		return NewOp("SWAP H", c.SWAP, []int{
 			8,
 		},
 			c.H,
-		),
-		0x35: NewOp("SWAP L", c.SWAP, []int{
+		)
+	case 0x35:
+		return NewOp("SWAP L", c.SWAP, []int{
 			8,
 		},
 			c.L,
-		),
-		0x36: NewOp("SWAP (HL)", c.SWAP, []int{
+		)
+	case 0x36:
+		return NewOp("SWAP (HL)", c.SWAP, []int{
 			16,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0x37: NewOp("SWAP A", c.SWAP, []int{
+		)
+	case 0x37:
+		return NewOp("SWAP A", c.SWAP, []int{
 			8,
 		},
 			c.A,
-		),
-		0x38: NewOp("SRL B", c.SRL, []int{
+		)
+	case 0x38:
+		return NewOp("SRL B", c.SRL, []int{
 			8,
 		},
 			c.B,
-		),
-		0x39: NewOp("SRL C", c.SRL, []int{
+		)
+	case 0x39:
+		return NewOp("SRL C", c.SRL, []int{
 			8,
 		},
 			c.C,
-		),
-		0x3a: NewOp("SRL D", c.SRL, []int{
+		)
+	case 0x3a:
+		return NewOp("SRL D", c.SRL, []int{
 			8,
 		},
 			c.D,
-		),
-		0x3b: NewOp("SRL E", c.SRL, []int{
+		)
+	case 0x3b:
+		return NewOp("SRL E", c.SRL, []int{
 			8,
 		},
 			c.E,
-		),
-		0x3c: NewOp("SRL H", c.SRL, []int{
+		)
+	case 0x3c:
+		return NewOp("SRL H", c.SRL, []int{
 			8,
 		},
 			c.H,
-		),
-		0x3d: NewOp("SRL L", c.SRL, []int{
+		)
+	case 0x3d:
+		return NewOp("SRL L", c.SRL, []int{
 			8,
 		},
 			c.L,
-		),
-		0x3e: NewOp("SRL (HL)", c.SRL, []int{
+		)
+	case 0x3e:
+		return NewOp("SRL (HL)", c.SRL, []int{
 			16,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0x3f: NewOp("SRL A", c.SRL, []int{
+		)
+	case 0x3f:
+		return NewOp("SRL A", c.SRL, []int{
 			8,
 		},
 			c.A,
-		),
-		0x4: NewOp("RLC H", c.RLC, []int{
+		)
+	case 0x4:
+		return NewOp("RLC H", c.RLC, []int{
 			8,
 		},
 			c.H,
-		),
-		0x40: NewOp("BIT 0,B", c.BIT, []int{
+		)
+	case 0x40:
+		return NewOp("BIT 0,B", c.BIT, []int{
 			8,
 		},
 			0,
 			c.B,
-		),
-		0x41: NewOp("BIT 0,C", c.BIT, []int{
+		)
+	case 0x41:
+		return NewOp("BIT 0,C", c.BIT, []int{
 			8,
 		},
 			0,
 			c.C,
-		),
-		0x42: NewOp("BIT 0,D", c.BIT, []int{
+		)
+	case 0x42:
+		return NewOp("BIT 0,D", c.BIT, []int{
 			8,
 		},
 			0,
 			c.D,
-		),
-		0x43: NewOp("BIT 0,E", c.BIT, []int{
+		)
+	case 0x43:
+		return NewOp("BIT 0,E", c.BIT, []int{
 			8,
 		},
 			0,
 			c.E,
-		),
-		0x44: NewOp("BIT 0,H", c.BIT, []int{
+		)
+	case 0x44:
+		return NewOp("BIT 0,H", c.BIT, []int{
 			8,
 		},
 			0,
 			c.H,
-		),
-		0x45: NewOp("BIT 0,L", c.BIT, []int{
+		)
+	case 0x45:
+		return NewOp("BIT 0,L", c.BIT, []int{
 			8,
 		},
 			0,
 			c.L,
-		),
-		0x46: NewOp("BIT 0,(HL)", c.BIT, []int{
+		)
+	case 0x46:
+		return NewOp("BIT 0,(HL)", c.BIT, []int{
 			16,
 		},
 			0,
 			c.MemoryAt(c.HL),
-		),
-		0x47: NewOp("BIT 0,A", c.BIT, []int{
+		)
+	case 0x47:
+		return NewOp("BIT 0,A", c.BIT, []int{
 			8,
 		},
 			0,
 			c.A,
-		),
-		0x48: NewOp("BIT 1,B", c.BIT, []int{
+		)
+	case 0x48:
+		return NewOp("BIT 1,B", c.BIT, []int{
 			8,
 		},
 			1,
 			c.B,
-		),
-		0x49: NewOp("BIT 1,C", c.BIT, []int{
+		)
+	case 0x49:
+		return NewOp("BIT 1,C", c.BIT, []int{
 			8,
 		},
 			1,
 			c.C,
-		),
-		0x4a: NewOp("BIT 1,D", c.BIT, []int{
+		)
+	case 0x4a:
+		return NewOp("BIT 1,D", c.BIT, []int{
 			8,
 		},
 			1,
 			c.D,
-		),
-		0x4b: NewOp("BIT 1,E", c.BIT, []int{
+		)
+	case 0x4b:
+		return NewOp("BIT 1,E", c.BIT, []int{
 			8,
 		},
 			1,
 			c.E,
-		),
-		0x4c: NewOp("BIT 1,H", c.BIT, []int{
+		)
+	case 0x4c:
+		return NewOp("BIT 1,H", c.BIT, []int{
 			8,
 		},
 			1,
 			c.H,
-		),
-		0x4d: NewOp("BIT 1,L", c.BIT, []int{
+		)
+	case 0x4d:
+		return NewOp("BIT 1,L", c.BIT, []int{
 			8,
 		},
 			1,
 			c.L,
-		),
-		0x4e: NewOp("BIT 1,(HL)", c.BIT, []int{
+		)
+	case 0x4e:
+		return NewOp("BIT 1,(HL)", c.BIT, []int{
 			16,
 		},
 			1,
 			c.MemoryAt(c.HL),
-		),
-		0x4f: NewOp("BIT 1,A", c.BIT, []int{
+		)
+	case 0x4f:
+		return NewOp("BIT 1,A", c.BIT, []int{
 			8,
 		},
 			1,
 			c.A,
-		),
-		0x5: NewOp("RLC L", c.RLC, []int{
+		)
+	case 0x5:
+		return NewOp("RLC L", c.RLC, []int{
 			8,
 		},
 			c.L,
-		),
-		0x50: NewOp("BIT 2,B", c.BIT, []int{
+		)
+	case 0x50:
+		return NewOp("BIT 2,B", c.BIT, []int{
 			8,
 		},
 			2,
 			c.B,
-		),
-		0x51: NewOp("BIT 2,C", c.BIT, []int{
+		)
+	case 0x51:
+		return NewOp("BIT 2,C", c.BIT, []int{
 			8,
 		},
 			2,
 			c.C,
-		),
-		0x52: NewOp("BIT 2,D", c.BIT, []int{
+		)
+	case 0x52:
+		return NewOp("BIT 2,D", c.BIT, []int{
 			8,
 		},
 			2,
 			c.D,
-		),
-		0x53: NewOp("BIT 2,E", c.BIT, []int{
+		)
+	case 0x53:
+		return NewOp("BIT 2,E", c.BIT, []int{
 			8,
 		},
 			2,
 			c.E,
-		),
-		0x54: NewOp("BIT 2,H", c.BIT, []int{
+		)
+	case 0x54:
+		return NewOp("BIT 2,H", c.BIT, []int{
 			8,
 		},
 			2,
 			c.H,
-		),
-		0x55: NewOp("BIT 2,L", c.BIT, []int{
+		)
+	case 0x55:
+		return NewOp("BIT 2,L", c.BIT, []int{
 			8,
 		},
 			2,
 			c.L,
-		),
-		0x56: NewOp("BIT 2,(HL)", c.BIT, []int{
+		)
+	case 0x56:
+		return NewOp("BIT 2,(HL)", c.BIT, []int{
 			16,
 		},
 			2,
 			c.MemoryAt(c.HL),
-		),
-		0x57: NewOp("BIT 2,A", c.BIT, []int{
+		)
+	case 0x57:
+		return NewOp("BIT 2,A", c.BIT, []int{
 			8,
 		},
 			2,
 			c.A,
-		),
-		0x58: NewOp("BIT 3,B", c.BIT, []int{
+		)
+	case 0x58:
+		return NewOp("BIT 3,B", c.BIT, []int{
 			8,
 		},
 			3,
 			c.B,
-		),
-		0x59: NewOp("BIT 3,C", c.BIT, []int{
+		)
+	case 0x59:
+		return NewOp("BIT 3,C", c.BIT, []int{
 			8,
 		},
 			3,
 			c.C,
-		),
-		0x5a: NewOp("BIT 3,D", c.BIT, []int{
+		)
+	case 0x5a:
+		return NewOp("BIT 3,D", c.BIT, []int{
 			8,
 		},
 			3,
 			c.D,
-		),
-		0x5b: NewOp("BIT 3,E", c.BIT, []int{
+		)
+	case 0x5b:
+		return NewOp("BIT 3,E", c.BIT, []int{
 			8,
 		},
 			3,
 			c.E,
-		),
-		0x5c: NewOp("BIT 3,H", c.BIT, []int{
+		)
+	case 0x5c:
+		return NewOp("BIT 3,H", c.BIT, []int{
 			8,
 		},
 			3,
 			c.H,
-		),
-		0x5d: NewOp("BIT 3,L", c.BIT, []int{
+		)
+	case 0x5d:
+		return NewOp("BIT 3,L", c.BIT, []int{
 			8,
 		},
 			3,
 			c.L,
-		),
-		0x5e: NewOp("BIT 3,(HL)", c.BIT, []int{
+		)
+	case 0x5e:
+		return NewOp("BIT 3,(HL)", c.BIT, []int{
 			16,
 		},
 			3,
 			c.MemoryAt(c.HL),
-		),
-		0x5f: NewOp("BIT 3,A", c.BIT, []int{
+		)
+	case 0x5f:
+		return NewOp("BIT 3,A", c.BIT, []int{
 			8,
 		},
 			3,
 			c.A,
-		),
-		0x6: NewOp("RLC (HL)", c.RLC, []int{
+		)
+	case 0x6:
+		return NewOp("RLC (HL)", c.RLC, []int{
 			16,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0x60: NewOp("BIT 4,B", c.BIT, []int{
+		)
+	case 0x60:
+		return NewOp("BIT 4,B", c.BIT, []int{
 			8,
 		},
 			4,
 			c.B,
-		),
-		0x61: NewOp("BIT 4,C", c.BIT, []int{
+		)
+	case 0x61:
+		return NewOp("BIT 4,C", c.BIT, []int{
 			8,
 		},
 			4,
 			c.C,
-		),
-		0x62: NewOp("BIT 4,D", c.BIT, []int{
+		)
+	case 0x62:
+		return NewOp("BIT 4,D", c.BIT, []int{
 			8,
 		},
 			4,
 			c.D,
-		),
-		0x63: NewOp("BIT 4,E", c.BIT, []int{
+		)
+	case 0x63:
+		return NewOp("BIT 4,E", c.BIT, []int{
 			8,
 		},
 			4,
 			c.E,
-		),
-		0x64: NewOp("BIT 4,H", c.BIT, []int{
+		)
+	case 0x64:
+		return NewOp("BIT 4,H", c.BIT, []int{
 			8,
 		},
 			4,
 			c.H,
-		),
-		0x65: NewOp("BIT 4,L", c.BIT, []int{
+		)
+	case 0x65:
+		return NewOp("BIT 4,L", c.BIT, []int{
 			8,
 		},
 			4,
 			c.L,
-		),
-		0x66: NewOp("BIT 4,(HL)", c.BIT, []int{
+		)
+	case 0x66:
+		return NewOp("BIT 4,(HL)", c.BIT, []int{
 			16,
 		},
 			4,
 			c.MemoryAt(c.HL),
-		),
-		0x67: NewOp("BIT 4,A", c.BIT, []int{
+		)
+	case 0x67:
+		return NewOp("BIT 4,A", c.BIT, []int{
 			8,
 		},
 			4,
 			c.A,
-		),
-		0x68: NewOp("BIT 5,B", c.BIT, []int{
+		)
+	case 0x68:
+		return NewOp("BIT 5,B", c.BIT, []int{
 			8,
 		},
 			5,
 			c.B,
-		),
-		0x69: NewOp("BIT 5,C", c.BIT, []int{
+		)
+	case 0x69:
+		return NewOp("BIT 5,C", c.BIT, []int{
 			8,
 		},
 			5,
 			c.C,
-		),
-		0x6a: NewOp("BIT 5,D", c.BIT, []int{
+		)
+	case 0x6a:
+		return NewOp("BIT 5,D", c.BIT, []int{
 			8,
 		},
 			5,
 			c.D,
-		),
-		0x6b: NewOp("BIT 5,E", c.BIT, []int{
+		)
+	case 0x6b:
+		return NewOp("BIT 5,E", c.BIT, []int{
 			8,
 		},
 			5,
 			c.E,
-		),
-		0x6c: NewOp("BIT 5,H", c.BIT, []int{
+		)
+	case 0x6c:
+		return NewOp("BIT 5,H", c.BIT, []int{
 			8,
 		},
 			5,
 			c.H,
-		),
-		0x6d: NewOp("BIT 5,L", c.BIT, []int{
+		)
+	case 0x6d:
+		return NewOp("BIT 5,L", c.BIT, []int{
 			8,
 		},
 			5,
 			c.L,
-		),
-		0x6e: NewOp("BIT 5,(HL)", c.BIT, []int{
+		)
+	case 0x6e:
+		return NewOp("BIT 5,(HL)", c.BIT, []int{
 			16,
 		},
 			5,
 			c.MemoryAt(c.HL),
-		),
-		0x6f: NewOp("BIT 5,A", c.BIT, []int{
+		)
+	case 0x6f:
+		return NewOp("BIT 5,A", c.BIT, []int{
 			8,
 		},
 			5,
 			c.A,
-		),
-		0x7: NewOp("RLC A", c.RLC, []int{
+		)
+	case 0x7:
+		return NewOp("RLC A", c.RLC, []int{
 			8,
 		},
 			c.A,
-		),
-		0x70: NewOp("BIT 6,B", c.BIT, []int{
+		)
+	case 0x70:
+		return NewOp("BIT 6,B", c.BIT, []int{
 			8,
 		},
 			6,
 			c.B,
-		),
-		0x71: NewOp("BIT 6,C", c.BIT, []int{
+		)
+	case 0x71:
+		return NewOp("BIT 6,C", c.BIT, []int{
 			8,
 		},
 			6,
 			c.C,
-		),
-		0x72: NewOp("BIT 6,D", c.BIT, []int{
+		)
+	case 0x72:
+		return NewOp("BIT 6,D", c.BIT, []int{
 			8,
 		},
 			6,
 			c.D,
-		),
-		0x73: NewOp("BIT 6,E", c.BIT, []int{
+		)
+	case 0x73:
+		return NewOp("BIT 6,E", c.BIT, []int{
 			8,
 		},
 			6,
 			c.E,
-		),
-		0x74: NewOp("BIT 6,H", c.BIT, []int{
+		)
+	case 0x74:
+		return NewOp("BIT 6,H", c.BIT, []int{
 			8,
 		},
 			6,
 			c.H,
-		),
-		0x75: NewOp("BIT 6,L", c.BIT, []int{
+		)
+	case 0x75:
+		return NewOp("BIT 6,L", c.BIT, []int{
 			8,
 		},
 			6,
 			c.L,
-		),
-		0x76: NewOp("BIT 6,(HL)", c.BIT, []int{
+		)
+	case 0x76:
+		return NewOp("BIT 6,(HL)", c.BIT, []int{
 			16,
 		},
 			6,
 			c.MemoryAt(c.HL),
-		),
-		0x77: NewOp("BIT 6,A", c.BIT, []int{
+		)
+	case 0x77:
+		return NewOp("BIT 6,A", c.BIT, []int{
 			8,
 		},
 			6,
 			c.A,
-		),
-		0x78: NewOp("BIT 7,B", c.BIT, []int{
+		)
+	case 0x78:
+		return NewOp("BIT 7,B", c.BIT, []int{
 			8,
 		},
 			7,
 			c.B,
-		),
-		0x79: NewOp("BIT 7,C", c.BIT, []int{
+		)
+	case 0x79:
+		return NewOp("BIT 7,C", c.BIT, []int{
 			8,
 		},
 			7,
 			c.C,
-		),
-		0x7a: NewOp("BIT 7,D", c.BIT, []int{
+		)
+	case 0x7a:
+		return NewOp("BIT 7,D", c.BIT, []int{
 			8,
 		},
 			7,
 			c.D,
-		),
-		0x7b: NewOp("BIT 7,E", c.BIT, []int{
+		)
+	case 0x7b:
+		return NewOp("BIT 7,E", c.BIT, []int{
 			8,
 		},
 			7,
 			c.E,
-		),
-		0x7c: NewOp("BIT 7,H", c.BIT, []int{
+		)
+	case 0x7c:
+		return NewOp("BIT 7,H", c.BIT, []int{
 			8,
 		},
 			7,
 			c.H,
-		),
-		0x7d: NewOp("BIT 7,L", c.BIT, []int{
+		)
+	case 0x7d:
+		return NewOp("BIT 7,L", c.BIT, []int{
 			8,
 		},
 			7,
 			c.L,
-		),
-		0x7e: NewOp("BIT 7,(HL)", c.BIT, []int{
+		)
+	case 0x7e:
+		return NewOp("BIT 7,(HL)", c.BIT, []int{
 			16,
 		},
 			7,
 			c.MemoryAt(c.HL),
-		),
-		0x7f: NewOp("BIT 7,A", c.BIT, []int{
+		)
+	case 0x7f:
+		return NewOp("BIT 7,A", c.BIT, []int{
 			8,
 		},
 			7,
 			c.A,
-		),
-		0x8: NewOp("RRC B", c.RRC, []int{
+		)
+	case 0x8:
+		return NewOp("RRC B", c.RRC, []int{
 			8,
 		},
 			c.B,
-		),
-		0x80: NewOp("RES 0,B", c.RES, []int{
+		)
+	case 0x80:
+		return NewOp("RES 0,B", c.RES, []int{
 			8,
 		},
 			0,
 			c.B,
-		),
-		0x81: NewOp("RES 0,C", c.RES, []int{
+		)
+	case 0x81:
+		return NewOp("RES 0,C", c.RES, []int{
 			8,
 		},
 			0,
 			c.C,
-		),
-		0x82: NewOp("RES 0,D", c.RES, []int{
+		)
+	case 0x82:
+		return NewOp("RES 0,D", c.RES, []int{
 			8,
 		},
 			0,
 			c.D,
-		),
-		0x83: NewOp("RES 0,E", c.RES, []int{
+		)
+	case 0x83:
+		return NewOp("RES 0,E", c.RES, []int{
 			8,
 		},
 			0,
 			c.E,
-		),
-		0x84: NewOp("RES 0,H", c.RES, []int{
+		)
+	case 0x84:
+		return NewOp("RES 0,H", c.RES, []int{
 			8,
 		},
 			0,
 			c.H,
-		),
-		0x85: NewOp("RES 0,L", c.RES, []int{
+		)
+	case 0x85:
+		return NewOp("RES 0,L", c.RES, []int{
 			8,
 		},
 			0,
 			c.L,
-		),
-		0x86: NewOp("RES 0,(HL)", c.RES, []int{
+		)
+	case 0x86:
+		return NewOp("RES 0,(HL)", c.RES, []int{
 			16,
 		},
 			0,
 			c.MemoryAt(c.HL),
-		),
-		0x87: NewOp("RES 0,A", c.RES, []int{
+		)
+	case 0x87:
+		return NewOp("RES 0,A", c.RES, []int{
 			8,
 		},
 			0,
 			c.A,
-		),
-		0x88: NewOp("RES 1,B", c.RES, []int{
+		)
+	case 0x88:
+		return NewOp("RES 1,B", c.RES, []int{
 			8,
 		},
 			1,
 			c.B,
-		),
-		0x89: NewOp("RES 1,C", c.RES, []int{
+		)
+	case 0x89:
+		return NewOp("RES 1,C", c.RES, []int{
 			8,
 		},
 			1,
 			c.C,
-		),
-		0x8a: NewOp("RES 1,D", c.RES, []int{
+		)
+	case 0x8a:
+		return NewOp("RES 1,D", c.RES, []int{
 			8,
 		},
 			1,
 			c.D,
-		),
-		0x8b: NewOp("RES 1,E", c.RES, []int{
+		)
+	case 0x8b:
+		return NewOp("RES 1,E", c.RES, []int{
 			8,
 		},
 			1,
 			c.E,
-		),
-		0x8c: NewOp("RES 1,H", c.RES, []int{
+		)
+	case 0x8c:
+		return NewOp("RES 1,H", c.RES, []int{
 			8,
 		},
 			1,
 			c.H,
-		),
-		0x8d: NewOp("RES 1,L", c.RES, []int{
+		)
+	case 0x8d:
+		return NewOp("RES 1,L", c.RES, []int{
 			8,
 		},
 			1,
 			c.L,
-		),
-		0x8e: NewOp("RES 1,(HL)", c.RES, []int{
+		)
+	case 0x8e:
+		return NewOp("RES 1,(HL)", c.RES, []int{
 			16,
 		},
 			1,
 			c.MemoryAt(c.HL),
-		),
-		0x8f: NewOp("RES 1,A", c.RES, []int{
+		)
+	case 0x8f:
+		return NewOp("RES 1,A", c.RES, []int{
 			8,
 		},
 			1,
 			c.A,
-		),
-		0x9: NewOp("RRC C", c.RRC, []int{
+		)
+	case 0x9:
+		return NewOp("RRC C", c.RRC, []int{
 			8,
 		},
 			c.C,
-		),
-		0x90: NewOp("RES 2,B", c.RES, []int{
+		)
+	case 0x90:
+		return NewOp("RES 2,B", c.RES, []int{
 			8,
 		},
 			2,
 			c.B,
-		),
-		0x91: NewOp("RES 2,C", c.RES, []int{
+		)
+	case 0x91:
+		return NewOp("RES 2,C", c.RES, []int{
 			8,
 		},
 			2,
 			c.C,
-		),
-		0x92: NewOp("RES 2,D", c.RES, []int{
+		)
+	case 0x92:
+		return NewOp("RES 2,D", c.RES, []int{
 			8,
 		},
 			2,
 			c.D,
-		),
-		0x93: NewOp("RES 2,E", c.RES, []int{
+		)
+	case 0x93:
+		return NewOp("RES 2,E", c.RES, []int{
 			8,
 		},
 			2,
 			c.E,
-		),
-		0x94: NewOp("RES 2,H", c.RES, []int{
+		)
+	case 0x94:
+		return NewOp("RES 2,H", c.RES, []int{
 			8,
 		},
 			2,
 			c.H,
-		),
-		0x95: NewOp("RES 2,L", c.RES, []int{
+		)
+	case 0x95:
+		return NewOp("RES 2,L", c.RES, []int{
 			8,
 		},
 			2,
 			c.L,
-		),
-		0x96: NewOp("RES 2,(HL)", c.RES, []int{
+		)
+	case 0x96:
+		return NewOp("RES 2,(HL)", c.RES, []int{
 			16,
 		},
 			2,
 			c.MemoryAt(c.HL),
-		),
-		0x97: NewOp("RES 2,A", c.RES, []int{
+		)
+	case 0x97:
+		return NewOp("RES 2,A", c.RES, []int{
 			8,
 		},
 			2,
 			c.A,
-		),
-		0x98: NewOp("RES 3,B", c.RES, []int{
+		)
+	case 0x98:
+		return NewOp("RES 3,B", c.RES, []int{
 			8,
 		},
 			3,
 			c.B,
-		),
-		0x99: NewOp("RES 3,C", c.RES, []int{
+		)
+	case 0x99:
+		return NewOp("RES 3,C", c.RES, []int{
 			8,
 		},
 			3,
 			c.C,
-		),
-		0x9a: NewOp("RES 3,D", c.RES, []int{
+		)
+	case 0x9a:
+		return NewOp("RES 3,D", c.RES, []int{
 			8,
 		},
 			3,
 			c.D,
-		),
-		0x9b: NewOp("RES 3,E", c.RES, []int{
+		)
+	case 0x9b:
+		return NewOp("RES 3,E", c.RES, []int{
 			8,
 		},
 			3,
 			c.E,
-		),
-		0x9c: NewOp("RES 3,H", c.RES, []int{
+		)
+	case 0x9c:
+		return NewOp("RES 3,H", c.RES, []int{
 			8,
 		},
 			3,
 			c.H,
-		),
-		0x9d: NewOp("RES 3,L", c.RES, []int{
+		)
+	case 0x9d:
+		return NewOp("RES 3,L", c.RES, []int{
 			8,
 		},
 			3,
 			c.L,
-		),
-		0x9e: NewOp("RES 3,(HL)", c.RES, []int{
+		)
+	case 0x9e:
+		return NewOp("RES 3,(HL)", c.RES, []int{
 			16,
 		},
 			3,
 			c.MemoryAt(c.HL),
-		),
-		0x9f: NewOp("RES 3,A", c.RES, []int{
+		)
+	case 0x9f:
+		return NewOp("RES 3,A", c.RES, []int{
 			8,
 		},
 			3,
 			c.A,
-		),
-		0xa: NewOp("RRC D", c.RRC, []int{
+		)
+	case 0xa:
+		return NewOp("RRC D", c.RRC, []int{
 			8,
 		},
 			c.D,
-		),
-		0xa0: NewOp("RES 4,B", c.RES, []int{
+		)
+	case 0xa0:
+		return NewOp("RES 4,B", c.RES, []int{
 			8,
 		},
 			4,
 			c.B,
-		),
-		0xa1: NewOp("RES 4,C", c.RES, []int{
+		)
+	case 0xa1:
+		return NewOp("RES 4,C", c.RES, []int{
 			8,
 		},
 			4,
 			c.C,
-		),
-		0xa2: NewOp("RES 4,D", c.RES, []int{
+		)
+	case 0xa2:
+		return NewOp("RES 4,D", c.RES, []int{
 			8,
 		},
 			4,
 			c.D,
-		),
-		0xa3: NewOp("RES 4,E", c.RES, []int{
+		)
+	case 0xa3:
+		return NewOp("RES 4,E", c.RES, []int{
 			8,
 		},
 			4,
 			c.E,
-		),
-		0xa4: NewOp("RES 4,H", c.RES, []int{
+		)
+	case 0xa4:
+		return NewOp("RES 4,H", c.RES, []int{
 			8,
 		},
 			4,
 			c.H,
-		),
-		0xa5: NewOp("RES 4,L", c.RES, []int{
+		)
+	case 0xa5:
+		return NewOp("RES 4,L", c.RES, []int{
 			8,
 		},
 			4,
 			c.L,
-		),
-		0xa6: NewOp("RES 4,(HL)", c.RES, []int{
+		)
+	case 0xa6:
+		return NewOp("RES 4,(HL)", c.RES, []int{
 			16,
 		},
 			4,
 			c.MemoryAt(c.HL),
-		),
-		0xa7: NewOp("RES 4,A", c.RES, []int{
+		)
+	case 0xa7:
+		return NewOp("RES 4,A", c.RES, []int{
 			8,
 		},
 			4,
 			c.A,
-		),
-		0xa8: NewOp("RES 5,B", c.RES, []int{
+		)
+	case 0xa8:
+		return NewOp("RES 5,B", c.RES, []int{
 			8,
 		},
 			5,
 			c.B,
-		),
-		0xa9: NewOp("RES 5,C", c.RES, []int{
+		)
+	case 0xa9:
+		return NewOp("RES 5,C", c.RES, []int{
 			8,
 		},
 			5,
 			c.C,
-		),
-		0xaa: NewOp("RES 5,D", c.RES, []int{
+		)
+	case 0xaa:
+		return NewOp("RES 5,D", c.RES, []int{
 			8,
 		},
 			5,
 			c.D,
-		),
-		0xab: NewOp("RES 5,E", c.RES, []int{
+		)
+	case 0xab:
+		return NewOp("RES 5,E", c.RES, []int{
 			8,
 		},
 			5,
 			c.E,
-		),
-		0xac: NewOp("RES 5,H", c.RES, []int{
+		)
+	case 0xac:
+		return NewOp("RES 5,H", c.RES, []int{
 			8,
 		},
 			5,
 			c.H,
-		),
-		0xad: NewOp("RES 5,L", c.RES, []int{
+		)
+	case 0xad:
+		return NewOp("RES 5,L", c.RES, []int{
 			8,
 		},
 			5,
 			c.L,
-		),
-		0xae: NewOp("RES 5,(HL)", c.RES, []int{
+		)
+	case 0xae:
+		return NewOp("RES 5,(HL)", c.RES, []int{
 			16,
 		},
 			5,
 			c.MemoryAt(c.HL),
-		),
-		0xaf: NewOp("RES 5,A", c.RES, []int{
+		)
+	case 0xaf:
+		return NewOp("RES 5,A", c.RES, []int{
 			8,
 		},
 			5,
 			c.A,
-		),
-		0xb: NewOp("RRC E", c.RRC, []int{
+		)
+	case 0xb:
+		return NewOp("RRC E", c.RRC, []int{
 			8,
 		},
 			c.E,
-		),
-		0xb0: NewOp("RES 6,B", c.RES, []int{
+		)
+	case 0xb0:
+		return NewOp("RES 6,B", c.RES, []int{
 			8,
 		},
 			6,
 			c.B,
-		),
-		0xb1: NewOp("RES 6,C", c.RES, []int{
+		)
+	case 0xb1:
+		return NewOp("RES 6,C", c.RES, []int{
 			8,
 		},
 			6,
 			c.C,
-		),
-		0xb2: NewOp("RES 6,D", c.RES, []int{
+		)
+	case 0xb2:
+		return NewOp("RES 6,D", c.RES, []int{
 			8,
 		},
 			6,
 			c.D,
-		),
-		0xb3: NewOp("RES 6,E", c.RES, []int{
+		)
+	case 0xb3:
+		return NewOp("RES 6,E", c.RES, []int{
 			8,
 		},
 			6,
 			c.E,
-		),
-		0xb4: NewOp("RES 6,H", c.RES, []int{
+		)
+	case 0xb4:
+		return NewOp("RES 6,H", c.RES, []int{
 			8,
 		},
 			6,
 			c.H,
-		),
-		0xb5: NewOp("RES 6,L", c.RES, []int{
+		)
+	case 0xb5:
+		return NewOp("RES 6,L", c.RES, []int{
 			8,
 		},
 			6,
 			c.L,
-		),
-		0xb6: NewOp("RES 6,(HL)", c.RES, []int{
+		)
+	case 0xb6:
+		return NewOp("RES 6,(HL)", c.RES, []int{
 			16,
 		},
 			6,
 			c.MemoryAt(c.HL),
-		),
-		0xb7: NewOp("RES 6,A", c.RES, []int{
+		)
+	case 0xb7:
+		return NewOp("RES 6,A", c.RES, []int{
 			8,
 		},
 			6,
 			c.A,
-		),
-		0xb8: NewOp("RES 7,B", c.RES, []int{
+		)
+	case 0xb8:
+		return NewOp("RES 7,B", c.RES, []int{
 			8,
 		},
 			7,
 			c.B,
-		),
-		0xb9: NewOp("RES 7,C", c.RES, []int{
+		)
+	case 0xb9:
+		return NewOp("RES 7,C", c.RES, []int{
 			8,
 		},
 			7,
 			c.C,
-		),
-		0xba: NewOp("RES 7,D", c.RES, []int{
+		)
+	case 0xba:
+		return NewOp("RES 7,D", c.RES, []int{
 			8,
 		},
 			7,
 			c.D,
-		),
-		0xbb: NewOp("RES 7,E", c.RES, []int{
+		)
+	case 0xbb:
+		return NewOp("RES 7,E", c.RES, []int{
 			8,
 		},
 			7,
 			c.E,
-		),
-		0xbc: NewOp("RES 7,H", c.RES, []int{
+		)
+	case 0xbc:
+		return NewOp("RES 7,H", c.RES, []int{
 			8,
 		},
 			7,
 			c.H,
-		),
-		0xbd: NewOp("RES 7,L", c.RES, []int{
+		)
+	case 0xbd:
+		return NewOp("RES 7,L", c.RES, []int{
 			8,
 		},
 			7,
 			c.L,
-		),
-		0xbe: NewOp("RES 7,(HL)", c.RES, []int{
+		)
+	case 0xbe:
+		return NewOp("RES 7,(HL)", c.RES, []int{
 			16,
 		},
 			7,
 			c.MemoryAt(c.HL),
-		),
-		0xbf: NewOp("RES 7,A", c.RES, []int{
+		)
+	case 0xbf:
+		return NewOp("RES 7,A", c.RES, []int{
 			8,
 		},
 			7,
 			c.A,
-		),
-		0xc: NewOp("RRC H", c.RRC, []int{
+		)
+	case 0xc:
+		return NewOp("RRC H", c.RRC, []int{
 			8,
 		},
 			c.H,
-		),
-		0xc0: NewOp("SET 0,B", c.SET, []int{
+		)
+	case 0xc0:
+		return NewOp("SET 0,B", c.SET, []int{
 			8,
 		},
 			0,
 			c.B,
-		),
-		0xc1: NewOp("SET 0,C", c.SET, []int{
+		)
+	case 0xc1:
+		return NewOp("SET 0,C", c.SET, []int{
 			8,
 		},
 			0,
 			c.C,
-		),
-		0xc2: NewOp("SET 0,D", c.SET, []int{
+		)
+	case 0xc2:
+		return NewOp("SET 0,D", c.SET, []int{
 			8,
 		},
 			0,
 			c.D,
-		),
-		0xc3: NewOp("SET 0,E", c.SET, []int{
+		)
+	case 0xc3:
+		return NewOp("SET 0,E", c.SET, []int{
 			8,
 		},
 			0,
 			c.E,
-		),
-		0xc4: NewOp("SET 0,H", c.SET, []int{
+		)
+	case 0xc4:
+		return NewOp("SET 0,H", c.SET, []int{
 			8,
 		},
 			0,
 			c.H,
-		),
-		0xc5: NewOp("SET 0,L", c.SET, []int{
+		)
+	case 0xc5:
+		return NewOp("SET 0,L", c.SET, []int{
 			8,
 		},
 			0,
 			c.L,
-		),
-		0xc6: NewOp("SET 0,(HL)", c.SET, []int{
+		)
+	case 0xc6:
+		return NewOp("SET 0,(HL)", c.SET, []int{
 			16,
 		},
 			0,
 			c.MemoryAt(c.HL),
-		),
-		0xc7: NewOp("SET 0,A", c.SET, []int{
+		)
+	case 0xc7:
+		return NewOp("SET 0,A", c.SET, []int{
 			8,
 		},
 			0,
 			c.A,
-		),
-		0xc8: NewOp("SET 1,B", c.SET, []int{
+		)
+	case 0xc8:
+		return NewOp("SET 1,B", c.SET, []int{
 			8,
 		},
 			1,
 			c.B,
-		),
-		0xc9: NewOp("SET 1,C", c.SET, []int{
+		)
+	case 0xc9:
+		return NewOp("SET 1,C", c.SET, []int{
 			8,
 		},
 			1,
 			c.C,
-		),
-		0xca: NewOp("SET 1,D", c.SET, []int{
+		)
+	case 0xca:
+		return NewOp("SET 1,D", c.SET, []int{
 			8,
 		},
 			1,
 			c.D,
-		),
-		0xcb: NewOp("SET 1,E", c.SET, []int{
+		)
+	case 0xcb:
+		return NewOp("SET 1,E", c.SET, []int{
 			8,
 		},
 			1,
 			c.E,
-		),
-		0xcc: NewOp("SET 1,H", c.SET, []int{
+		)
+	case 0xcc:
+		return NewOp("SET 1,H", c.SET, []int{
 			8,
 		},
 			1,
 			c.H,
-		),
-		0xcd: NewOp("SET 1,L", c.SET, []int{
+		)
+	case 0xcd:
+		return NewOp("SET 1,L", c.SET, []int{
 			8,
 		},
 			1,
 			c.L,
-		),
-		0xce: NewOp("SET 1,(HL)", c.SET, []int{
+		)
+	case 0xce:
+		return NewOp("SET 1,(HL)", c.SET, []int{
 			16,
 		},
 			1,
 			c.MemoryAt(c.HL),
-		),
-		0xcf: NewOp("SET 1,A", c.SET, []int{
+		)
+	case 0xcf:
+		return NewOp("SET 1,A", c.SET, []int{
 			8,
 		},
 			1,
 			c.A,
-		),
-		0xd: NewOp("RRC L", c.RRC, []int{
+		)
+	case 0xd:
+		return NewOp("RRC L", c.RRC, []int{
 			8,
 		},
 			c.L,
-		),
-		0xd0: NewOp("SET 2,B", c.SET, []int{
+		)
+	case 0xd0:
+		return NewOp("SET 2,B", c.SET, []int{
 			8,
 		},
 			2,
 			c.B,
-		),
-		0xd1: NewOp("SET 2,C", c.SET, []int{
+		)
+	case 0xd1:
+		return NewOp("SET 2,C", c.SET, []int{
 			8,
 		},
 			2,
 			c.C,
-		),
-		0xd2: NewOp("SET 2,D", c.SET, []int{
+		)
+	case 0xd2:
+		return NewOp("SET 2,D", c.SET, []int{
 			8,
 		},
 			2,
 			c.D,
-		),
-		0xd3: NewOp("SET 2,E", c.SET, []int{
+		)
+	case 0xd3:
+		return NewOp("SET 2,E", c.SET, []int{
 			8,
 		},
 			2,
 			c.E,
-		),
-		0xd4: NewOp("SET 2,H", c.SET, []int{
+		)
+	case 0xd4:
+		return NewOp("SET 2,H", c.SET, []int{
 			8,
 		},
 			2,
 			c.H,
-		),
-		0xd5: NewOp("SET 2,L", c.SET, []int{
+		)
+	case 0xd5:
+		return NewOp("SET 2,L", c.SET, []int{
 			8,
 		},
 			2,
 			c.L,
-		),
-		0xd6: NewOp("SET 2,(HL)", c.SET, []int{
+		)
+	case 0xd6:
+		return NewOp("SET 2,(HL)", c.SET, []int{
 			16,
 		},
 			2,
 			c.MemoryAt(c.HL),
-		),
-		0xd7: NewOp("SET 2,A", c.SET, []int{
+		)
+	case 0xd7:
+		return NewOp("SET 2,A", c.SET, []int{
 			8,
 		},
 			2,
 			c.A,
-		),
-		0xd8: NewOp("SET 3,B", c.SET, []int{
+		)
+	case 0xd8:
+		return NewOp("SET 3,B", c.SET, []int{
 			8,
 		},
 			3,
 			c.B,
-		),
-		0xd9: NewOp("SET 3,C", c.SET, []int{
+		)
+	case 0xd9:
+		return NewOp("SET 3,C", c.SET, []int{
 			8,
 		},
 			3,
 			c.C,
-		),
-		0xda: NewOp("SET 3,D", c.SET, []int{
+		)
+	case 0xda:
+		return NewOp("SET 3,D", c.SET, []int{
 			8,
 		},
 			3,
 			c.D,
-		),
-		0xdb: NewOp("SET 3,E", c.SET, []int{
+		)
+	case 0xdb:
+		return NewOp("SET 3,E", c.SET, []int{
 			8,
 		},
 			3,
 			c.E,
-		),
-		0xdc: NewOp("SET 3,H", c.SET, []int{
+		)
+	case 0xdc:
+		return NewOp("SET 3,H", c.SET, []int{
 			8,
 		},
 			3,
 			c.H,
-		),
-		0xdd: NewOp("SET 3,L", c.SET, []int{
+		)
+	case 0xdd:
+		return NewOp("SET 3,L", c.SET, []int{
 			8,
 		},
 			3,
 			c.L,
-		),
-		0xde: NewOp("SET 3,(HL)", c.SET, []int{
+		)
+	case 0xde:
+		return NewOp("SET 3,(HL)", c.SET, []int{
 			16,
 		},
 			3,
 			c.MemoryAt(c.HL),
-		),
-		0xdf: NewOp("SET 3,A", c.SET, []int{
+		)
+	case 0xdf:
+		return NewOp("SET 3,A", c.SET, []int{
 			8,
 		},
 			3,
 			c.A,
-		),
-		0xe: NewOp("RRC (HL)", c.RRC, []int{
+		)
+	case 0xe:
+		return NewOp("RRC (HL)", c.RRC, []int{
 			16,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0xe0: NewOp("SET 4,B", c.SET, []int{
+		)
+	case 0xe0:
+		return NewOp("SET 4,B", c.SET, []int{
 			8,
 		},
 			4,
 			c.B,
-		),
-		0xe1: NewOp("SET 4,C", c.SET, []int{
+		)
+	case 0xe1:
+		return NewOp("SET 4,C", c.SET, []int{
 			8,
 		},
 			4,
 			c.C,
-		),
-		0xe2: NewOp("SET 4,D", c.SET, []int{
+		)
+	case 0xe2:
+		return NewOp("SET 4,D", c.SET, []int{
 			8,
 		},
 			4,
 			c.D,
-		),
-		0xe3: NewOp("SET 4,E", c.SET, []int{
+		)
+	case 0xe3:
+		return NewOp("SET 4,E", c.SET, []int{
 			8,
 		},
 			4,
 			c.E,
-		),
-		0xe4: NewOp("SET 4,H", c.SET, []int{
+		)
+	case 0xe4:
+		return NewOp("SET 4,H", c.SET, []int{
 			8,
 		},
 			4,
 			c.H,
-		),
-		0xe5: NewOp("SET 4,L", c.SET, []int{
+		)
+	case 0xe5:
+		return NewOp("SET 4,L", c.SET, []int{
 			8,
 		},
 			4,
 			c.L,
-		),
-		0xe6: NewOp("SET 4,(HL)", c.SET, []int{
+		)
+	case 0xe6:
+		return NewOp("SET 4,(HL)", c.SET, []int{
 			16,
 		},
 			4,
 			c.MemoryAt(c.HL),
-		),
-		0xe7: NewOp("SET 4,A", c.SET, []int{
+		)
+	case 0xe7:
+		return NewOp("SET 4,A", c.SET, []int{
 			8,
 		},
 			4,
 			c.A,
-		),
-		0xe8: NewOp("SET 5,B", c.SET, []int{
+		)
+	case 0xe8:
+		return NewOp("SET 5,B", c.SET, []int{
 			8,
 		},
 			5,
 			c.B,
-		),
-		0xe9: NewOp("SET 5,C", c.SET, []int{
+		)
+	case 0xe9:
+		return NewOp("SET 5,C", c.SET, []int{
 			8,
 		},
 			5,
 			c.C,
-		),
-		0xea: NewOp("SET 5,D", c.SET, []int{
+		)
+	case 0xea:
+		return NewOp("SET 5,D", c.SET, []int{
 			8,
 		},
 			5,
 			c.D,
-		),
-		0xeb: NewOp("SET 5,E", c.SET, []int{
+		)
+	case 0xeb:
+		return NewOp("SET 5,E", c.SET, []int{
 			8,
 		},
 			5,
 			c.E,
-		),
-		0xec: NewOp("SET 5,H", c.SET, []int{
+		)
+	case 0xec:
+		return NewOp("SET 5,H", c.SET, []int{
 			8,
 		},
 			5,
 			c.H,
-		),
-		0xed: NewOp("SET 5,L", c.SET, []int{
+		)
+	case 0xed:
+		return NewOp("SET 5,L", c.SET, []int{
 			8,
 		},
 			5,
 			c.L,
-		),
-		0xee: NewOp("SET 5,(HL)", c.SET, []int{
+		)
+	case 0xee:
+		return NewOp("SET 5,(HL)", c.SET, []int{
 			16,
 		},
 			5,
 			c.MemoryAt(c.HL),
-		),
-		0xef: NewOp("SET 5,A", c.SET, []int{
+		)
+	case 0xef:
+		return NewOp("SET 5,A", c.SET, []int{
 			8,
 		},
 			5,
 			c.A,
-		),
-		0xf: NewOp("RRC A", c.RRC, []int{
+		)
+	case 0xf:
+		return NewOp("RRC A", c.RRC, []int{
 			8,
 		},
 			c.A,
-		),
-		0xf0: NewOp("SET 6,B", c.SET, []int{
+		)
+	case 0xf0:
+		return NewOp("SET 6,B", c.SET, []int{
 			8,
 		},
 			6,
 			c.B,
-		),
-		0xf1: NewOp("SET 6,C", c.SET, []int{
+		)
+	case 0xf1:
+		return NewOp("SET 6,C", c.SET, []int{
 			8,
 		},
 			6,
 			c.C,
-		),
-		0xf2: NewOp("SET 6,D", c.SET, []int{
+		)
+	case 0xf2:
+		return NewOp("SET 6,D", c.SET, []int{
 			8,
 		},
 			6,
 			c.D,
-		),
-		0xf3: NewOp("SET 6,E", c.SET, []int{
+		)
+	case 0xf3:
+		return NewOp("SET 6,E", c.SET, []int{
 			8,
 		},
 			6,
 			c.E,
-		),
-		0xf4: NewOp("SET 6,H", c.SET, []int{
+		)
+	case 0xf4:
+		return NewOp("SET 6,H", c.SET, []int{
 			8,
 		},
 			6,
 			c.H,
-		),
-		0xf5: NewOp("SET 6,L", c.SET, []int{
+		)
+	case 0xf5:
+		return NewOp("SET 6,L", c.SET, []int{
 			8,
 		},
 			6,
 			c.L,
-		),
-		0xf6: NewOp("SET 6,(HL)", c.SET, []int{
+		)
+	case 0xf6:
+		return NewOp("SET 6,(HL)", c.SET, []int{
 			16,
 		},
 			6,
 			c.MemoryAt(c.HL),
-		),
-		0xf7: NewOp("SET 6,A", c.SET, []int{
+		)
+	case 0xf7:
+		return NewOp("SET 6,A", c.SET, []int{
 			8,
 		},
 			6,
 			c.A,
-		),
-		0xf8: NewOp("SET 7,B", c.SET, []int{
+		)
+	case 0xf8:
+		return NewOp("SET 7,B", c.SET, []int{
 			8,
 		},
 			7,
 			c.B,
-		),
-		0xf9: NewOp("SET 7,C", c.SET, []int{
+		)
+	case 0xf9:
+		return NewOp("SET 7,C", c.SET, []int{
 			8,
 		},
 			7,
 			c.C,
-		),
-		0xfa: NewOp("SET 7,D", c.SET, []int{
+		)
+	case 0xfa:
+		return NewOp("SET 7,D", c.SET, []int{
 			8,
 		},
 			7,
 			c.D,
-		),
-		0xfb: NewOp("SET 7,E", c.SET, []int{
+		)
+	case 0xfb:
+		return NewOp("SET 7,E", c.SET, []int{
 			8,
 		},
 			7,
 			c.E,
-		),
-		0xfc: NewOp("SET 7,H", c.SET, []int{
+		)
+	case 0xfc:
+		return NewOp("SET 7,H", c.SET, []int{
 			8,
 		},
 			7,
 			c.H,
-		),
-		0xfd: NewOp("SET 7,L", c.SET, []int{
+		)
+	case 0xfd:
+		return NewOp("SET 7,L", c.SET, []int{
 			8,
 		},
 			7,
 			c.L,
-		),
-		0xfe: NewOp("SET 7,(HL)", c.SET, []int{
+		)
+	case 0xfe:
+		return NewOp("SET 7,(HL)", c.SET, []int{
 			16,
 		},
 			7,
 			c.MemoryAt(c.HL),
-		),
-		0xff: NewOp("SET 7,A", c.SET, []int{
+		)
+	case 0xff:
+		return NewOp("SET 7,A", c.SET, []int{
 			8,
 		},
 			7,
 			c.A,
-		),
+		)
+	default:
+		panic(fmt.Sprintf("unknown opcode: 0x%X", code))
 	}
 }
-func unprefixedOpcodes(c *CPU) map[Opcode]Op {
-	return map[Opcode]Op{
-		0x0: NewOp("NOP", c.NOP, []int{
+func unprefixedOpcodes(c *CPU, code Opcode) Op {
+	switch code {
+	case 0x0:
+		return NewOp("NOP", c.NOP, []int{
 			4,
 		},
-		),
-		0x1: NewOp("LD BC,d16", c.LD, []int{
+		)
+	case 0x1:
+		return NewOp("LD BC,d16", c.LD, []int{
 			12,
 		},
 			c.BC,
-			c.D16,
-		),
-		0x10: NewOp("STOP 0", c.STOP, []int{
+			c.D16(),
+		)
+	case 0x10:
+		return NewOp("STOP 0", c.STOP, []int{
 			4,
 		},
 			0,
-		),
-		0x11: NewOp("LD DE,d16", c.LD, []int{
+		)
+	case 0x11:
+		return NewOp("LD DE,d16", c.LD, []int{
 			12,
 		},
 			c.DE,
-			c.D16,
-		),
-		0x12: NewOp("LD (DE),A", c.LD, []int{
+			c.D16(),
+		)
+	case 0x12:
+		return NewOp("LD (DE),A", c.LD, []int{
 			8,
 		},
 			c.MemoryAt(c.DE),
 			c.A,
-		),
-		0x13: NewOp("INC DE", c.INC, []int{
+		)
+	case 0x13:
+		return NewOp("INC DE", c.INC, []int{
 			8,
 		},
 			c.DE,
-		),
-		0x14: NewOp("INC D", c.INC, []int{
+		)
+	case 0x14:
+		return NewOp("INC D", c.INC, []int{
 			4,
 		},
 			c.D,
-		),
-		0x15: NewOp("DEC D", c.DEC, []int{
+		)
+	case 0x15:
+		return NewOp("DEC D", c.DEC, []int{
 			4,
 		},
 			c.D,
-		),
-		0x16: NewOp("LD D,d8", c.LD, []int{
+		)
+	case 0x16:
+		return NewOp("LD D,d8", c.LD, []int{
 			8,
 		},
 			c.D,
-			c.D8,
-		),
-		0x17: NewOp("RLA", c.RLA, []int{
+			c.D8(),
+		)
+	case 0x17:
+		return NewOp("RLA", c.RLA, []int{
 			4,
 		},
-		),
-		0x18: NewOp("JR r8", c.JR, []int{
+		)
+	case 0x18:
+		return NewOp("JR r8", c.JR, []int{
 			12,
 		},
-			c.D8,
-		),
-		0x19: NewOp("ADD HL,DE", c.ADD, []int{
+			c.R8(),
+		)
+	case 0x19:
+		return NewOp("ADD HL,DE", c.ADD, []int{
 			8,
 		},
 			c.HL,
 			c.DE,
-		),
-		0x1a: NewOp("LD A,(DE)", c.LD, []int{
+		)
+	case 0x1a:
+		return NewOp("LD A,(DE)", c.LD, []int{
 			8,
 		},
 			c.A,
 			c.MemoryAt(c.DE),
-		),
-		0x1b: NewOp("DEC DE", c.DEC, []int{
+		)
+	case 0x1b:
+		return NewOp("DEC DE", c.DEC, []int{
 			8,
 		},
 			c.DE,
-		),
-		0x1c: NewOp("INC E", c.INC, []int{
+		)
+	case 0x1c:
+		return NewOp("INC E", c.INC, []int{
 			4,
 		},
 			c.E,
-		),
-		0x1d: NewOp("DEC E", c.DEC, []int{
+		)
+	case 0x1d:
+		return NewOp("DEC E", c.DEC, []int{
 			4,
 		},
 			c.E,
-		),
-		0x1e: NewOp("LD E,d8", c.LD, []int{
+		)
+	case 0x1e:
+		return NewOp("LD E,d8", c.LD, []int{
 			8,
 		},
 			c.E,
-			c.D8,
-		),
-		0x1f: NewOp("RRA", c.RRA, []int{
+			c.D8(),
+		)
+	case 0x1f:
+		return NewOp("RRA", c.RRA, []int{
 			4,
 		},
-		),
-		0x2: NewOp("LD (BC),A", c.LD, []int{
+		)
+	case 0x2:
+		return NewOp("LD (BC),A", c.LD, []int{
 			8,
 		},
 			c.MemoryAt(c.BC),
 			c.A,
-		),
-		0x20: NewOp("JR NZ,r8", c.JRC, []int{
+		)
+	case 0x20:
+		return NewOp("JR NZ,r8", c.JRC, []int{
 			12,
 
 			8,
 		},
 			CaseNZ,
-			c.D8,
-		),
-		0x21: NewOp("LD HL,d16", c.LD, []int{
+			c.R8(),
+		)
+	case 0x21:
+		return NewOp("LD HL,d16", c.LD, []int{
 			12,
 		},
 			c.HL,
-			c.D16,
-		),
-		0x22: NewOp("LDI (HL),A", c.LDI, []int{
+			c.D16(),
+		)
+	case 0x22:
+		return NewOp("LDI (HL),A", c.LDI, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
 			c.A,
-		),
-		0x23: NewOp("INC HL", c.INC, []int{
+		)
+	case 0x23:
+		return NewOp("INC HL", c.INC, []int{
 			8,
 		},
 			c.HL,
-		),
-		0x24: NewOp("INC H", c.INC, []int{
+		)
+	case 0x24:
+		return NewOp("INC H", c.INC, []int{
 			4,
 		},
 			c.H,
-		),
-		0x25: NewOp("DEC H", c.DEC, []int{
+		)
+	case 0x25:
+		return NewOp("DEC H", c.DEC, []int{
 			4,
 		},
 			c.H,
-		),
-		0x26: NewOp("LD H,d8", c.LD, []int{
+		)
+	case 0x26:
+		return NewOp("LD H,d8", c.LD, []int{
 			8,
 		},
 			c.H,
-			c.D8,
-		),
-		0x27: NewOp("DAA", c.DAA, []int{
+			c.D8(),
+		)
+	case 0x27:
+		return NewOp("DAA", c.DAA, []int{
 			4,
 		},
-		),
-		0x28: NewOp("JR Z,r8", c.JRC, []int{
+		)
+	case 0x28:
+		return NewOp("JR Z,r8", c.JRC, []int{
 			12,
 
 			8,
 		},
 			CaseZ,
-			c.D8,
-		),
-		0x29: NewOp("ADD HL,HL", c.ADD, []int{
+			c.R8(),
+		)
+	case 0x29:
+		return NewOp("ADD HL,HL", c.ADD, []int{
 			8,
 		},
 			c.HL,
 			c.HL,
-		),
-		0x2a: NewOp("LDI A,(HL)", c.LDI, []int{
+		)
+	case 0x2a:
+		return NewOp("LDI A,(HL)", c.LDI, []int{
 			8,
 		},
 			c.A,
 			c.MemoryAt(c.HL),
-		),
-		0x2b: NewOp("DEC HL", c.DEC, []int{
+		)
+	case 0x2b:
+		return NewOp("DEC HL", c.DEC, []int{
 			8,
 		},
 			c.HL,
-		),
-		0x2c: NewOp("INC L", c.INC, []int{
+		)
+	case 0x2c:
+		return NewOp("INC L", c.INC, []int{
 			4,
 		},
 			c.L,
-		),
-		0x2d: NewOp("DEC L", c.DEC, []int{
+		)
+	case 0x2d:
+		return NewOp("DEC L", c.DEC, []int{
 			4,
 		},
 			c.L,
-		),
-		0x2e: NewOp("LD L,d8", c.LD, []int{
+		)
+	case 0x2e:
+		return NewOp("LD L,d8", c.LD, []int{
 			8,
 		},
 			c.L,
-			c.D8,
-		),
-		0x2f: NewOp("CPL", c.CPL, []int{
+			c.D8(),
+		)
+	case 0x2f:
+		return NewOp("CPL", c.CPL, []int{
 			4,
 		},
-		),
-		0x3: NewOp("INC BC", c.INC, []int{
+		)
+	case 0x3:
+		return NewOp("INC BC", c.INC, []int{
 			8,
 		},
 			c.BC,
-		),
-		0x30: NewOp("JR NC,r8", c.JRC, []int{
+		)
+	case 0x30:
+		return NewOp("JR NC,r8", c.JRC, []int{
 			12,
 
 			8,
 		},
 			CaseNC,
-			c.D8,
-		),
-		0x31: NewOp("LD SP,d16", c.LD, []int{
+			c.R8(),
+		)
+	case 0x31:
+		return NewOp("LD SP,d16", c.LD, []int{
 			12,
 		},
 			c.SP,
-			c.D16,
-		),
-		0x32: NewOp("LDD (HL),A", c.LDD, []int{
+			c.D16(),
+		)
+	case 0x32:
+		return NewOp("LDD (HL),A", c.LDD, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
 			c.A,
-		),
-		0x33: NewOp("INC SP", c.INC, []int{
+		)
+	case 0x33:
+		return NewOp("INC SP", c.INC, []int{
 			8,
 		},
 			c.SP,
-		),
-		0x34: NewOp("INC (HL)", c.INC, []int{
+		)
+	case 0x34:
+		return NewOp("INC (HL)", c.INC, []int{
 			12,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0x35: NewOp("DEC (HL)", c.DEC, []int{
+		)
+	case 0x35:
+		return NewOp("DEC (HL)", c.DEC, []int{
 			12,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0x36: NewOp("LD (HL),d8", c.LD, []int{
+		)
+	case 0x36:
+		return NewOp("LD (HL),d8", c.LD, []int{
 			12,
 		},
 			c.MemoryAt(c.HL),
-			c.D8,
-		),
-		0x37: NewOp("SCF", c.SCF, []int{
+			c.D8(),
+		)
+	case 0x37:
+		return NewOp("SCF", c.SCF, []int{
 			4,
 		},
-		),
-		0x38: NewOp("JR C,r8", c.JRC, []int{
+		)
+	case 0x38:
+		return NewOp("JR C,r8", c.JRC, []int{
 			12,
 
 			8,
 		},
 			CaseC,
-			c.D8,
-		),
-		0x39: NewOp("ADD HL,SP", c.ADD, []int{
+			c.R8(),
+		)
+	case 0x39:
+		return NewOp("ADD HL,SP", c.ADD, []int{
 			8,
 		},
 			c.HL,
 			c.SP,
-		),
-		0x3a: NewOp("LDD A,(HL)", c.LDD, []int{
+		)
+	case 0x3a:
+		return NewOp("LDD A,(HL)", c.LDD, []int{
 			8,
 		},
 			c.A,
 			c.MemoryAt(c.HL),
-		),
-		0x3b: NewOp("DEC SP", c.DEC, []int{
+		)
+	case 0x3b:
+		return NewOp("DEC SP", c.DEC, []int{
 			8,
 		},
 			c.SP,
-		),
-		0x3c: NewOp("INC A", c.INC, []int{
+		)
+	case 0x3c:
+		return NewOp("INC A", c.INC, []int{
 			4,
 		},
 			c.A,
-		),
-		0x3d: NewOp("DEC A", c.DEC, []int{
+		)
+	case 0x3d:
+		return NewOp("DEC A", c.DEC, []int{
 			4,
 		},
 			c.A,
-		),
-		0x3e: NewOp("LD A,d8", c.LD, []int{
+		)
+	case 0x3e:
+		return NewOp("LD A,d8", c.LD, []int{
 			8,
 		},
 			c.A,
-			c.D8,
-		),
-		0x3f: NewOp("CCF", c.CCF, []int{
+			c.D8(),
+		)
+	case 0x3f:
+		return NewOp("CCF", c.CCF, []int{
 			4,
 		},
-		),
-		0x4: NewOp("INC B", c.INC, []int{
-			4,
-		},
-			c.B,
-		),
-		0x40: NewOp("LD B,B", c.LD, []int{
+		)
+	case 0x4:
+		return NewOp("INC B", c.INC, []int{
 			4,
 		},
 			c.B,
+		)
+	case 0x40:
+		return NewOp("LD B,B", c.LD, []int{
+			4,
+		},
 			c.B,
-		),
-		0x41: NewOp("LD B,C", c.LD, []int{
+			c.B,
+		)
+	case 0x41:
+		return NewOp("LD B,C", c.LD, []int{
 			4,
 		},
 			c.B,
 			c.C,
-		),
-		0x42: NewOp("LD B,D", c.LD, []int{
+		)
+	case 0x42:
+		return NewOp("LD B,D", c.LD, []int{
 			4,
 		},
 			c.B,
 			c.D,
-		),
-		0x43: NewOp("LD B,E", c.LD, []int{
+		)
+	case 0x43:
+		return NewOp("LD B,E", c.LD, []int{
 			4,
 		},
 			c.B,
 			c.E,
-		),
-		0x44: NewOp("LD B,H", c.LD, []int{
+		)
+	case 0x44:
+		return NewOp("LD B,H", c.LD, []int{
 			4,
 		},
 			c.B,
 			c.H,
-		),
-		0x45: NewOp("LD B,L", c.LD, []int{
+		)
+	case 0x45:
+		return NewOp("LD B,L", c.LD, []int{
 			4,
 		},
 			c.B,
 			c.L,
-		),
-		0x46: NewOp("LD B,(HL)", c.LD, []int{
+		)
+	case 0x46:
+		return NewOp("LD B,(HL)", c.LD, []int{
 			8,
 		},
 			c.B,
 			c.MemoryAt(c.HL),
-		),
-		0x47: NewOp("LD B,A", c.LD, []int{
+		)
+	case 0x47:
+		return NewOp("LD B,A", c.LD, []int{
 			4,
 		},
 			c.B,
 			c.A,
-		),
-		0x48: NewOp("LD C,B", c.LD, []int{
+		)
+	case 0x48:
+		return NewOp("LD C,B", c.LD, []int{
 			4,
 		},
 			c.C,
 			c.B,
-		),
-		0x49: NewOp("LD C,C", c.LD, []int{
+		)
+	case 0x49:
+		return NewOp("LD C,C", c.LD, []int{
 			4,
 		},
 			c.C,
 			c.C,
-		),
-		0x4a: NewOp("LD C,D", c.LD, []int{
+		)
+	case 0x4a:
+		return NewOp("LD C,D", c.LD, []int{
 			4,
 		},
 			c.C,
 			c.D,
-		),
-		0x4b: NewOp("LD C,E", c.LD, []int{
+		)
+	case 0x4b:
+		return NewOp("LD C,E", c.LD, []int{
 			4,
 		},
 			c.C,
 			c.E,
-		),
-		0x4c: NewOp("LD C,H", c.LD, []int{
+		)
+	case 0x4c:
+		return NewOp("LD C,H", c.LD, []int{
 			4,
 		},
 			c.C,
 			c.H,
-		),
-		0x4d: NewOp("LD C,L", c.LD, []int{
+		)
+	case 0x4d:
+		return NewOp("LD C,L", c.LD, []int{
 			4,
 		},
 			c.C,
 			c.L,
-		),
-		0x4e: NewOp("LD C,(HL)", c.LD, []int{
+		)
+	case 0x4e:
+		return NewOp("LD C,(HL)", c.LD, []int{
 			8,
 		},
 			c.C,
 			c.MemoryAt(c.HL),
-		),
-		0x4f: NewOp("LD C,A", c.LD, []int{
+		)
+	case 0x4f:
+		return NewOp("LD C,A", c.LD, []int{
 			4,
 		},
 			c.C,
 			c.A,
-		),
-		0x5: NewOp("DEC B", c.DEC, []int{
+		)
+	case 0x5:
+		return NewOp("DEC B", c.DEC, []int{
 			4,
 		},
 			c.B,
-		),
-		0x50: NewOp("LD D,B", c.LD, []int{
+		)
+	case 0x50:
+		return NewOp("LD D,B", c.LD, []int{
 			4,
 		},
 			c.D,
 			c.B,
-		),
-		0x51: NewOp("LD D,C", c.LD, []int{
+		)
+	case 0x51:
+		return NewOp("LD D,C", c.LD, []int{
 			4,
 		},
 			c.D,
 			c.C,
-		),
-		0x52: NewOp("LD D,D", c.LD, []int{
+		)
+	case 0x52:
+		return NewOp("LD D,D", c.LD, []int{
 			4,
 		},
 			c.D,
 			c.D,
-		),
-		0x53: NewOp("LD D,E", c.LD, []int{
+		)
+	case 0x53:
+		return NewOp("LD D,E", c.LD, []int{
 			4,
 		},
 			c.D,
 			c.E,
-		),
-		0x54: NewOp("LD D,H", c.LD, []int{
+		)
+	case 0x54:
+		return NewOp("LD D,H", c.LD, []int{
 			4,
 		},
 			c.D,
 			c.H,
-		),
-		0x55: NewOp("LD D,L", c.LD, []int{
+		)
+	case 0x55:
+		return NewOp("LD D,L", c.LD, []int{
 			4,
 		},
 			c.D,
 			c.L,
-		),
-		0x56: NewOp("LD D,(HL)", c.LD, []int{
+		)
+	case 0x56:
+		return NewOp("LD D,(HL)", c.LD, []int{
 			8,
 		},
 			c.D,
 			c.MemoryAt(c.HL),
-		),
-		0x57: NewOp("LD D,A", c.LD, []int{
+		)
+	case 0x57:
+		return NewOp("LD D,A", c.LD, []int{
 			4,
 		},
 			c.D,
 			c.A,
-		),
-		0x58: NewOp("LD E,B", c.LD, []int{
+		)
+	case 0x58:
+		return NewOp("LD E,B", c.LD, []int{
 			4,
 		},
 			c.E,
 			c.B,
-		),
-		0x59: NewOp("LD E,C", c.LD, []int{
+		)
+	case 0x59:
+		return NewOp("LD E,C", c.LD, []int{
 			4,
 		},
 			c.E,
 			c.C,
-		),
-		0x5a: NewOp("LD E,D", c.LD, []int{
+		)
+	case 0x5a:
+		return NewOp("LD E,D", c.LD, []int{
 			4,
 		},
 			c.E,
 			c.D,
-		),
-		0x5b: NewOp("LD E,E", c.LD, []int{
+		)
+	case 0x5b:
+		return NewOp("LD E,E", c.LD, []int{
 			4,
 		},
 			c.E,
 			c.E,
-		),
-		0x5c: NewOp("LD E,H", c.LD, []int{
+		)
+	case 0x5c:
+		return NewOp("LD E,H", c.LD, []int{
 			4,
 		},
 			c.E,
 			c.H,
-		),
-		0x5d: NewOp("LD E,L", c.LD, []int{
+		)
+	case 0x5d:
+		return NewOp("LD E,L", c.LD, []int{
 			4,
 		},
 			c.E,
 			c.L,
-		),
-		0x5e: NewOp("LD E,(HL)", c.LD, []int{
+		)
+	case 0x5e:
+		return NewOp("LD E,(HL)", c.LD, []int{
 			8,
 		},
 			c.E,
 			c.MemoryAt(c.HL),
-		),
-		0x5f: NewOp("LD E,A", c.LD, []int{
+		)
+	case 0x5f:
+		return NewOp("LD E,A", c.LD, []int{
 			4,
 		},
 			c.E,
 			c.A,
-		),
-		0x6: NewOp("LD B,d8", c.LD, []int{
+		)
+	case 0x6:
+		return NewOp("LD B,d8", c.LD, []int{
 			8,
 		},
 			c.B,
-			c.D8,
-		),
-		0x60: NewOp("LD H,B", c.LD, []int{
+			c.D8(),
+		)
+	case 0x60:
+		return NewOp("LD H,B", c.LD, []int{
 			4,
 		},
 			c.H,
 			c.B,
-		),
-		0x61: NewOp("LD H,C", c.LD, []int{
+		)
+	case 0x61:
+		return NewOp("LD H,C", c.LD, []int{
 			4,
 		},
 			c.H,
 			c.C,
-		),
-		0x62: NewOp("LD H,D", c.LD, []int{
+		)
+	case 0x62:
+		return NewOp("LD H,D", c.LD, []int{
 			4,
 		},
 			c.H,
 			c.D,
-		),
-		0x63: NewOp("LD H,E", c.LD, []int{
+		)
+	case 0x63:
+		return NewOp("LD H,E", c.LD, []int{
 			4,
 		},
 			c.H,
 			c.E,
-		),
-		0x64: NewOp("LD H,H", c.LD, []int{
+		)
+	case 0x64:
+		return NewOp("LD H,H", c.LD, []int{
 			4,
 		},
 			c.H,
 			c.H,
-		),
-		0x65: NewOp("LD H,L", c.LD, []int{
+		)
+	case 0x65:
+		return NewOp("LD H,L", c.LD, []int{
 			4,
 		},
 			c.H,
 			c.L,
-		),
-		0x66: NewOp("LD H,(HL)", c.LD, []int{
+		)
+	case 0x66:
+		return NewOp("LD H,(HL)", c.LD, []int{
 			8,
 		},
 			c.H,
 			c.MemoryAt(c.HL),
-		),
-		0x67: NewOp("LD H,A", c.LD, []int{
+		)
+	case 0x67:
+		return NewOp("LD H,A", c.LD, []int{
 			4,
 		},
 			c.H,
 			c.A,
-		),
-		0x68: NewOp("LD L,B", c.LD, []int{
+		)
+	case 0x68:
+		return NewOp("LD L,B", c.LD, []int{
 			4,
 		},
 			c.L,
 			c.B,
-		),
-		0x69: NewOp("LD L,C", c.LD, []int{
+		)
+	case 0x69:
+		return NewOp("LD L,C", c.LD, []int{
 			4,
 		},
 			c.L,
 			c.C,
-		),
-		0x6a: NewOp("LD L,D", c.LD, []int{
+		)
+	case 0x6a:
+		return NewOp("LD L,D", c.LD, []int{
 			4,
 		},
 			c.L,
 			c.D,
-		),
-		0x6b: NewOp("LD L,E", c.LD, []int{
+		)
+	case 0x6b:
+		return NewOp("LD L,E", c.LD, []int{
 			4,
 		},
 			c.L,
 			c.E,
-		),
-		0x6c: NewOp("LD L,H", c.LD, []int{
+		)
+	case 0x6c:
+		return NewOp("LD L,H", c.LD, []int{
 			4,
 		},
 			c.L,
 			c.H,
-		),
-		0x6d: NewOp("LD L,L", c.LD, []int{
+		)
+	case 0x6d:
+		return NewOp("LD L,L", c.LD, []int{
 			4,
 		},
 			c.L,
 			c.L,
-		),
-		0x6e: NewOp("LD L,(HL)", c.LD, []int{
+		)
+	case 0x6e:
+		return NewOp("LD L,(HL)", c.LD, []int{
 			8,
 		},
 			c.L,
 			c.MemoryAt(c.HL),
-		),
-		0x6f: NewOp("LD L,A", c.LD, []int{
+		)
+	case 0x6f:
+		return NewOp("LD L,A", c.LD, []int{
 			4,
 		},
 			c.L,
 			c.A,
-		),
-		0x7: NewOp("RLCA", c.RLCA, []int{
+		)
+	case 0x7:
+		return NewOp("RLCA", c.RLCA, []int{
 			4,
 		},
-		),
-		0x70: NewOp("LD (HL),B", c.LD, []int{
+		)
+	case 0x70:
+		return NewOp("LD (HL),B", c.LD, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
 			c.B,
-		),
-		0x71: NewOp("LD (HL),C", c.LD, []int{
+		)
+	case 0x71:
+		return NewOp("LD (HL),C", c.LD, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
 			c.C,
-		),
-		0x72: NewOp("LD (HL),D", c.LD, []int{
+		)
+	case 0x72:
+		return NewOp("LD (HL),D", c.LD, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
 			c.D,
-		),
-		0x73: NewOp("LD (HL),E", c.LD, []int{
+		)
+	case 0x73:
+		return NewOp("LD (HL),E", c.LD, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
 			c.E,
-		),
-		0x74: NewOp("LD (HL),H", c.LD, []int{
+		)
+	case 0x74:
+		return NewOp("LD (HL),H", c.LD, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
 			c.H,
-		),
-		0x75: NewOp("LD (HL),L", c.LD, []int{
+		)
+	case 0x75:
+		return NewOp("LD (HL),L", c.LD, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
 			c.L,
-		),
-		0x76: NewOp("HALT", c.HALT, []int{
+		)
+	case 0x76:
+		return NewOp("HALT", c.HALT, []int{
 			4,
 		},
-		),
-		0x77: NewOp("LD (HL),A", c.LD, []int{
+		)
+	case 0x77:
+		return NewOp("LD (HL),A", c.LD, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
 			c.A,
-		),
-		0x78: NewOp("LD A,B", c.LD, []int{
+		)
+	case 0x78:
+		return NewOp("LD A,B", c.LD, []int{
 			4,
 		},
 			c.A,
 			c.B,
-		),
-		0x79: NewOp("LD A,C", c.LD, []int{
+		)
+	case 0x79:
+		return NewOp("LD A,C", c.LD, []int{
 			4,
 		},
 			c.A,
 			c.C,
-		),
-		0x7a: NewOp("LD A,D", c.LD, []int{
+		)
+	case 0x7a:
+		return NewOp("LD A,D", c.LD, []int{
 			4,
 		},
 			c.A,
 			c.D,
-		),
-		0x7b: NewOp("LD A,E", c.LD, []int{
+		)
+	case 0x7b:
+		return NewOp("LD A,E", c.LD, []int{
 			4,
 		},
 			c.A,
 			c.E,
-		),
-		0x7c: NewOp("LD A,H", c.LD, []int{
+		)
+	case 0x7c:
+		return NewOp("LD A,H", c.LD, []int{
 			4,
 		},
 			c.A,
 			c.H,
-		),
-		0x7d: NewOp("LD A,L", c.LD, []int{
+		)
+	case 0x7d:
+		return NewOp("LD A,L", c.LD, []int{
 			4,
 		},
 			c.A,
 			c.L,
-		),
-		0x7e: NewOp("LD A,(HL)", c.LD, []int{
+		)
+	case 0x7e:
+		return NewOp("LD A,(HL)", c.LD, []int{
 			8,
 		},
 			c.A,
 			c.MemoryAt(c.HL),
-		),
-		0x7f: NewOp("LD A,A", c.LD, []int{
+		)
+	case 0x7f:
+		return NewOp("LD A,A", c.LD, []int{
 			4,
 		},
 			c.A,
 			c.A,
-		),
-		0x8: NewOp("LD (a16),SP", c.LD, []int{
+		)
+	case 0x8:
+		return NewOp("LD (a16),SP", c.LD, []int{
 			20,
 		},
-			c.MemoryAt(c.D16),
+			c.MemoryAt(c.A16()),
 			c.SP,
-		),
-		0x80: NewOp("ADD A,B", c.ADD, []int{
+		)
+	case 0x80:
+		return NewOp("ADD A,B", c.ADD, []int{
 			4,
 		},
 			c.A,
 			c.B,
-		),
-		0x81: NewOp("ADD A,C", c.ADD, []int{
+		)
+	case 0x81:
+		return NewOp("ADD A,C", c.ADD, []int{
 			4,
 		},
 			c.A,
 			c.C,
-		),
-		0x82: NewOp("ADD A,D", c.ADD, []int{
+		)
+	case 0x82:
+		return NewOp("ADD A,D", c.ADD, []int{
 			4,
 		},
 			c.A,
 			c.D,
-		),
-		0x83: NewOp("ADD A,E", c.ADD, []int{
+		)
+	case 0x83:
+		return NewOp("ADD A,E", c.ADD, []int{
 			4,
 		},
 			c.A,
 			c.E,
-		),
-		0x84: NewOp("ADD A,H", c.ADD, []int{
+		)
+	case 0x84:
+		return NewOp("ADD A,H", c.ADD, []int{
 			4,
 		},
 			c.A,
 			c.H,
-		),
-		0x85: NewOp("ADD A,L", c.ADD, []int{
+		)
+	case 0x85:
+		return NewOp("ADD A,L", c.ADD, []int{
 			4,
 		},
 			c.A,
 			c.L,
-		),
-		0x86: NewOp("ADD A,(HL)", c.ADD, []int{
+		)
+	case 0x86:
+		return NewOp("ADD A,(HL)", c.ADD, []int{
 			8,
 		},
 			c.A,
 			c.MemoryAt(c.HL),
-		),
-		0x87: NewOp("ADD A,A", c.ADD, []int{
+		)
+	case 0x87:
+		return NewOp("ADD A,A", c.ADD, []int{
 			4,
 		},
 			c.A,
 			c.A,
-		),
-		0x88: NewOp("ADC A,B", c.ADC, []int{
+		)
+	case 0x88:
+		return NewOp("ADC A,B", c.ADC, []int{
 			4,
 		},
 			c.A,
 			c.B,
-		),
-		0x89: NewOp("ADC A,C", c.ADC, []int{
+		)
+	case 0x89:
+		return NewOp("ADC A,C", c.ADC, []int{
 			4,
 		},
 			c.A,
 			c.C,
-		),
-		0x8a: NewOp("ADC A,D", c.ADC, []int{
+		)
+	case 0x8a:
+		return NewOp("ADC A,D", c.ADC, []int{
 			4,
 		},
 			c.A,
 			c.D,
-		),
-		0x8b: NewOp("ADC A,E", c.ADC, []int{
+		)
+	case 0x8b:
+		return NewOp("ADC A,E", c.ADC, []int{
 			4,
 		},
 			c.A,
 			c.E,
-		),
-		0x8c: NewOp("ADC A,H", c.ADC, []int{
+		)
+	case 0x8c:
+		return NewOp("ADC A,H", c.ADC, []int{
 			4,
 		},
 			c.A,
 			c.H,
-		),
-		0x8d: NewOp("ADC A,L", c.ADC, []int{
+		)
+	case 0x8d:
+		return NewOp("ADC A,L", c.ADC, []int{
 			4,
 		},
 			c.A,
 			c.L,
-		),
-		0x8e: NewOp("ADC A,(HL)", c.ADC, []int{
+		)
+	case 0x8e:
+		return NewOp("ADC A,(HL)", c.ADC, []int{
 			8,
 		},
 			c.A,
 			c.MemoryAt(c.HL),
-		),
-		0x8f: NewOp("ADC A,A", c.ADC, []int{
+		)
+	case 0x8f:
+		return NewOp("ADC A,A", c.ADC, []int{
 			4,
 		},
 			c.A,
 			c.A,
-		),
-		0x9: NewOp("ADD HL,BC", c.ADD, []int{
+		)
+	case 0x9:
+		return NewOp("ADD HL,BC", c.ADD, []int{
 			8,
 		},
 			c.HL,
 			c.BC,
-		),
-		0x90: NewOp("SUB B", c.SUB, []int{
+		)
+	case 0x90:
+		return NewOp("SUB B", c.SUB, []int{
 			4,
 		},
 			c.B,
-		),
-		0x91: NewOp("SUB C", c.SUB, []int{
+		)
+	case 0x91:
+		return NewOp("SUB C", c.SUB, []int{
 			4,
 		},
 			c.C,
-		),
-		0x92: NewOp("SUB D", c.SUB, []int{
+		)
+	case 0x92:
+		return NewOp("SUB D", c.SUB, []int{
 			4,
 		},
 			c.D,
-		),
-		0x93: NewOp("SUB E", c.SUB, []int{
+		)
+	case 0x93:
+		return NewOp("SUB E", c.SUB, []int{
 			4,
 		},
 			c.E,
-		),
-		0x94: NewOp("SUB H", c.SUB, []int{
+		)
+	case 0x94:
+		return NewOp("SUB H", c.SUB, []int{
 			4,
 		},
 			c.H,
-		),
-		0x95: NewOp("SUB L", c.SUB, []int{
+		)
+	case 0x95:
+		return NewOp("SUB L", c.SUB, []int{
 			4,
 		},
 			c.L,
-		),
-		0x96: NewOp("SUB (HL)", c.SUB, []int{
+		)
+	case 0x96:
+		return NewOp("SUB (HL)", c.SUB, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0x97: NewOp("SUB A", c.SUB, []int{
+		)
+	case 0x97:
+		return NewOp("SUB A", c.SUB, []int{
 			4,
 		},
 			c.A,
-		),
-		0x98: NewOp("SBC A,B", c.SBC, []int{
+		)
+	case 0x98:
+		return NewOp("SBC A,B", c.SBC, []int{
 			4,
 		},
 			c.A,
 			c.B,
-		),
-		0x99: NewOp("SBC A,C", c.SBC, []int{
+		)
+	case 0x99:
+		return NewOp("SBC A,C", c.SBC, []int{
 			4,
 		},
 			c.A,
 			c.C,
-		),
-		0x9a: NewOp("SBC A,D", c.SBC, []int{
+		)
+	case 0x9a:
+		return NewOp("SBC A,D", c.SBC, []int{
 			4,
 		},
 			c.A,
 			c.D,
-		),
-		0x9b: NewOp("SBC A,E", c.SBC, []int{
+		)
+	case 0x9b:
+		return NewOp("SBC A,E", c.SBC, []int{
 			4,
 		},
 			c.A,
 			c.E,
-		),
-		0x9c: NewOp("SBC A,H", c.SBC, []int{
+		)
+	case 0x9c:
+		return NewOp("SBC A,H", c.SBC, []int{
 			4,
 		},
 			c.A,
 			c.H,
-		),
-		0x9d: NewOp("SBC A,L", c.SBC, []int{
+		)
+	case 0x9d:
+		return NewOp("SBC A,L", c.SBC, []int{
 			4,
 		},
 			c.A,
 			c.L,
-		),
-		0x9e: NewOp("SBC A,(HL)", c.SBC, []int{
+		)
+	case 0x9e:
+		return NewOp("SBC A,(HL)", c.SBC, []int{
 			8,
 		},
 			c.A,
 			c.MemoryAt(c.HL),
-		),
-		0x9f: NewOp("SBC A,A", c.SBC, []int{
+		)
+	case 0x9f:
+		return NewOp("SBC A,A", c.SBC, []int{
 			4,
 		},
 			c.A,
 			c.A,
-		),
-		0xa: NewOp("LD A,(BC)", c.LD, []int{
+		)
+	case 0xa:
+		return NewOp("LD A,(BC)", c.LD, []int{
 			8,
 		},
 			c.A,
 			c.MemoryAt(c.BC),
-		),
-		0xa0: NewOp("AND B", c.AND, []int{
+		)
+	case 0xa0:
+		return NewOp("AND B", c.AND, []int{
 			4,
 		},
 			c.B,
-		),
-		0xa1: NewOp("AND C", c.AND, []int{
+		)
+	case 0xa1:
+		return NewOp("AND C", c.AND, []int{
 			4,
 		},
 			c.C,
-		),
-		0xa2: NewOp("AND D", c.AND, []int{
+		)
+	case 0xa2:
+		return NewOp("AND D", c.AND, []int{
 			4,
 		},
 			c.D,
-		),
-		0xa3: NewOp("AND E", c.AND, []int{
+		)
+	case 0xa3:
+		return NewOp("AND E", c.AND, []int{
 			4,
 		},
 			c.E,
-		),
-		0xa4: NewOp("AND H", c.AND, []int{
+		)
+	case 0xa4:
+		return NewOp("AND H", c.AND, []int{
 			4,
 		},
 			c.H,
-		),
-		0xa5: NewOp("AND L", c.AND, []int{
+		)
+	case 0xa5:
+		return NewOp("AND L", c.AND, []int{
 			4,
 		},
 			c.L,
-		),
-		0xa6: NewOp("AND (HL)", c.AND, []int{
+		)
+	case 0xa6:
+		return NewOp("AND (HL)", c.AND, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0xa7: NewOp("AND A", c.AND, []int{
+		)
+	case 0xa7:
+		return NewOp("AND A", c.AND, []int{
 			4,
 		},
 			c.A,
-		),
-		0xa8: NewOp("XOR B", c.XOR, []int{
+		)
+	case 0xa8:
+		return NewOp("XOR B", c.XOR, []int{
 			4,
 		},
 			c.B,
-		),
-		0xa9: NewOp("XOR C", c.XOR, []int{
+		)
+	case 0xa9:
+		return NewOp("XOR C", c.XOR, []int{
 			4,
 		},
 			c.C,
-		),
-		0xaa: NewOp("XOR D", c.XOR, []int{
+		)
+	case 0xaa:
+		return NewOp("XOR D", c.XOR, []int{
 			4,
 		},
 			c.D,
-		),
-		0xab: NewOp("XOR E", c.XOR, []int{
+		)
+	case 0xab:
+		return NewOp("XOR E", c.XOR, []int{
 			4,
 		},
 			c.E,
-		),
-		0xac: NewOp("XOR H", c.XOR, []int{
+		)
+	case 0xac:
+		return NewOp("XOR H", c.XOR, []int{
 			4,
 		},
 			c.H,
-		),
-		0xad: NewOp("XOR L", c.XOR, []int{
+		)
+	case 0xad:
+		return NewOp("XOR L", c.XOR, []int{
 			4,
 		},
 			c.L,
-		),
-		0xae: NewOp("XOR (HL)", c.XOR, []int{
+		)
+	case 0xae:
+		return NewOp("XOR (HL)", c.XOR, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0xaf: NewOp("XOR A", c.XOR, []int{
+		)
+	case 0xaf:
+		return NewOp("XOR A", c.XOR, []int{
 			4,
 		},
 			c.A,
-		),
-		0xb: NewOp("DEC BC", c.DEC, []int{
+		)
+	case 0xb:
+		return NewOp("DEC BC", c.DEC, []int{
 			8,
 		},
 			c.BC,
-		),
-		0xb0: NewOp("OR B", c.OR, []int{
+		)
+	case 0xb0:
+		return NewOp("OR B", c.OR, []int{
 			4,
 		},
 			c.B,
-		),
-		0xb1: NewOp("OR C", c.OR, []int{
+		)
+	case 0xb1:
+		return NewOp("OR C", c.OR, []int{
 			4,
 		},
 			c.C,
-		),
-		0xb2: NewOp("OR D", c.OR, []int{
+		)
+	case 0xb2:
+		return NewOp("OR D", c.OR, []int{
 			4,
 		},
 			c.D,
-		),
-		0xb3: NewOp("OR E", c.OR, []int{
+		)
+	case 0xb3:
+		return NewOp("OR E", c.OR, []int{
 			4,
 		},
 			c.E,
-		),
-		0xb4: NewOp("OR H", c.OR, []int{
+		)
+	case 0xb4:
+		return NewOp("OR H", c.OR, []int{
 			4,
 		},
 			c.H,
-		),
-		0xb5: NewOp("OR L", c.OR, []int{
+		)
+	case 0xb5:
+		return NewOp("OR L", c.OR, []int{
 			4,
 		},
 			c.L,
-		),
-		0xb6: NewOp("OR (HL)", c.OR, []int{
+		)
+	case 0xb6:
+		return NewOp("OR (HL)", c.OR, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0xb7: NewOp("OR A", c.OR, []int{
+		)
+	case 0xb7:
+		return NewOp("OR A", c.OR, []int{
 			4,
 		},
 			c.A,
-		),
-		0xb8: NewOp("CP B", c.CP, []int{
+		)
+	case 0xb8:
+		return NewOp("CP B", c.CP, []int{
 			4,
 		},
 			c.B,
-		),
-		0xb9: NewOp("CP C", c.CP, []int{
+		)
+	case 0xb9:
+		return NewOp("CP C", c.CP, []int{
 			4,
 		},
 			c.C,
-		),
-		0xba: NewOp("CP D", c.CP, []int{
+		)
+	case 0xba:
+		return NewOp("CP D", c.CP, []int{
 			4,
 		},
 			c.D,
-		),
-		0xbb: NewOp("CP E", c.CP, []int{
+		)
+	case 0xbb:
+		return NewOp("CP E", c.CP, []int{
 			4,
 		},
 			c.E,
-		),
-		0xbc: NewOp("CP H", c.CP, []int{
+		)
+	case 0xbc:
+		return NewOp("CP H", c.CP, []int{
 			4,
 		},
 			c.H,
-		),
-		0xbd: NewOp("CP L", c.CP, []int{
+		)
+	case 0xbd:
+		return NewOp("CP L", c.CP, []int{
 			4,
 		},
 			c.L,
-		),
-		0xbe: NewOp("CP (HL)", c.CP, []int{
+		)
+	case 0xbe:
+		return NewOp("CP (HL)", c.CP, []int{
 			8,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0xbf: NewOp("CP A", c.CP, []int{
+		)
+	case 0xbf:
+		return NewOp("CP A", c.CP, []int{
 			4,
 		},
 			c.A,
-		),
-		0xc: NewOp("INC C", c.INC, []int{
+		)
+	case 0xc:
+		return NewOp("INC C", c.INC, []int{
 			4,
 		},
 			c.C,
-		),
-		0xc0: NewOp("RET NZ", c.RETC, []int{
+		)
+	case 0xc0:
+		return NewOp("RET NZ", c.RETC, []int{
 			20,
 
 			8,
 		},
 			CaseNZ,
-		),
-		0xc1: NewOp("POP BC", c.POP, []int{
+		)
+	case 0xc1:
+		return NewOp("POP BC", c.POP, []int{
 			12,
 		},
 			c.BC,
-		),
-		0xc2: NewOp("JP NZ,a16", c.JPC, []int{
+		)
+	case 0xc2:
+		return NewOp("JP NZ,a16", c.JPC, []int{
 			16,
 
 			12,
 		},
 			CaseNZ,
-			c.D16,
-		),
-		0xc3: NewOp("JP a16", c.JP, []int{
+			c.A16(),
+		)
+	case 0xc3:
+		return NewOp("JP a16", c.JP, []int{
 			16,
 		},
-			c.D16,
-		),
-		0xc4: NewOp("CALL NZ,a16", c.CALLC, []int{
+			c.A16(),
+		)
+	case 0xc4:
+		return NewOp("CALL NZ,a16", c.CALLC, []int{
 			24,
 
 			12,
 		},
 			CaseNZ,
-			c.D16,
-		),
-		0xc5: NewOp("PUSH BC", c.PUSH, []int{
+			c.A16(),
+		)
+	case 0xc5:
+		return NewOp("PUSH BC", c.PUSH, []int{
 			16,
 		},
 			c.BC,
-		),
-		0xc6: NewOp("ADD A,d8", c.ADD, []int{
+		)
+	case 0xc6:
+		return NewOp("ADD A,d8", c.ADD, []int{
 			8,
 		},
 			c.A,
-			c.D8,
-		),
-		0xc7: NewOp("RST 00H", c.RST, []int{
+			c.D8(),
+		)
+	case 0xc7:
+		return NewOp("RST 00H", c.RST, []int{
 			16,
 		},
 			0x00,
-		),
-		0xc8: NewOp("RET Z", c.RETC, []int{
+		)
+	case 0xc8:
+		return NewOp("RET Z", c.RETC, []int{
 			20,
 
 			8,
 		},
 			CaseZ,
-		),
-		0xc9: NewOp("RET", c.RET, []int{
+		)
+	case 0xc9:
+		return NewOp("RET", c.RET, []int{
 			16,
 		},
-		),
-		0xca: NewOp("JP Z,a16", c.JPC, []int{
+		)
+	case 0xca:
+		return NewOp("JP Z,a16", c.JPC, []int{
 			16,
 
 			12,
 		},
 			CaseZ,
-			c.D16,
-		),
-		0xcb: NewOp("PREFIX CB", c.PREFIX, []int{
+			c.A16(),
+		)
+	case 0xcb:
+		return NewOp("PREFIX CB", c.PREFIX, []int{
 			4,
 		},
 			c.CB,
-		),
-		0xcc: NewOp("CALL Z,a16", c.CALLC, []int{
+		)
+	case 0xcc:
+		return NewOp("CALL Z,a16", c.CALLC, []int{
 			24,
 
 			12,
 		},
 			CaseZ,
-			c.D16,
-		),
-		0xcd: NewOp("CALL a16", c.CALL, []int{
+			c.A16(),
+		)
+	case 0xcd:
+		return NewOp("CALL a16", c.CALL, []int{
 			24,
 		},
-			c.D16,
-		),
-		0xce: NewOp("ADC A,d8", c.ADC, []int{
+			c.A16(),
+		)
+	case 0xce:
+		return NewOp("ADC A,d8", c.ADC, []int{
 			8,
 		},
 			c.A,
-			c.D8,
-		),
-		0xcf: NewOp("RST 08H", c.RST, []int{
+			c.D8(),
+		)
+	case 0xcf:
+		return NewOp("RST 08H", c.RST, []int{
 			16,
 		},
 			0x08,
-		),
-		0xd: NewOp("DEC C", c.DEC, []int{
+		)
+	case 0xd:
+		return NewOp("DEC C", c.DEC, []int{
 			4,
 		},
 			c.C,
-		),
-		0xd0: NewOp("RET NC", c.RETC, []int{
+		)
+	case 0xd0:
+		return NewOp("RET NC", c.RETC, []int{
 			20,
 
 			8,
 		},
 			CaseNC,
-		),
-		0xd1: NewOp("POP DE", c.POP, []int{
+		)
+	case 0xd1:
+		return NewOp("POP DE", c.POP, []int{
 			12,
 		},
 			c.DE,
-		),
-		0xd2: NewOp("JP NC,a16", c.JPC, []int{
+		)
+	case 0xd2:
+		return NewOp("JP NC,a16", c.JPC, []int{
 			16,
 
 			12,
 		},
 			CaseNC,
-			c.D16,
-		),
-		0xd4: NewOp("CALL NC,a16", c.CALLC, []int{
+			c.A16(),
+		)
+	case 0xd4:
+		return NewOp("CALL NC,a16", c.CALLC, []int{
 			24,
 
 			12,
 		},
 			CaseNC,
-			c.D16,
-		),
-		0xd5: NewOp("PUSH DE", c.PUSH, []int{
+			c.A16(),
+		)
+	case 0xd5:
+		return NewOp("PUSH DE", c.PUSH, []int{
 			16,
 		},
 			c.DE,
-		),
-		0xd6: NewOp("SUB d8", c.SUB, []int{
+		)
+	case 0xd6:
+		return NewOp("SUB d8", c.SUB, []int{
 			8,
 		},
-			c.D8,
-		),
-		0xd7: NewOp("RST 10H", c.RST, []int{
+			c.D8(),
+		)
+	case 0xd7:
+		return NewOp("RST 10H", c.RST, []int{
 			16,
 		},
 			0x10,
-		),
-		0xd8: NewOp("RET C", c.RETC, []int{
+		)
+	case 0xd8:
+		return NewOp("RET C", c.RETC, []int{
 			20,
 
 			8,
 		},
 			CaseC,
-		),
-		0xd9: NewOp("RETI", c.RETI, []int{
+		)
+	case 0xd9:
+		return NewOp("RETI", c.RETI, []int{
 			16,
 		},
-		),
-		0xda: NewOp("JP C,a16", c.JPC, []int{
+		)
+	case 0xda:
+		return NewOp("JP C,a16", c.JPC, []int{
 			16,
 
 			12,
 		},
 			CaseC,
-			c.D16,
-		),
-		0xdc: NewOp("CALL C,a16", c.CALLC, []int{
+			c.A16(),
+		)
+	case 0xdc:
+		return NewOp("CALL C,a16", c.CALLC, []int{
 			24,
 
 			12,
 		},
 			CaseC,
-			c.D16,
-		),
-		0xde: NewOp("SBC A,d8", c.SBC, []int{
+			c.A16(),
+		)
+	case 0xde:
+		return NewOp("SBC A,d8", c.SBC, []int{
 			8,
 		},
 			c.A,
-			c.D8,
-		),
-		0xdf: NewOp("RST 18H", c.RST, []int{
+			c.D8(),
+		)
+	case 0xdf:
+		return NewOp("RST 18H", c.RST, []int{
 			16,
 		},
 			0x18,
-		),
-		0xe: NewOp("LD C,d8", c.LD, []int{
+		)
+	case 0xe:
+		return NewOp("LD C,d8", c.LD, []int{
 			8,
 		},
 			c.C,
-			c.D8,
-		),
-		0xe0: NewOp("LDH (a8),A", c.LDH, []int{
+			c.D8(),
+		)
+	case 0xe0:
+		return NewOp("LDH (a8),A", c.LDH, []int{
 			12,
 		},
-			c.MemoryAtH(c.D8),
+			c.MemoryAt(c.A8()),
 			c.A,
-		),
-		0xe1: NewOp("POP HL", c.POP, []int{
+		)
+	case 0xe1:
+		return NewOp("POP HL", c.POP, []int{
 			12,
 		},
 			c.HL,
-		),
-		0xe2: NewOp("LD (C),A", c.LD, []int{
+		)
+	case 0xe2:
+		return NewOp("LD (C),A", c.LD, []int{
 			8,
 		},
 			c.MemoryAt(c.C),
 			c.A,
-		),
-		0xe5: NewOp("PUSH HL", c.PUSH, []int{
+		)
+	case 0xe5:
+		return NewOp("PUSH HL", c.PUSH, []int{
 			16,
 		},
 			c.HL,
-		),
-		0xe6: NewOp("AND d8", c.AND, []int{
+		)
+	case 0xe6:
+		return NewOp("AND d8", c.AND, []int{
 			8,
 		},
-			c.D8,
-		),
-		0xe7: NewOp("RST 20H", c.RST, []int{
+			c.D8(),
+		)
+	case 0xe7:
+		return NewOp("RST 20H", c.RST, []int{
 			16,
 		},
 			0x20,
-		),
-		0xe8: NewOp("ADD SP,r8", c.ADD, []int{
+		)
+	case 0xe8:
+		return NewOp("ADD SP,r8", c.ADD, []int{
 			16,
 		},
 			c.SP,
-			c.D8,
-		),
-		0xe9: NewOp("JP (HL)", c.JP, []int{
+			c.R8(),
+		)
+	case 0xe9:
+		return NewOp("JP (HL)", c.JP, []int{
 			4,
 		},
 			c.MemoryAt(c.HL),
-		),
-		0xea: NewOp("LD (a16),A", c.LD, []int{
+		)
+	case 0xea:
+		return NewOp("LD (a16),A", c.LD, []int{
 			16,
 		},
-			c.MemoryAt(c.D16),
+			c.MemoryAt(c.A16()),
 			c.A,
-		),
-		0xee: NewOp("XOR d8", c.XOR, []int{
+		)
+	case 0xee:
+		return NewOp("XOR d8", c.XOR, []int{
 			8,
 		},
-			c.D8,
-		),
-		0xef: NewOp("RST 28H", c.RST, []int{
+			c.D8(),
+		)
+	case 0xef:
+		return NewOp("RST 28H", c.RST, []int{
 			16,
 		},
 			0x28,
-		),
-		0xf: NewOp("RRCA", c.RRCA, []int{
+		)
+	case 0xf:
+		return NewOp("RRCA", c.RRCA, []int{
 			4,
 		},
-		),
-		0xf0: NewOp("LDH A,(a8)", c.LDH, []int{
+		)
+	case 0xf0:
+		return NewOp("LDH A,(a8)", c.LDH, []int{
 			12,
 		},
 			c.A,
-			c.MemoryAtH(c.D8),
-		),
-		0xf1: NewOp("POP AF", c.POP, []int{
+			c.MemoryAt(c.A8()),
+		)
+	case 0xf1:
+		return NewOp("POP AF", c.POP, []int{
 			12,
 		},
 			c.AF,
-		),
-		0xf2: NewOp("LD A,(C)", c.LD, []int{
+		)
+	case 0xf2:
+		return NewOp("LD A,(C)", c.LD, []int{
 			8,
 		},
 			c.A,
 			c.MemoryAt(c.C),
-		),
-		0xf3: NewOp("DI", c.DI, []int{
+		)
+	case 0xf3:
+		return NewOp("DI", c.DI, []int{
 			4,
 		},
-		),
-		0xf5: NewOp("PUSH AF", c.PUSH, []int{
+		)
+	case 0xf5:
+		return NewOp("PUSH AF", c.PUSH, []int{
 			16,
 		},
 			c.AF,
-		),
-		0xf6: NewOp("OR d8", c.OR, []int{
+		)
+	case 0xf6:
+		return NewOp("OR d8", c.OR, []int{
 			8,
 		},
-			c.D8,
-		),
-		0xf7: NewOp("RST 30H", c.RST, []int{
+			c.D8(),
+		)
+	case 0xf7:
+		return NewOp("RST 30H", c.RST, []int{
 			16,
 		},
 			0x30,
-		),
-		0xf8: NewOp("LDHL SP,r8", c.LDHL, []int{
+		)
+	case 0xf8:
+		return NewOp("LDHL SP,r8", c.LDHL, []int{
 			12,
 		},
 			c.SP,
-			c.D8,
-		),
-		0xf9: NewOp("LD SP,HL", c.LD, []int{
+			c.R8(),
+		)
+	case 0xf9:
+		return NewOp("LD SP,HL", c.LD, []int{
 			8,
 		},
 			c.SP,
 			c.HL,
-		),
-		0xfa: NewOp("LD A,(a16)", c.LD, []int{
+		)
+	case 0xfa:
+		return NewOp("LD A,(a16)", c.LD, []int{
 			16,
 		},
 			c.A,
-			c.MemoryAt(c.D16),
-		),
-		0xfb: NewOp("EI", c.EI, []int{
+			c.MemoryAt(c.A16()),
+		)
+	case 0xfb:
+		return NewOp("EI", c.EI, []int{
 			4,
 		},
-		),
-		0xfe: NewOp("CP d8", c.CP, []int{
+		)
+	case 0xfe:
+		return NewOp("CP d8", c.CP, []int{
 			8,
 		},
-			c.D8,
-		),
-		0xff: NewOp("RST 38H", c.RST, []int{
+			c.D8(),
+		)
+	case 0xff:
+		return NewOp("RST 38H", c.RST, []int{
 			16,
 		},
 			0x38,
-		),
+		)
+	default:
+		panic(fmt.Sprintf("unknown opcode: 0x%X", code))
 	}
 }

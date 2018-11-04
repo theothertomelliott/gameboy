@@ -96,16 +96,11 @@ func (o *Operand) UnmarshalJSON(d []byte) error {
 		}
 	}
 
-	s = strings.Replace(s, "r8", "D8", 1)
-	s = strings.Replace(s, "d8", "D8", 1)
-	s = strings.Replace(s, "a16", "D16", 1)
-	s = strings.Replace(s, "d16", "D16", 1)
-
-	if s == "(a8)" {
-		*o = Operand("c.MemoryAtH(c.D8)")
-		return nil
-	}
-	s = strings.Replace(s, "a8", "A8", 1)
+	s = strings.Replace(s, "r8", "R8()", 1)
+	s = strings.Replace(s, "d8", "D8()", 1)
+	s = strings.Replace(s, "a16", "A16()", 1)
+	s = strings.Replace(s, "d16", "D16()", 1)
+	s = strings.Replace(s, "a8", "A8()", 1)
 
 	if strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
 		s = strings.Replace(s, "(", "", 1)

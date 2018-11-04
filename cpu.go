@@ -2,7 +2,6 @@ package gameboy
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"time"
 )
@@ -31,9 +30,6 @@ type CPU struct {
 	SP *Address
 	PC *Address
 
-	D8  *Direct8
-	D16 *Direct16
-
 	// CB is a placeholder for the prefix
 	CB struct{}
 
@@ -50,7 +46,7 @@ type CPU struct {
 // NewClock creates time.Ticker with suitable speed
 // that can be used with cpu.Run
 func NewClock() *time.Ticker {
-	return time.NewTicker(time.Microsecond)
+	return time.NewTicker(time.Second / (4000000))
 }
 
 // NewCPU creates a CPU in a zeroed initial state.
@@ -75,13 +71,6 @@ func NewCPU(mmu *MMU) *CPU {
 	}
 	cpu.HL = &RegisterPair{
 		Low: cpu.H, High: cpu.L,
-	}
-
-	cpu.D8 = &Direct8{
-		CPU: cpu,
-	}
-	cpu.D16 = &Direct16{
-		CPU: cpu,
 	}
 
 	return cpu
@@ -119,11 +108,24 @@ func (a *Address) Inc(amount int8) {
 }
 
 func (c *CPU) Run(clock <-chan time.Time) {
+	scanTick := time.NewTicker(time.Microsecond)
+	defer scanTick.Stop()
+
+	//c.init()
+
 	for _ = range clock {
 		if c.cycles > 0 {
 			c.cycles--
 			continue
 		}
+
+		// Fake scanlines
+		select {
+		case <-scanTick.C:
+			c.fakeScanlines()
+		default:
+		}
+
 		if c.isHalted {
 			// If interrupts are disabled (DI) then
 			// halt doesn't suspend operation but it does cause
@@ -140,52 +142,122 @@ func (c *CPU) Run(clock <-chan time.Time) {
 	}
 }
 
-// execute handles the next operation
-func (c *CPU) execute() {
-	c.D8.Reset()
-	c.D16.Reset()
+func (c *CPU) init() {
+	c.PC.Write16(0x100)
+	c.AF.Write16(0x01)
+	c.F.Write8(0xB0)
+	c.BC.Write16(0x0013)
+	c.DE.Write16(0x00D8)
+	c.HL.Write16(0x014D)
+	c.SP.Write16(0xFFFE)
 
-	var table map[Opcode]Op
+	c.MMU.Write8(0xFF05, 0x0, 0x0, 0x0)
+	// [$FF05] = $00 ; TIMA
+	// [$FF06] = $00 ; TMA
+	// [$FF07] = $00 ; TAC
+	c.MMU.Write8(0xFF10, 0x80, 0xBF, 0xF3)
+	// [$FF10] = $80 ; NR10
+	// [$FF11] = $BF ; NR11
+	// [$FF12] = $F3 ; NR12
+	c.MMU.Write8(0xFF14, 0xBF)
+	// [$FF14] = $BF ; NR14
+	c.MMU.Write8(0xFF16, 0x3F, 0x00, 0x00, 0xBF)
+	// [$FF16] = $3F ; NR21
+	// [$FF17] = $00 ; NR22
+	// [$FF19] = $BF ; NR24
+	c.MMU.Write8(0xFF1A, 0x7F, 0xFF, 0x9F, 0x0, 0xBF, 0x00, 0xFF)
+	// [$FF1A] = $7F ; NR30
+	// [$FF1B] = $FF ; NR31
+	// [$FF1C] = $9F ; NR32
+	// [$FF1E] = $BF ; NR33
+	// [$FF20] = $FF ; NR41
+	c.MMU.Write8(0xFF21, 0x0, 0x0, 0xBF, 0x77, 0xF3, 0xF1)
+	// [$FF21] = $00 ; NR42
+	// [$FF22] = $00 ; NR43
+	// [$FF23] = $BF ; NR30
+	// [$FF24] = $77 ; NR50
+	// [$FF25] = $F3 ; NR51
+	// [$FF26] = $F1-GB, $F0-SGB ; NR52
+	c.MMU.Write8(0xFF40, 0x91, 0x0, 0x00, 0x00, 0x0, 0x00, 0x00, 0xFC, 0xFF, 0xFF)
+	// [$FF40] = $91 ; LCDC
+	// [$FF42] = $00 ; SCY
+	// [$FF43] = $00 ; SCX
+	// [$FF45] = $00 ; LYC
+	// [$FF47] = $FC ; BGP
+	// [$FF48] = $FF ; OBP0
+	// [$FF49] = $FF ; OBP1
+	c.MMU.Write8(0xFF4A, 0x00, 0x00)
+	// [$FF4A] = $00 ; WY
+	// [$FF4B] = $00 ; WX
+	c.MMU.Write8(0xFFFF, 0x00)
+	// [$FFFF] = $00 ; IE
+}
+
+func (c *CPU) fakeScanlines() {
+	curline := c.MMU.Read8(CURLINE)
+	curline++
+	if curline > 153 {
+		curline = 0
+	}
+	c.MMU.Write8(CURLINE, curline)
+}
+
+func (c *CPU) GetOperation() (Opcode, Op) {
+	var table func(*CPU, Opcode) Op
 	opcode := Opcode(c.MMU.Read8(c.PC.Read16()))
-	var isCB bool
 	switch opcode {
 	case 0xCB:
 		c.PC.Inc(1)
 		opcode = Opcode(c.MMU.Read8(c.PC.Read16()))
-		table = cbprefixedOpcodes(c)
-		isCB = true
+		table = cbprefixedOpcodes
 	default:
-		table = unprefixedOpcodes(c)
+		table = unprefixedOpcodes
 	}
-	op := table[opcode]
+	c.PC.Inc(1)
+	op := table(c, opcode)
+	return opcode, op
+}
+
+// execute handles the next operation
+func (c *CPU) execute() {
+	pcBefore := c.PC.Read16()
+	opcode, op := c.GetOperation()
 
 	defer func() {
 		if r := recover(); r != nil {
-			if isCB {
-				fmt.Print("0xCB ")
-			}
-			fmt.Printf("%#x\n", opcode)
+			fmt.Printf(op.Description)
 			panic(r)
 		}
 	}()
-	c.PC.Inc(1)
 	if op.Instruction != nil {
-		log.Printf(
-			"0x%X:\t%v\t(%v)",
-			c.PC.Read16()-1,
-			op.Description,
-			strings.Join(paramsToString(op.Params...), ", "),
-		)
+		paramsBefore := paramsToString(op.Params...)
 		op.Instruction(op.Params...)
+		if opcode != 0 && false {
+			fmt.Printf(
+				"0x%X:\t%v\t(%v) -> (%v)\n",
+				pcBefore,
+				op.Description,
+				strings.Join(paramsBefore, ", "),
+				strings.Join(paramsToString(op.Params...), ", "),
+			)
+		}
+		c.cycles = op.Cycles[0] - 1
 	}
-	c.cycles = op.Cycles[0] - 1
 }
 
 func paramsToString(params ...Param) []string {
 	var out []string
 	for _, param := range params {
+		if s, isString := param.(fmt.Stringer); isString {
+			out = append(out, s.String())
+			continue
+		}
 		if n, is8Bit := param.(Value8); is8Bit {
 			out = append(out, fmt.Sprintf("0x%X", n.Read8()))
+			continue
+		}
+		if n, is8BitSigned := param.(ValueSigned8); is8BitSigned {
+			out = append(out, fmt.Sprintf("%d", n.ReadSigned8()))
 			continue
 		}
 		if n, is16Bit := param.(Value16); is16Bit {

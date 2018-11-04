@@ -569,8 +569,8 @@ func TestSUB(t *testing.T) {
 		},
 		{
 			name:     "borrow and half borrow (not on boundary)",
-			in:       0x3,
 			a:        0x01,
+			in:       0x3,
 			expected: 0xFE,
 			flags: expectedFlags{
 				z: false,
@@ -908,6 +908,14 @@ func TestDEC(t *testing.T) {
 			expected: 0xEF,
 			flags: expectedFlags{
 				h: false,
+				n: true,
+			},
+		},
+		{
+			name:     "underflow",
+			in:       0x0,
+			expected: 0xFF,
+			flags: expectedFlags{
 				n: true,
 			},
 		},

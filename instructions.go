@@ -131,21 +131,24 @@ func (c *CPU) LDH(params ...Param) {
 //  C - Set or reset according to operation.
 func (c *CPU) LDHL(params ...Param) {
 	sp := params[0].(Value16)
-	n := params[1].(Value8)
+	n := params[1].(ValueSigned8)
 
 	c.F.SetZ(false)
 	c.F.SetN(false)
 
 	vSP := sp.Read16()
-	vN := uint16(n.Read8())
+	vN := int16(n.ReadSigned8())
 
-	halfCarry := vSP&0xFFF+vN&0xFFF > 0xFFF
-	carry := uint32(vSP)+uint32(vN) > 0xFFFF
+	total := int32(vSP) + int32(vN)
+
+	//halfCarry := vSP&0xFFF+vN&0xFFF > 0xFFF
+	halfCarry := false // TODO: Implement this correctly
+	carry := total > 0xFFFF
 
 	c.F.SetH(halfCarry)
 	c.F.SetC(carry)
 
-	c.HL.Write16(vSP + vN)
+	c.HL.Write16(uint16(total))
 }
 
 // PUSH pushes nn onto the stack.
@@ -166,9 +169,9 @@ func (c *CPU) PUSH(params ...Param) {
 // nn = AF,BC,DE,HL
 func (c *CPU) POP(params ...Param) {
 	nn := params[0].(Value16)
+	c.SP.Inc(2)
 	m := c.MemoryAt(c.SP)
 	nn.Write16(m.Read16())
-	c.SP.Inc(2)
 }
 
 // ADD adds n to A
@@ -287,12 +290,12 @@ func (c *CPU) SUB(params ...Param) {
 	n := params[0].(Value8)
 	a := c.A.Read8()
 	in := n.Read8()
+	carry := a < in
 	result := a - in
 	c.F.SetZ(result == 0)
 	c.F.SetN(true)
 
 	halfCarry := (a & 0xF) < (in & 0xF)
-	carry := uint16(a) < uint16(in)
 	c.F.SetH(!halfCarry)
 	c.F.SetC(!carry)
 
@@ -465,6 +468,9 @@ func (c *CPU) DEC(params ...Param) {
 	if n, is8Bit := params[0].(Value8); is8Bit {
 		in := n.Read8()
 		result := in - 1
+		if in == 0 {
+			result = 0xFF
+		}
 		c.F.SetZ(result == 0)
 		c.F.SetN(true)
 
@@ -472,6 +478,7 @@ func (c *CPU) DEC(params ...Param) {
 		c.F.SetH(!halfCarry)
 
 		n.Write8(result)
+		return
 	}
 
 	if n, is16Bit := params[0].(Value16); is16Bit {
@@ -775,8 +782,7 @@ func (c *CPU) SRL(params ...Param) {
 func (c *CPU) BIT(params ...Param) {
 	pos := byte(params[0].(int))
 	value := params[1].(Value8).Read8()
-	mask := (byte(1) << pos)
-	result := (value & mask) > 0
+	result := bitValue(pos, value) > 0
 	c.F.SetZ(result)
 }
 
@@ -832,8 +838,10 @@ func (c *CPU) JPC(params ...Param) {
 // Use with:
 //  n = one byte signed immediate value
 func (c *CPU) JR(params ...Param) {
-	n := params[0].(Value8)
-	c.PC.Write16(c.PC.Read16() + uint16(n.Read8()))
+	n := params[0].(ValueSigned8)
+	current := c.PC.Read16()
+	v := int16(current) + int16(n.ReadSigned8())
+	c.PC.Write16(uint16(v))
 }
 
 // JRC will, if following condition is true, add n to current
@@ -855,9 +863,10 @@ func (c *CPU) JRC(params ...Param) {
 //  nn = two byte immediate value. (LS byte first.)
 func (c *CPU) CALL(params ...Param) {
 	n := params[0].(Value16)
+	dst := n.Read16()
 	c.PC.Inc(1)
 	c.PUSH(c.PC)
-	c.SP.Write16(uint16(n.Read16()))
+	c.PC.Write16(dst)
 }
 
 // CALLC calls address n if following condition is true:
@@ -888,8 +897,8 @@ func (c *CPU) RST(params ...Param) {
 // RET pops two bytes from stack & jumps to that address.
 func (c *CPU) RET(...Param) {
 	m := c.MemoryAt(c.SP)
-	c.PC.Write16(m.Read16())
 	c.SP.Inc(2)
+	c.PC.Write16(m.Read16())
 }
 
 // RETC returns if following condition is true:
