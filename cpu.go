@@ -42,7 +42,7 @@ type CPU struct {
 
 	countStartTime      time.Time
 	opCount             uint64
-	OperationsPerSecond float64
+	OperationsPerSecond uint64
 }
 
 // NewCPU creates a CPU in a zeroed initial state.
@@ -156,7 +156,7 @@ func (c *CPU) CountSpeed() {
 	c.opCount++
 
 	if c.opCount == 1000 {
-		c.OperationsPerSecond = float64(time.Second/time.Since(c.countStartTime)) * float64(c.opCount)
+		c.OperationsPerSecond = uint64(float64(time.Second/time.Since(c.countStartTime)) * float64(c.opCount))
 		c.opCount = 0
 	}
 }
