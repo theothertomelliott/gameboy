@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/jroimartin/gocui"
 	"github.com/theothertomelliott/gameboy"
@@ -14,9 +13,6 @@ type cui struct {
 	cpu     *gameboy.CPU
 	tracer  *gameboy.Tracer
 	control *control
-
-	opCount      uint64
-	opsPerSecond uint64
 }
 
 func (c *cui) Close() {
@@ -42,18 +38,11 @@ func setupCUI(cpu *gameboy.CPU, control *control, tracer *gameboy.Tracer) (*cui,
 
 func startCUI(cui *cui) {
 	go func() {
-		for range time.Tick(time.Second) {
-			cui.opsPerSecond = cui.opCount
-			cui.opCount = 0
-		}
-	}()
-	go func() {
 		var (
 			traceBuffer      = make([]gameboy.TraceMessage, 10000)
 			traceBufferIndex = 0
 		)
 		for trace := range cui.tracer.Event {
-			cui.opCount++
 			traceBuffer[traceBufferIndex] = trace
 			if traceBufferIndex < len(traceBuffer)-1 {
 				traceBufferIndex++
@@ -89,7 +78,7 @@ func startCUI(cui *cui) {
 
 				fmt.Fprintln(v)
 
-				fmt.Fprintf(v, "Ops/Second: %d\n", cui.opsPerSecond)
+				fmt.Fprintf(v, "Ops/Second: %v\n", cui.cpu.OperationsPerSecond)
 
 				return nil
 			})

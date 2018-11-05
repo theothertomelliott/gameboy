@@ -2,6 +2,7 @@ package gameboy
 
 import (
 	"fmt"
+	"time"
 )
 
 // Built while watching the ultimate Game Boy Talk
@@ -38,6 +39,10 @@ type CPU struct {
 	isStopped bool
 
 	tracer *Tracer
+
+	countStartTime      time.Time
+	opCount             uint64
+	OperationsPerSecond float64
 }
 
 // NewCPU creates a CPU in a zeroed initial state.
@@ -144,7 +149,20 @@ func (c *CPU) Init() {
 	// [$FFFF] = $00 ; IE
 }
 
+func (c *CPU) CountSpeed() {
+	if c.opCount == 0 {
+		c.countStartTime = time.Now()
+	}
+	c.opCount++
+
+	if c.opCount == 1000 {
+		c.OperationsPerSecond = float64(time.Second/time.Since(c.countStartTime)) * float64(c.opCount)
+		c.opCount = 0
+	}
+}
+
 func (c *CPU) ExecuteOperation() (string, []int) {
+	c.CountSpeed()
 	pcBefore := c.PC.Read16()
 	defer func() {
 		if r := recover(); r != nil {
