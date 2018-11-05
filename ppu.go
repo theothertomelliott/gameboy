@@ -175,9 +175,9 @@ func (p *PPU) RenderBackground() [][]byte {
 }
 
 func renderTile(tile []byte, palette byte) [][]byte {
-	var out [][]byte
+	var out [][]byte = make([][]byte, 8)
 	for line := 0; line < 8; line++ {
-		var lineData []byte
+		var lineData = make([]byte, 8)
 		high := tile[line*2+1]
 		low := tile[line*2]
 		for bit := byte(0); bit < 8; bit++ {
@@ -185,9 +185,9 @@ func renderTile(tile []byte, palette byte) [][]byte {
 			l := bitValue(7-bit, low)
 			colorValue := l + (h << 1)
 			paletteValue := color(palette, colorValue)
-			lineData = append(lineData, paletteValue)
+			lineData[bit] = paletteValue
 		}
-		out = append(out, lineData)
+		out[line] = lineData
 	}
 	return out
 }
