@@ -2,7 +2,6 @@ package gameboy
 
 import (
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -33,20 +32,17 @@ type CPU struct {
 	// CB is a placeholder for the prefix
 	CB struct{}
 
-	// Cycles remaining to be used for operation
-	cycles int
-
 	// if true, no processing will be completed until an interrupt
 	isHalted bool
 
 	// if true, the CPU and LCD are halted until a button is pressed
 	isStopped bool
 
-	Trace bool
+	tracer *Tracer
 }
 
 // NewCPU creates a CPU in a zeroed initial state.
-func NewCPU(mmu *MMU) *CPU {
+func NewCPU(mmu *MMU, tracer *Tracer) *CPU {
 	cpu := &CPU{
 		MMU: mmu,
 		A:   &Register{}, F: &Register{},
@@ -55,6 +51,7 @@ func NewCPU(mmu *MMU) *CPU {
 		H: &Register{}, L: &Register{},
 
 		SP: &Address{}, PC: &Address{},
+		tracer: tracer,
 	}
 	cpu.AF = &RegisterPair{
 		Low: cpu.F, High: cpu.A,
@@ -174,6 +171,18 @@ func (c *CPU) GetOperation() (Opcode, Op) {
 
 // Step handles the next operation
 func (c *CPU) Step() int {
+
+	if c.isHalted {
+		// If interrupts are disabled (DI) then
+		// halt doesn't suspend operation but it does cause
+		// the program counter to stop counting for one
+		// instruction
+		if c.MMU.Read8(IE) == 0x0 {
+			c.PC.Inc(1)
+		}
+		return 0
+	}
+
 	// Handle interrupts
 	c.vblankInterrupt()
 
@@ -190,16 +199,15 @@ func (c *CPU) Step() int {
 	if op.Instruction != nil {
 		paramsBefore := paramsToString(op.Params...)
 		op.Instruction(op.Params...)
-		if c.Trace && !c.MMU.inROM {
-			log.Printf(
-				"0x%X:  %v\n  B: %v - %v\n  A: %v - %v\n",
-				pcBefore,
-				op.Description,
-				strings.Join(paramsBefore, ", "),
-				flagsBefore,
-				strings.Join(paramsToString(op.Params...), ", "),
-				flagsToString(c.F),
-			)
+		if c.tracer != nil {
+			c.tracer.Log(TraceEvent{
+				PC:           pcBefore,
+				Operation:    op,
+				ParamsBefore: strings.Join(paramsBefore, ", "),
+				ParamsAfter:  strings.Join(paramsToString(op.Params...), ", "),
+				FlagsBefore:  flagsBefore,
+				FlagsAfter:   flagsToString(c.F),
+			})
 		}
 	}
 	return op.Cycles[0]

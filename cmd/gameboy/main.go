@@ -1,8 +1,6 @@
 package main
 
 import (
-	"flag"
-	"io/ioutil"
 	"log"
 	"os"
 	"runtime/pprof"
@@ -12,83 +10,35 @@ import (
 	"github.com/theothertomelliott/gameboy"
 )
 
-var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to `file`")
-
 func main() {
-	flag.Parse()
-	if *cpuprofile != "" {
-		f, err := os.Create(*cpuprofile)
-		if err != nil {
-			log.Fatal("could not create CPU profile: ", err)
-		}
-		if err := pprof.StartCPUProfile(f); err != nil {
-			log.Fatal("could not start CPU profile: ", err)
-		}
-		defer pprof.StopCPUProfile()
+	f, err := os.Create("profile.out")
+	if err != nil {
+		log.Fatal("could not create CPU profile: ", err)
 	}
-	pixelgl.Run(run)
-}
+	if err := pprof.StartCPUProfile(f); err != nil {
+		log.Fatal("could not start CPU profile: ", err)
+	}
+	defer pprof.StopCPUProfile()
 
-func run() {
+	tracer := gameboy.NewTracer()
+	defer tracer.Close()
+
 	mmu := gameboy.NewMMU()
-	cpu := gameboy.NewCPU(mmu)
+	cpu := gameboy.NewCPU(mmu, tracer)
 	ppu := gameboy.NewPPU(mmu)
 
-	setupGraphics()
-	setupMemView()
+	control := NewControl(time.Nanosecond)
+	defer control.Close()
 
-	var (
-		data []byte
-		err  error
-	)
-
-	data, err = ioutil.ReadFile(os.Args[1])
+	cui, err := setupCUI(cpu, control, tracer)
 	if err != nil {
 		panic(err)
 	}
-	mmu.LoadCartridge(data)
+	defer cui.Close()
 
-	if len(os.Args) > 2 {
-		data, err = ioutil.ReadFile(os.Args[2])
-		if err != nil {
-			panic(err)
-		}
-		mmu.LoadROM(data)
-	} else {
-		cpu.Init()
-	}
+	go startCUI(cui)
 
-	//cpu.Trace = true
-
-	clock := time.NewTicker(time.Microsecond / 4)
-	defer clock.Stop()
-
-	go func() {
-		for true {
-			gameboy.Step(cpu, ppu)
-		}
-	}()
-
-	for !win.Closed() {
-		if ppu.LCDEnabled() {
-			bg := ppu.RenderBackground()
-			drawGraphics(
-				bg,
-				ppu.ScrollX(),
-				ppu.ScrollY(),
-			)
-		}
-
-		if !memWin.Closed() {
-			drawMemory(
-				mmu,
-				ppu,
-			)
-			memWin.UpdateInput()
-		}
-		win.UpdateInput()
-
-		_ = <-ppu.ShouldDraw()
-	}
-
+	pixelgl.Run(func() {
+		run(cpu, mmu, ppu, control.C)
+	})
 }
