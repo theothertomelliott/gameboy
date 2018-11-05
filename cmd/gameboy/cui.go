@@ -48,15 +48,26 @@ func startCUI(cui *cui) {
 		}
 	}()
 	go func() {
+		var (
+			traceBuffer      = make([]gameboy.TraceMessage, 10000)
+			traceBufferIndex = 0
+		)
 		for trace := range cui.tracer.Event {
 			cui.opCount++
-			trace := trace
+			traceBuffer[traceBufferIndex] = trace
+			if traceBufferIndex < len(traceBuffer)-1 {
+				traceBufferIndex++
+				continue
+			}
+			traceBufferIndex = 0
 			cui.gui.Update(func(g *gocui.Gui) error {
 				v, err := g.View("trace")
 				if err != nil {
 					return nil
 				}
-				fmt.Fprintf(v, "0x%X: %v\n", trace.Count, trace.Event.Operation.Description)
+				for _, trace := range traceBuffer {
+					fmt.Fprintf(v, "0x%X: %v\n", trace.Count, trace.Event.Description)
+				}
 				return nil
 			})
 			cui.gui.Update(func(g *gocui.Gui) error {

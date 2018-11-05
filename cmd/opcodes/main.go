@@ -34,15 +34,11 @@ var opcodes = `
 package gameboy
 
 {{range $prefixType, $opcodes := . -}}
-func {{$prefixType}}Opcodes(c *CPU, code Opcode) Op {
+func {{$prefixType}}Handler(c *CPU, code Opcode) (string, []int) {
 	switch code {
 		{{- range $opcodes}}
 		case {{.Addr}}:
-			return NewOp("{{.Description}}", c.{{.Mnemonic}}, []int{
-				{{- range .Cycles}}
-					{{.}},
-				{{end -}}
-				},
+			c.{{.Mnemonic}}(
 				{{- if .Operand1}}
 				{{.Operand1}},
 				{{- end -}}
@@ -50,6 +46,11 @@ func {{$prefixType}}Opcodes(c *CPU, code Opcode) Op {
 				{{.Operand2}},
 				{{- end}}
 			)
+			return "{{.Description}}", []int{
+				{{- range .Cycles}}
+					{{.}},
+				{{- end -}}
+				}
 		{{- end}}
 		default:
 			panic(fmt.Sprintf("unknown opcode: 0x%X", code))

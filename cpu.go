@@ -2,7 +2,6 @@ package gameboy
 
 import (
 	"fmt"
-	"strings"
 )
 
 // Built while watching the ultimate Game Boy Talk
@@ -145,7 +144,7 @@ func (c *CPU) Init() {
 	// [$FFFF] = $00 ; IE
 }
 
-func (c *CPU) GetOperation() (Opcode, Op) {
+func (c *CPU) ExecuteOperation() (string, []int) {
 	pcBefore := c.PC.Read16()
 	defer func() {
 		if r := recover(); r != nil {
@@ -154,19 +153,18 @@ func (c *CPU) GetOperation() (Opcode, Op) {
 		}
 	}()
 
-	var table func(*CPU, Opcode) Op
+	var handler func(*CPU, Opcode) (string, []int)
 	opcode := Opcode(c.MMU.Read8(c.PC.Read16()))
 	switch opcode {
 	case 0xCB:
 		c.PC.Inc(1)
 		opcode = Opcode(c.MMU.Read8(c.PC.Read16()))
-		table = cbprefixedOpcodes
+		handler = cbprefixedHandler
 	default:
-		table = unprefixedOpcodes
+		handler = unprefixedHandler
 	}
 	c.PC.Inc(1)
-	op := table(c, opcode)
-	return opcode, op
+	return handler(c, opcode)
 }
 
 // Step handles the next operation
@@ -188,29 +186,24 @@ func (c *CPU) Step() int {
 
 	pcBefore := c.PC.Read16()
 	flagsBefore := flagsToString(c.F)
-	_, op := c.GetOperation()
 
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Printf("0x%X: %v\n", pcBefore, op.Description)
+			fmt.Printf("0x%Xn", pcBefore)
 			panic(r)
 		}
 	}()
-	if op.Instruction != nil {
-		paramsBefore := paramsToString(op.Params...)
-		op.Instruction(op.Params...)
-		if c.tracer != nil {
-			c.tracer.Log(TraceEvent{
-				PC:           pcBefore,
-				Operation:    op,
-				ParamsBefore: strings.Join(paramsBefore, ", "),
-				ParamsAfter:  strings.Join(paramsToString(op.Params...), ", "),
-				FlagsBefore:  flagsBefore,
-				FlagsAfter:   flagsToString(c.F),
-			})
-		}
+	description, cycles := c.ExecuteOperation()
+	if c.tracer != nil {
+		c.tracer.Log(TraceEvent{
+			PC:          pcBefore,
+			Description: description,
+			FlagsBefore: flagsBefore,
+			FlagsAfter:  flagsToString(c.F),
+		})
 	}
-	return op.Cycles[0]
+
+	return cycles[0]
 }
 
 func paramsToString(params ...Param) []string {

@@ -6,7 +6,8 @@ type control struct {
 	C    chan struct{}
 	step chan struct{}
 
-	Paused bool
+	Paused  bool
+	Stopped bool
 
 	timer *time.Ticker
 }
@@ -19,7 +20,7 @@ func NewControl(duration time.Duration) *control {
 	}
 	go func() {
 		for range c.timer.C {
-			if c.Paused {
+			if c.Stopped || c.Paused {
 				continue
 			}
 			c.C <- struct{}{}
@@ -27,6 +28,9 @@ func NewControl(duration time.Duration) *control {
 	}()
 	go func() {
 		for range c.step {
+			if c.Stopped {
+				continue
+			}
 			c.C <- struct{}{}
 		}
 	}()
@@ -38,6 +42,7 @@ func (c *control) Step() {
 }
 
 func (c *control) Close() {
+	c.Stopped = true
 	c.timer.Stop()
 	close(c.step)
 	close(c.C)

@@ -6,12 +6,10 @@ type TraceMessage struct {
 }
 
 type TraceEvent struct {
-	PC           uint16
-	Operation    Op
-	ParamsBefore string
-	ParamsAfter  string
-	FlagsBefore  string
-	FlagsAfter   string
+	PC          uint16
+	Description string
+	FlagsBefore string
+	FlagsAfter  string
 }
 
 type Tracer struct {
