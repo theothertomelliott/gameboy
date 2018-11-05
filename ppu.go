@@ -15,10 +15,6 @@ func NewPPU(mmu *MMU) *PPU {
 	}
 }
 
-func (p *PPU) ShouldDraw() <-chan struct{} {
-	return p.drawChan
-}
-
 func (p *PPU) Step(t int) {
 	p.modeclock += t
 
@@ -54,9 +50,6 @@ func (p *PPU) Step(t int) {
 
 				// Set the VBlank bit in IF to request an interrupt
 				p.MMU.Write8(IF, p.MMU.Read8(IF)|0x1)
-
-				// Draw the screen
-				p.drawChan <- struct{}{}
 			} else {
 				p.mode = 2
 			}

@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	sizeX, sizeY              = 256, 256
+	sizeX, sizeY              = 160, 144
 	screenWidth, screenHeight = float64(1600 / 2), float64(1440 / 2)
 )
 
@@ -38,9 +38,11 @@ func drawGraphics(graphics [][]byte, scrollX, scrollY byte) {
 	imd.Color = pixel.RGB(0, 0, 0)
 	screenWidth := win.Bounds().W()
 	width, height := screenWidth/sizeX, screenHeight/sizeY
-	for x := 0; x < 256; x++ {
-		for y := 0; y < 256; y++ {
-			value := graphics[255-y][x]
+	for x := 0; x < 160; x++ {
+		for y := 0; y < 144; y++ {
+			windowX := byte(x) + scrollX
+			windowY := byte(y) + scrollY
+			value := graphics[windowY][windowX]
 			if value == 0 {
 				continue
 			}
@@ -51,12 +53,6 @@ func drawGraphics(graphics [][]byte, scrollX, scrollY byte) {
 			imd.Rectangle(0)
 		}
 	}
-
-	imd.Push(pixel.V(width*float64(scrollX), height*float64(255-scrollY)))
-	imd.Push(pixel.V(width*float64(scrollX)+160*width, height*float64(255-scrollY)-144*height))
-	colorVal := 0.5
-	imd.Color = pixel.RGB(colorVal, colorVal, colorVal)
-	imd.Rectangle(1)
 
 	imd.Draw(win)
 	win.Update()

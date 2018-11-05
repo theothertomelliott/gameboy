@@ -39,7 +39,7 @@ func run(
 	}
 
 	go func() {
-		for range clock {
+		for true {
 			gameboy.Step(cpu, ppu)
 		}
 	}()
@@ -64,7 +64,6 @@ func run(
 		win.UpdateInput()
 
 		select {
-		case <-ppu.ShouldDraw():
 		case <-time.After(time.Second / 60):
 		}
 	}
