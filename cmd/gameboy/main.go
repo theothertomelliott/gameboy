@@ -48,32 +48,26 @@ func run() {
 	}
 	mmu.LoadCartridge(data)
 
-	// TODO: Unload when done
 	if len(os.Args) > 2 {
 		data, err = ioutil.ReadFile(os.Args[2])
 		if err != nil {
 			panic(err)
 		}
-		cpu.LoadROM(data)
+		mmu.LoadROM(data)
 	} else {
 		cpu.Init()
 	}
 
-	cpu.Trace = true
+	//cpu.Trace = true
 
-	clock := gameboy.NewClock()
-	videoClock := time.NewTicker(time.Second / 60)
-	defer videoClock.Stop()
+	clock := time.NewTicker(time.Microsecond / 4)
 	defer clock.Stop()
 
-	var fakeClock = make(chan time.Time)
 	go func() {
 		for true {
-			fakeClock <- time.Now()
+			gameboy.Step(cpu, ppu)
 		}
 	}()
-
-	go cpu.Run(fakeClock)
 
 	for !win.Closed() {
 		if ppu.LCDEnabled() {
@@ -93,10 +87,8 @@ func run() {
 			memWin.UpdateInput()
 		}
 		win.UpdateInput()
-		_ = <-videoClock.C
-	}
 
-	clock.Stop()
-	videoClock.Stop()
+		_ = <-ppu.ShouldDraw()
+	}
 
 }

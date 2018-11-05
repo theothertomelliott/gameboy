@@ -921,9 +921,7 @@ func (c *CPU) RST(params ...Param) {
 
 // RET pops two bytes from stack & jumps to that address.
 func (c *CPU) RET(...Param) {
-	m := c.MemoryAt(c.SP)
-	c.SP.Inc(2)
-	c.PC.Write16(m.Read16())
+	c.POP(c.PC)
 }
 
 // RETC returns if following condition is true:

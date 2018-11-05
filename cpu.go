@@ -2,8 +2,8 @@ package gameboy
 
 import (
 	"fmt"
+	"log"
 	"strings"
-	"time"
 )
 
 // Built while watching the ultimate Game Boy Talk
@@ -45,12 +45,6 @@ type CPU struct {
 	Trace bool
 }
 
-// NewClock creates time.Ticker with suitable speed
-// that can be used with cpu.Run
-func NewClock() *time.Ticker {
-	return time.NewTicker(time.Second / (4000000))
-}
-
 // NewCPU creates a CPU in a zeroed initial state.
 func NewCPU(mmu *MMU) *CPU {
 	cpu := &CPU{
@@ -78,13 +72,6 @@ func NewCPU(mmu *MMU) *CPU {
 	return cpu
 }
 
-// LoadROM places the provided ROM data into RAM
-func (c *CPU) LoadROM(data []byte) {
-	for index, value := range data {
-		c.MMU.Write8(uint16(index), value)
-	}
-}
-
 type Address struct {
 	value uint16
 }
@@ -106,35 +93,6 @@ func (a *Address) Inc(amount int8) {
 	if a != nil {
 		v := int32(a.value) + int32(amount)
 		a.value = uint16(v)
-	}
-}
-
-func (c *CPU) Run(clock <-chan time.Time) {
-	scanTick := time.NewTicker(time.Millisecond)
-	defer scanTick.Stop()
-
-	for _ = range clock {
-		if c.cycles > 0 {
-			c.cycles--
-			continue
-		}
-
-		// Fake scanlines
-		c.fakeScanlines()
-
-		if c.isHalted {
-			// If interrupts are disabled (DI) then
-			// halt doesn't suspend operation but it does cause
-			// the program counter to stop counting for one
-			// instruction
-			if c.MMU.Read8(IE) == 0x0 {
-				c.PC.Inc(1)
-				c.cycles = 1
-			}
-			continue
-		}
-
-		c.execute()
 	}
 }
 
@@ -214,8 +172,11 @@ func (c *CPU) GetOperation() (Opcode, Op) {
 	return opcode, op
 }
 
-// execute handles the next operation
-func (c *CPU) execute() {
+// Step handles the next operation
+func (c *CPU) Step() int {
+	// Handle interrupts
+	c.vblankInterrupt()
+
 	pcBefore := c.PC.Read16()
 	flagsBefore := flagsToString(c.F)
 	_, op := c.GetOperation()
@@ -229,8 +190,8 @@ func (c *CPU) execute() {
 	if op.Instruction != nil {
 		paramsBefore := paramsToString(op.Params...)
 		op.Instruction(op.Params...)
-		if c.Trace {
-			fmt.Printf(
+		if c.Trace && !c.MMU.inROM {
+			log.Printf(
 				"0x%X:  %v\n  B: %v - %v\n  A: %v - %v\n",
 				pcBefore,
 				op.Description,
@@ -240,8 +201,8 @@ func (c *CPU) execute() {
 				flagsToString(c.F),
 			)
 		}
-		c.cycles = op.Cycles[0] - 1
 	}
+	return op.Cycles[0]
 }
 
 func paramsToString(params ...Param) []string {

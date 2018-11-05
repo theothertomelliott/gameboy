@@ -1,14 +1,13 @@
 package gameboy
 
-import (
-	"sync"
-)
+import "log"
 
 type MMU struct {
 	RAM            []byte
 	CartridgeBanks [][]byte
+	ROM            []byte
 
-	mtx sync.RWMutex
+	inROM bool
 }
 
 type Range struct {
@@ -22,10 +21,16 @@ func NewMMU() *MMU {
 	}
 }
 
+func (m *MMU) LoadROM(data []byte) {
+	m.ROM = nil
+	for _, b := range data {
+		m.ROM = append(m.ROM, b)
+	}
+	m.inROM = true
+}
+
 // LoadCartridge loads a Cartridge ROM into memory
 func (m *MMU) LoadCartridge(data []byte) {
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
 	for index := 0x000; index < len(data); index++ {
 		m.RAM[index] = data[index]
 	}
@@ -61,22 +66,23 @@ func (m *MMU) switchBank(bank byte) {
 
 // ReadRange will return a range in RAM
 func (m *MMU) ReadRange(r Range) []byte {
-	m.mtx.RLock()
-	defer m.mtx.RUnlock()
-
 	return m.RAM[r.Start : r.End+1]
 }
 
 func (m *MMU) Read8(pos uint16) byte {
-	m.mtx.RLock()
-	defer m.mtx.RUnlock()
+	if pos <= 0xFF && m.inROM {
+		return m.ROM[pos]
+	}
 
 	return m.RAM[pos]
 }
 
 func (m *MMU) Write8(pos uint16, values ...byte) {
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
+	// Turn off ROM
+	if pos == 0xFFFF && m.inROM {
+		log.Print("Disabling ROM")
+		m.inROM = false
+	}
 
 	for _, value := range values {
 		// Check for write to ROM area for bank switching
@@ -90,18 +96,17 @@ func (m *MMU) Write8(pos uint16, values ...byte) {
 }
 
 func (m *MMU) Read16(pos uint16) uint16 {
-	m.mtx.RLock()
-	defer m.mtx.RUnlock()
-
+	if pos+1 <= 0xFF && m.inROM {
+		low := uint16(m.ROM[pos])
+		high := uint16(m.ROM[pos+1])
+		return low | high<<8
+	}
 	low := uint16(m.RAM[pos])
 	high := uint16(m.RAM[pos+1])
 	return low | high<<8
 }
 
 func (m *MMU) Write16(pos uint16, value uint16) {
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
-
 	low := byte(value & 0xFF)
 	high := byte(value >> 8)
 	m.RAM[pos] = low
@@ -110,8 +115,5 @@ func (m *MMU) Write16(pos uint16, value uint16) {
 
 // Clear resets the RAM to 0
 func (m *MMU) Clear() {
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
-
 	m.RAM = make([]byte, 0x10000)
 }

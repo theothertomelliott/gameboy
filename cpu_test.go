@@ -2,8 +2,8 @@ package gameboy_test
 
 import (
 	"fmt"
+	"runtime/debug"
 	"testing"
-	"time"
 
 	"github.com/theothertomelliott/gameboy"
 )
@@ -28,7 +28,7 @@ func TestPrograms(t *testing.T) {
 				B: 0x22,
 				C: 0x11,
 			},
-			cycles: 12,
+			cycles: 1,
 		},
 		{
 			name: "0x2 + 0x1",
@@ -41,7 +41,24 @@ func TestPrograms(t *testing.T) {
 				A: 0x3,
 				B: 0x1,
 			},
-			cycles: 8 + 16 + 8,
+			cycles: 3,
+		},
+		{
+			name: "Push and Pop",
+			rom: []byte{
+				0x1, 0x1, 0x2, // LD BC, 0x0201
+				0xC5,          // PUSH BC
+				0x1, 0x3, 0x4, // LD BC, 0x0403
+				0xC5,          // PUSH BC
+				0x1, 0x0, 0x0, // LD BC, 0x0
+				0xC1, // POP BC
+				0xC1, // POP BC
+			},
+			expected: expectation{
+				B: 0x2,
+				C: 0x1,
+			},
+			cycles: 10,
 		},
 		{
 			name: "Copy into memory",
@@ -84,33 +101,26 @@ func TestPrograms(t *testing.T) {
 					0x8: []byte{0x1, 0x2, 0x3, 0x4, 0x5},
 				},
 			},
-			cycles: 1000,
+			cycles: 100,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			fmt.Println(test.name)
-			cpu := gameboy.NewCPU(gameboy.NewMMU())
-			cpu.LoadROM(test.rom)
-
-			var clock = make(chan time.Time)
-			go func() {
-				for i := 0; i < test.cycles; i++ {
-					clock <- time.Now()
+			defer func() {
+				if r := recover(); r != nil {
+					t.Errorf("Panic: %v", r)
+					debug.PrintStack()
 				}
-				close(clock)
 			}()
 
-			var exited = make(chan struct{})
-			go func() {
-				cpu.Run(clock)
-				exited <- struct{}{}
-			}()
+			mmu := gameboy.NewMMU()
+			mmu.LoadROM(append(test.rom, make([]byte, 0xFF00)...))
 
-			select {
-			case <-exited:
-			case <-time.After(time.Second):
-				t.Errorf("Timed out waiting for CPU to exit")
+			cpu := gameboy.NewCPU(mmu)
+			cpu.SP.Write16(0xFFFE) // Set up stack
+
+			for count := 0; count < test.cycles; count++ {
+				cpu.Step()
 			}
 			test.expected.compare(t, cpu)
 		})
@@ -128,6 +138,8 @@ type expectation struct {
 }
 
 func (e expectation) compare(t *testing.T, cpu *gameboy.CPU) {
+	t.Helper()
+
 	e.compareReg(t, "A", cpu.A, e.A)
 	e.compareReg(t, "F", cpu.F, e.F)
 	e.compareReg(t, "B", cpu.B, e.B)
@@ -149,6 +161,7 @@ func (e expectation) compare(t *testing.T, cpu *gameboy.CPU) {
 }
 
 func (e expectation) compareReg(t *testing.T, name string, r *gameboy.Register, expected byte) {
+	t.Helper()
 	if got := r.Read8(); got != expected {
 		t.Errorf("%s: expected 0x%X, got 0x%X", name, expected, got)
 	}

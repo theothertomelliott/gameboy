@@ -1,12 +1,84 @@
 package gameboy
 
 type PPU struct {
-	MMU *MMU
+	MMU       *MMU
+	modeclock int
+	mode      byte
+	line      byte
+	drawChan  chan struct{}
 }
 
 func NewPPU(mmu *MMU) *PPU {
 	return &PPU{
-		MMU: mmu,
+		MMU:      mmu,
+		drawChan: make(chan struct{}),
+	}
+}
+
+func (p *PPU) ShouldDraw() <-chan struct{} {
+	return p.drawChan
+}
+
+func (p *PPU) Step(t int) {
+	p.modeclock += t
+
+	switch p.mode {
+	// OAM read mode, scanline active
+	case 2:
+		if p.modeclock >= 80 {
+			// Enter scanline mode 3
+			p.modeclock = 0
+			p.mode = 3
+		}
+	// VRAM read mode, scanline active
+	// Treat end of mode 3 as end of scanline
+	case 3:
+		if p.modeclock >= 172 {
+			// Enter hblank
+			p.modeclock = 0
+			p.mode = 0
+
+			// Write a scanline to the framebuffer
+			//GPU.renderscan()
+		}
+	// Hblank
+	// After the last hblank, push the screen data to canvas
+	case 0:
+		if p.modeclock >= 204 {
+			p.modeclock = 0
+			p.line++
+
+			if p.line == 143 {
+				// Enter vblank
+				p.mode = 1
+
+				// Set the VBlank bit in IF to request an interrupt
+				p.MMU.Write8(IF, p.MMU.Read8(IF)|0x1)
+
+				// Draw the screen
+				p.drawChan <- struct{}{}
+			} else {
+				p.mode = 2
+			}
+		}
+
+	// Vblank (10 lines)
+	case 1:
+		if p.modeclock >= 456 {
+			p.modeclock = 0
+			p.line++
+
+			if p.line > 153 {
+				// Restart scanning modes
+				p.mode = 2
+				p.line = 0
+			}
+		}
+	}
+
+	if p.MMU.Read8(CURLINE) != p.line {
+		// Write the current line to memory
+		p.MMU.Write8(CURLINE, p.line)
 	}
 }
 
