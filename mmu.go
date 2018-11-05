@@ -26,7 +26,7 @@ func NewMMU() *MMU {
 func (m *MMU) LoadCartridge(data []byte) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
-	for index := 0x100; index < len(data); index++ {
+	for index := 0x000; index < len(data); index++ {
 		m.RAM[index] = data[index]
 	}
 	// // Write cartridge header to RAM

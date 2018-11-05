@@ -42,6 +42,13 @@ func run() {
 		err  error
 	)
 
+	data, err = ioutil.ReadFile(os.Args[1])
+	if err != nil {
+		panic(err)
+	}
+	mmu.LoadCartridge(data)
+
+	// TODO: Unload when done
 	if len(os.Args) > 2 {
 		data, err = ioutil.ReadFile(os.Args[2])
 		if err != nil {
@@ -52,18 +59,21 @@ func run() {
 		cpu.Init()
 	}
 
-	data, err = ioutil.ReadFile(os.Args[1])
-	if err != nil {
-		panic(err)
-	}
-	mmu.LoadCartridge(data)
+	cpu.Trace = true
 
 	clock := gameboy.NewClock()
 	videoClock := time.NewTicker(time.Second / 60)
 	defer videoClock.Stop()
 	defer clock.Stop()
 
-	go cpu.Run(clock.C)
+	var fakeClock = make(chan time.Time)
+	go func() {
+		for true {
+			fakeClock <- time.Now()
+		}
+	}()
+
+	go cpu.Run(fakeClock)
 
 	for !win.Closed() {
 		if ppu.LCDEnabled() {

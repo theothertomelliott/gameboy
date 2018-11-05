@@ -4,8 +4,6 @@ const (
 	// Interrupt flag locations
 	// See: http://bgb.bircd.org/pandocs.htm#interrupts
 
-	VBLANK = 0xFF85
-
 	IE = 0xFFFF // Interrupt Enable (R/W)
 	IF = 0xFF0F // Interrupt Flag (R/W)
 

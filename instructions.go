@@ -940,17 +940,14 @@ func (c *CPU) RETC(params ...Param) {
 // RETI pops two bytes from stack & jumps to that address then
 // enables interrupts.
 func (c *CPU) RETI(...Param) {
-	c.EI()
 	c.RET()
+	c.EI()
 }
 
 // PREFIX is a placeholder for prefixing an opcode
 func (c *CPU) PREFIX(...Param) {}
 
 func (c *CPU) conditionMet(params ...Param) bool {
-	if len(params) == 0 {
-		return false
-	}
 	switch params[0] {
 	case CaseC:
 		return c.F.C()

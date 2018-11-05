@@ -41,6 +41,8 @@ type CPU struct {
 
 	// if true, the CPU and LCD are halted until a button is pressed
 	isStopped bool
+
+	Trace bool
 }
 
 // NewClock creates time.Ticker with suitable speed
@@ -188,27 +190,6 @@ func (c *CPU) Init() {
 	// [$FFFF] = $00 ; IE
 }
 
-var scanLineCycleCount int
-
-func (c *CPU) fakeScanlines() {
-	if scanLineCycleCount < 50 {
-		scanLineCycleCount++
-		return
-	}
-	scanLineCycleCount = 0
-	curline := c.MMU.Read8(CURLINE)
-	curline++
-	if curline > 144 {
-		c.MMU.Write8(VBLANK, 0xFF)
-	} else {
-		c.MMU.Write8(VBLANK, 0x00)
-	}
-	if curline > 153 {
-		curline = 0
-	}
-	c.MMU.Write8(CURLINE, curline)
-}
-
 func (c *CPU) GetOperation() (Opcode, Op) {
 	pcBefore := c.PC.Read16()
 	defer func() {
@@ -248,17 +229,17 @@ func (c *CPU) execute() {
 	if op.Instruction != nil {
 		paramsBefore := paramsToString(op.Params...)
 		op.Instruction(op.Params...)
-		//if opcode != 0 {
-		fmt.Printf(
-			"0x%X:\t%v\t(%v - %v) -> (%v - %v)\n",
-			pcBefore,
-			op.Description,
-			strings.Join(paramsBefore, ", "),
-			flagsBefore,
-			strings.Join(paramsToString(op.Params...), ", "),
-			flagsToString(c.F),
-		)
-		//}
+		if c.Trace {
+			fmt.Printf(
+				"0x%X:  %v\n  B: %v - %v\n  A: %v - %v\n",
+				pcBefore,
+				op.Description,
+				strings.Join(paramsBefore, ", "),
+				flagsBefore,
+				strings.Join(paramsToString(op.Params...), ", "),
+				flagsToString(c.F),
+			)
+		}
 		c.cycles = op.Cycles[0] - 1
 	}
 }
