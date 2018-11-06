@@ -1,10 +1,10 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 	"runtime/pprof"
-	"time"
 
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/theothertomelliott/gameboy"
@@ -27,10 +27,27 @@ func main() {
 	cpu := gameboy.NewCPU(mmu, tracer)
 	ppu := gameboy.NewPPU(mmu)
 
-	control := NewControl(time.Nanosecond)
-	defer control.Close()
+	data, err := ioutil.ReadFile(os.Args[1])
+	if err != nil {
+		panic(err)
+	}
+	mmu.LoadCartridge(data)
 
-	cui, err := setupCUI(cpu, control, tracer)
+	if len(os.Args) > 2 {
+		data, err = ioutil.ReadFile(os.Args[2])
+		if err != nil {
+			panic(err)
+		}
+		mmu.LoadROM(data)
+	} else {
+		cpu.Init()
+	}
+
+	control := gameboy.NewControl(cpu, ppu)
+	control.Start()
+	defer control.Stop()
+
+	cui, err := setupCUI(cpu, tracer, control)
 	if err != nil {
 		panic(err)
 	}
@@ -39,6 +56,6 @@ func main() {
 	go startCUI(cui)
 
 	pixelgl.Run(func() {
-		run(cpu, mmu, ppu, control.C)
+		run(cpu, mmu, ppu)
 	})
 }

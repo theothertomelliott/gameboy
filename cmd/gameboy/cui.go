@@ -12,14 +12,17 @@ type cui struct {
 	gui     *gocui.Gui
 	cpu     *gameboy.CPU
 	tracer  *gameboy.Tracer
-	control *control
+	control *gameboy.Control
+
+	traceBuffer      []gameboy.TraceMessage
+	traceBufferIndex int
 }
 
 func (c *cui) Close() {
 	c.gui.Close()
 }
 
-func setupCUI(cpu *gameboy.CPU, control *control, tracer *gameboy.Tracer) (*cui, error) {
+func setupCUI(cpu *gameboy.CPU, tracer *gameboy.Tracer, control *gameboy.Control) (*cui, error) {
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		return nil, err
@@ -30,58 +33,63 @@ func setupCUI(cpu *gameboy.CPU, control *control, tracer *gameboy.Tracer) (*cui,
 		cpu:     cpu,
 		tracer:  tracer,
 		control: control,
+
+		traceBuffer: make([]gameboy.TraceMessage, 10000),
 	}
 
 	g.SetManagerFunc(cui.layout)
 	return cui, nil
 }
 
+func (c *cui) updateTrace() {
+	c.gui.Update(func(g *gocui.Gui) error {
+		v, err := g.View("trace")
+		if err != nil {
+			return nil
+		}
+		for _, trace := range c.traceBuffer {
+			fmt.Fprintf(v, "0x%X: %v\n", trace.Count, trace.Event.Description)
+		}
+		return nil
+	})
+}
+
+func (c *cui) updateRegisters() {
+	c.gui.Update(func(g *gocui.Gui) error {
+		v, err := g.View("registers")
+		if err != nil {
+			return nil
+		}
+		v.Clear()
+
+		fmt.Fprintf(v, "A: 0x%X, F: 0x%X\n", c.cpu.A.Read8(), c.cpu.F.Read8())
+		fmt.Fprintf(v, "B: 0x%X, C: 0x%X\n", c.cpu.B.Read8(), c.cpu.C.Read8())
+		fmt.Fprintf(v, "D: 0x%X, E: 0x%X\n", c.cpu.D.Read8(), c.cpu.E.Read8())
+		fmt.Fprintf(v, "H: 0x%X, L: 0x%X\n", c.cpu.H.Read8(), c.cpu.L.Read8())
+
+		fmt.Fprintln(v)
+
+		fmt.Fprintf(v, "PC: 0x%X\n", c.cpu.PC.Read16())
+		fmt.Fprintf(v, "SP: 0x%X\n", c.cpu.SP.Read16())
+
+		fmt.Fprintln(v)
+
+		fmt.Fprintf(v, "Ops/Second: %v\n", c.cpu.OperationsPerSecond)
+
+		return nil
+	})
+}
+
 func startCUI(cui *cui) {
 	go func() {
-		var (
-			traceBuffer      = make([]gameboy.TraceMessage, 10000)
-			traceBufferIndex = 0
-		)
 		for trace := range cui.tracer.Event {
-			traceBuffer[traceBufferIndex] = trace
-			if traceBufferIndex < len(traceBuffer)-1 {
-				traceBufferIndex++
+			cui.traceBuffer = append(cui.traceBuffer, trace)
+			if len(cui.traceBuffer) < 1000 {
 				continue
 			}
-			traceBufferIndex = 0
-			cui.gui.Update(func(g *gocui.Gui) error {
-				v, err := g.View("trace")
-				if err != nil {
-					return nil
-				}
-				for _, trace := range traceBuffer {
-					fmt.Fprintf(v, "0x%X: %v\n", trace.Count, trace.Event.Description)
-				}
-				return nil
-			})
-			cui.gui.Update(func(g *gocui.Gui) error {
-				v, err := g.View("registers")
-				if err != nil {
-					return nil
-				}
-				v.Clear()
-
-				fmt.Fprintf(v, "A: 0x%X, F: 0x%X\n", cui.cpu.A.Read8(), cui.cpu.F.Read8())
-				fmt.Fprintf(v, "B: 0x%X, C: 0x%X\n", cui.cpu.B.Read8(), cui.cpu.C.Read8())
-				fmt.Fprintf(v, "D: 0x%X, E: 0x%X\n", cui.cpu.D.Read8(), cui.cpu.E.Read8())
-				fmt.Fprintf(v, "H: 0x%X, L: 0x%X\n", cui.cpu.H.Read8(), cui.cpu.L.Read8())
-
-				fmt.Fprintln(v)
-
-				fmt.Fprintf(v, "PC: 0x%X\n", cui.cpu.PC.Read16())
-				fmt.Fprintf(v, "SP: 0x%X\n", cui.cpu.SP.Read16())
-
-				fmt.Fprintln(v)
-
-				fmt.Fprintf(v, "Ops/Second: %v\n", cui.cpu.OperationsPerSecond)
-
-				return nil
-			})
+			cui.updateTrace()
+			cui.updateRegisters()
+			cui.traceBuffer = nil
 		}
 	}()
 
@@ -103,12 +111,15 @@ func startCUI(cui *cui) {
 }
 
 func (c *cui) pause(g *gocui.Gui, v *gocui.View) error {
-	c.control.Paused = !c.control.Paused
+	c.control.TogglePaused()
 	return nil
 }
 
 func (c *cui) step(g *gocui.Gui, v *gocui.View) error {
 	c.control.Step()
+	c.updateTrace()
+	c.updateRegisters()
+	c.traceBuffer = nil
 	return nil
 }
 
