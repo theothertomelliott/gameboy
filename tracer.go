@@ -8,8 +8,6 @@ type TraceMessage struct {
 type TraceEvent struct {
 	PC          uint16
 	Description string
-	FlagsBefore string
-	FlagsAfter  string
 }
 
 type Tracer struct {

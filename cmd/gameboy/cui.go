@@ -48,7 +48,7 @@ func (c *cui) updateTrace() {
 			return nil
 		}
 		for _, trace := range c.traceBuffer {
-			fmt.Fprintf(v, "0x%X: %v\n", trace.Count, trace.Event.Description)
+			fmt.Fprintf(v, "0x%X: %v\n", trace.Event.PC, trace.Event.Description)
 		}
 		return nil
 	})

@@ -2,6 +2,21 @@ package gameboy
 
 type ConditionalCase int
 
+func (c ConditionalCase) String() string {
+	switch c {
+	case CaseZ:
+		return "Z"
+	case CaseNZ:
+		return "NZ"
+	case CaseC:
+		return "C"
+	case CaseNC:
+		return "NC"
+	default:
+		return "Unknown Conditional"
+	}
+}
+
 const (
 	CaseZ ConditionalCase = iota
 	CaseNZ
@@ -11,22 +26,4 @@ const (
 
 type Param interface{}
 
-type Instruction func(...Param)
-
 type Opcode byte
-
-type Op struct {
-	Instruction Instruction
-	Params      []Param
-	Cycles      []int
-	Description string
-}
-
-func NewOp(description string, i Instruction, c []int, params ...Param) Op {
-	return Op{
-		Instruction: i,
-		Params:      params,
-		Cycles:      c,
-		Description: description,
-	}
-}

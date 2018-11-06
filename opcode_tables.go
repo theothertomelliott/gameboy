@@ -5,1732 +5,3396 @@ import "fmt"
 func cbprefixedHandler(c *CPU, code Opcode) (string, []int) {
 	switch code {
 	case 0x0:
+		o1 := c.B
 		c.RLC(
-			c.B,
+			o1,
 		)
-		return "RLC B", []int{
+		description := fmt.Sprint(
+			"RLC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x1:
+		o1 := c.C
 		c.RLC(
-			c.C,
+			o1,
 		)
-		return "RLC C", []int{
+		description := fmt.Sprint(
+			"RLC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x10:
+		o1 := c.B
 		c.RL(
-			c.B,
+			o1,
 		)
-		return "RL B", []int{
+		description := fmt.Sprint(
+			"RL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x11:
+		o1 := c.C
 		c.RL(
-			c.C,
+			o1,
 		)
-		return "RL C", []int{
+		description := fmt.Sprint(
+			"RL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x12:
+		o1 := c.D
 		c.RL(
-			c.D,
+			o1,
 		)
-		return "RL D", []int{
+		description := fmt.Sprint(
+			"RL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x13:
+		o1 := c.E
 		c.RL(
-			c.E,
+			o1,
 		)
-		return "RL E", []int{
+		description := fmt.Sprint(
+			"RL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x14:
+		o1 := c.H
 		c.RL(
-			c.H,
+			o1,
 		)
-		return "RL H", []int{
+		description := fmt.Sprint(
+			"RL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x15:
+		o1 := c.L
 		c.RL(
-			c.L,
+			o1,
 		)
-		return "RL L", []int{
+		description := fmt.Sprint(
+			"RL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x16:
+		o1 := c.MemoryAt(c.HL)
 		c.RL(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "RL (HL)", []int{
+		description := fmt.Sprint(
+			"RL ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0x17:
+		o1 := c.A
 		c.RL(
-			c.A,
+			o1,
 		)
-		return "RL A", []int{
+		description := fmt.Sprint(
+			"RL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x18:
+		o1 := c.B
 		c.RR(
-			c.B,
+			o1,
 		)
-		return "RR B", []int{
+		description := fmt.Sprint(
+			"RR ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x19:
+		o1 := c.C
 		c.RR(
-			c.C,
+			o1,
 		)
-		return "RR C", []int{
+		description := fmt.Sprint(
+			"RR ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x1a:
+		o1 := c.D
 		c.RR(
-			c.D,
+			o1,
 		)
-		return "RR D", []int{
+		description := fmt.Sprint(
+			"RR ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x1b:
+		o1 := c.E
 		c.RR(
-			c.E,
+			o1,
 		)
-		return "RR E", []int{
+		description := fmt.Sprint(
+			"RR ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x1c:
+		o1 := c.H
 		c.RR(
-			c.H,
+			o1,
 		)
-		return "RR H", []int{
+		description := fmt.Sprint(
+			"RR ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x1d:
+		o1 := c.L
 		c.RR(
-			c.L,
+			o1,
 		)
-		return "RR L", []int{
+		description := fmt.Sprint(
+			"RR ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x1e:
+		o1 := c.MemoryAt(c.HL)
 		c.RR(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "RR (HL)", []int{
+		description := fmt.Sprint(
+			"RR ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0x1f:
+		o1 := c.A
 		c.RR(
-			c.A,
+			o1,
 		)
-		return "RR A", []int{
+		description := fmt.Sprint(
+			"RR ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x2:
+		o1 := c.D
 		c.RLC(
-			c.D,
+			o1,
 		)
-		return "RLC D", []int{
+		description := fmt.Sprint(
+			"RLC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x20:
+		o1 := c.B
 		c.SLA(
-			c.B,
+			o1,
 		)
-		return "SLA B", []int{
+		description := fmt.Sprint(
+			"SLA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x21:
+		o1 := c.C
 		c.SLA(
-			c.C,
+			o1,
 		)
-		return "SLA C", []int{
+		description := fmt.Sprint(
+			"SLA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x22:
+		o1 := c.D
 		c.SLA(
-			c.D,
+			o1,
 		)
-		return "SLA D", []int{
+		description := fmt.Sprint(
+			"SLA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x23:
+		o1 := c.E
 		c.SLA(
-			c.E,
+			o1,
 		)
-		return "SLA E", []int{
+		description := fmt.Sprint(
+			"SLA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x24:
+		o1 := c.H
 		c.SLA(
-			c.H,
+			o1,
 		)
-		return "SLA H", []int{
+		description := fmt.Sprint(
+			"SLA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x25:
+		o1 := c.L
 		c.SLA(
-			c.L,
+			o1,
 		)
-		return "SLA L", []int{
+		description := fmt.Sprint(
+			"SLA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x26:
+		o1 := c.MemoryAt(c.HL)
 		c.SLA(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "SLA (HL)", []int{
+		description := fmt.Sprint(
+			"SLA ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0x27:
+		o1 := c.A
 		c.SLA(
-			c.A,
+			o1,
 		)
-		return "SLA A", []int{
+		description := fmt.Sprint(
+			"SLA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x28:
+		o1 := c.B
 		c.SRA(
-			c.B,
+			o1,
 		)
-		return "SRA B", []int{
+		description := fmt.Sprint(
+			"SRA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x29:
+		o1 := c.C
 		c.SRA(
-			c.C,
+			o1,
 		)
-		return "SRA C", []int{
+		description := fmt.Sprint(
+			"SRA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x2a:
+		o1 := c.D
 		c.SRA(
-			c.D,
+			o1,
 		)
-		return "SRA D", []int{
+		description := fmt.Sprint(
+			"SRA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x2b:
+		o1 := c.E
 		c.SRA(
-			c.E,
+			o1,
 		)
-		return "SRA E", []int{
+		description := fmt.Sprint(
+			"SRA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x2c:
+		o1 := c.H
 		c.SRA(
-			c.H,
+			o1,
 		)
-		return "SRA H", []int{
+		description := fmt.Sprint(
+			"SRA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x2d:
+		o1 := c.L
 		c.SRA(
-			c.L,
+			o1,
 		)
-		return "SRA L", []int{
+		description := fmt.Sprint(
+			"SRA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x2e:
+		o1 := c.MemoryAt(c.HL)
 		c.SRA(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "SRA (HL)", []int{
+		description := fmt.Sprint(
+			"SRA ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0x2f:
+		o1 := c.A
 		c.SRA(
-			c.A,
+			o1,
 		)
-		return "SRA A", []int{
+		description := fmt.Sprint(
+			"SRA ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x3:
+		o1 := c.E
 		c.RLC(
-			c.E,
+			o1,
 		)
-		return "RLC E", []int{
+		description := fmt.Sprint(
+			"RLC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x30:
+		o1 := c.B
 		c.SWAP(
-			c.B,
+			o1,
 		)
-		return "SWAP B", []int{
+		description := fmt.Sprint(
+			"SWAP ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x31:
+		o1 := c.C
 		c.SWAP(
-			c.C,
+			o1,
 		)
-		return "SWAP C", []int{
+		description := fmt.Sprint(
+			"SWAP ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x32:
+		o1 := c.D
 		c.SWAP(
-			c.D,
+			o1,
 		)
-		return "SWAP D", []int{
+		description := fmt.Sprint(
+			"SWAP ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x33:
+		o1 := c.E
 		c.SWAP(
-			c.E,
+			o1,
 		)
-		return "SWAP E", []int{
+		description := fmt.Sprint(
+			"SWAP ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x34:
+		o1 := c.H
 		c.SWAP(
-			c.H,
+			o1,
 		)
-		return "SWAP H", []int{
+		description := fmt.Sprint(
+			"SWAP ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x35:
+		o1 := c.L
 		c.SWAP(
-			c.L,
+			o1,
 		)
-		return "SWAP L", []int{
+		description := fmt.Sprint(
+			"SWAP ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x36:
+		o1 := c.MemoryAt(c.HL)
 		c.SWAP(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "SWAP (HL)", []int{
+		description := fmt.Sprint(
+			"SWAP ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0x37:
+		o1 := c.A
 		c.SWAP(
-			c.A,
+			o1,
 		)
-		return "SWAP A", []int{
+		description := fmt.Sprint(
+			"SWAP ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x38:
+		o1 := c.B
 		c.SRL(
-			c.B,
+			o1,
 		)
-		return "SRL B", []int{
+		description := fmt.Sprint(
+			"SRL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x39:
+		o1 := c.C
 		c.SRL(
-			c.C,
+			o1,
 		)
-		return "SRL C", []int{
+		description := fmt.Sprint(
+			"SRL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x3a:
+		o1 := c.D
 		c.SRL(
-			c.D,
+			o1,
 		)
-		return "SRL D", []int{
+		description := fmt.Sprint(
+			"SRL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x3b:
+		o1 := c.E
 		c.SRL(
-			c.E,
+			o1,
 		)
-		return "SRL E", []int{
+		description := fmt.Sprint(
+			"SRL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x3c:
+		o1 := c.H
 		c.SRL(
-			c.H,
+			o1,
 		)
-		return "SRL H", []int{
+		description := fmt.Sprint(
+			"SRL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x3d:
+		o1 := c.L
 		c.SRL(
-			c.L,
+			o1,
 		)
-		return "SRL L", []int{
+		description := fmt.Sprint(
+			"SRL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x3e:
+		o1 := c.MemoryAt(c.HL)
 		c.SRL(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "SRL (HL)", []int{
+		description := fmt.Sprint(
+			"SRL ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0x3f:
+		o1 := c.A
 		c.SRL(
-			c.A,
+			o1,
 		)
-		return "SRL A", []int{
+		description := fmt.Sprint(
+			"SRL ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x4:
+		o1 := c.H
 		c.RLC(
-			c.H,
+			o1,
 		)
-		return "RLC H", []int{
+		description := fmt.Sprint(
+			"RLC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x40:
+		o1 := 0
+		o2 := c.B
 		c.BIT(
-			0,
-			c.B,
+			o1,
+			o2,
 		)
-		return "BIT 0,B", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x41:
+		o1 := 0
+		o2 := c.C
 		c.BIT(
-			0,
-			c.C,
+			o1,
+			o2,
 		)
-		return "BIT 0,C", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x42:
+		o1 := 0
+		o2 := c.D
 		c.BIT(
-			0,
-			c.D,
+			o1,
+			o2,
 		)
-		return "BIT 0,D", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x43:
+		o1 := 0
+		o2 := c.E
 		c.BIT(
-			0,
-			c.E,
+			o1,
+			o2,
 		)
-		return "BIT 0,E", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x44:
+		o1 := 0
+		o2 := c.H
 		c.BIT(
-			0,
-			c.H,
+			o1,
+			o2,
 		)
-		return "BIT 0,H", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x45:
+		o1 := 0
+		o2 := c.L
 		c.BIT(
-			0,
-			c.L,
+			o1,
+			o2,
 		)
-		return "BIT 0,L", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x46:
+		o1 := 0
+		o2 := c.MemoryAt(c.HL)
 		c.BIT(
-			0,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "BIT 0,(HL)", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0x47:
+		o1 := 0
+		o2 := c.A
 		c.BIT(
-			0,
-			c.A,
+			o1,
+			o2,
 		)
-		return "BIT 0,A", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x48:
+		o1 := 1
+		o2 := c.B
 		c.BIT(
-			1,
-			c.B,
+			o1,
+			o2,
 		)
-		return "BIT 1,B", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x49:
+		o1 := 1
+		o2 := c.C
 		c.BIT(
-			1,
-			c.C,
+			o1,
+			o2,
 		)
-		return "BIT 1,C", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x4a:
+		o1 := 1
+		o2 := c.D
 		c.BIT(
-			1,
-			c.D,
+			o1,
+			o2,
 		)
-		return "BIT 1,D", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x4b:
+		o1 := 1
+		o2 := c.E
 		c.BIT(
-			1,
-			c.E,
+			o1,
+			o2,
 		)
-		return "BIT 1,E", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x4c:
+		o1 := 1
+		o2 := c.H
 		c.BIT(
-			1,
-			c.H,
+			o1,
+			o2,
 		)
-		return "BIT 1,H", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x4d:
+		o1 := 1
+		o2 := c.L
 		c.BIT(
-			1,
-			c.L,
+			o1,
+			o2,
 		)
-		return "BIT 1,L", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x4e:
+		o1 := 1
+		o2 := c.MemoryAt(c.HL)
 		c.BIT(
-			1,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "BIT 1,(HL)", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0x4f:
+		o1 := 1
+		o2 := c.A
 		c.BIT(
-			1,
-			c.A,
+			o1,
+			o2,
 		)
-		return "BIT 1,A", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x5:
+		o1 := c.L
 		c.RLC(
-			c.L,
+			o1,
 		)
-		return "RLC L", []int{
+		description := fmt.Sprint(
+			"RLC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x50:
+		o1 := 2
+		o2 := c.B
 		c.BIT(
-			2,
-			c.B,
+			o1,
+			o2,
 		)
-		return "BIT 2,B", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x51:
+		o1 := 2
+		o2 := c.C
 		c.BIT(
-			2,
-			c.C,
+			o1,
+			o2,
 		)
-		return "BIT 2,C", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x52:
+		o1 := 2
+		o2 := c.D
 		c.BIT(
-			2,
-			c.D,
+			o1,
+			o2,
 		)
-		return "BIT 2,D", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x53:
+		o1 := 2
+		o2 := c.E
 		c.BIT(
-			2,
-			c.E,
+			o1,
+			o2,
 		)
-		return "BIT 2,E", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x54:
+		o1 := 2
+		o2 := c.H
 		c.BIT(
-			2,
-			c.H,
+			o1,
+			o2,
 		)
-		return "BIT 2,H", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x55:
+		o1 := 2
+		o2 := c.L
 		c.BIT(
-			2,
-			c.L,
+			o1,
+			o2,
 		)
-		return "BIT 2,L", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x56:
+		o1 := 2
+		o2 := c.MemoryAt(c.HL)
 		c.BIT(
-			2,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "BIT 2,(HL)", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0x57:
+		o1 := 2
+		o2 := c.A
 		c.BIT(
-			2,
-			c.A,
+			o1,
+			o2,
 		)
-		return "BIT 2,A", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x58:
+		o1 := 3
+		o2 := c.B
 		c.BIT(
-			3,
-			c.B,
+			o1,
+			o2,
 		)
-		return "BIT 3,B", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x59:
+		o1 := 3
+		o2 := c.C
 		c.BIT(
-			3,
-			c.C,
+			o1,
+			o2,
 		)
-		return "BIT 3,C", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x5a:
+		o1 := 3
+		o2 := c.D
 		c.BIT(
-			3,
-			c.D,
+			o1,
+			o2,
 		)
-		return "BIT 3,D", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x5b:
+		o1 := 3
+		o2 := c.E
 		c.BIT(
-			3,
-			c.E,
+			o1,
+			o2,
 		)
-		return "BIT 3,E", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x5c:
+		o1 := 3
+		o2 := c.H
 		c.BIT(
-			3,
-			c.H,
+			o1,
+			o2,
 		)
-		return "BIT 3,H", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x5d:
+		o1 := 3
+		o2 := c.L
 		c.BIT(
-			3,
-			c.L,
+			o1,
+			o2,
 		)
-		return "BIT 3,L", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x5e:
+		o1 := 3
+		o2 := c.MemoryAt(c.HL)
 		c.BIT(
-			3,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "BIT 3,(HL)", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0x5f:
+		o1 := 3
+		o2 := c.A
 		c.BIT(
-			3,
-			c.A,
+			o1,
+			o2,
 		)
-		return "BIT 3,A", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x6:
+		o1 := c.MemoryAt(c.HL)
 		c.RLC(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "RLC (HL)", []int{
+		description := fmt.Sprint(
+			"RLC ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0x60:
+		o1 := 4
+		o2 := c.B
 		c.BIT(
-			4,
-			c.B,
+			o1,
+			o2,
 		)
-		return "BIT 4,B", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x61:
+		o1 := 4
+		o2 := c.C
 		c.BIT(
-			4,
-			c.C,
+			o1,
+			o2,
 		)
-		return "BIT 4,C", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x62:
+		o1 := 4
+		o2 := c.D
 		c.BIT(
-			4,
-			c.D,
+			o1,
+			o2,
 		)
-		return "BIT 4,D", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x63:
+		o1 := 4
+		o2 := c.E
 		c.BIT(
-			4,
-			c.E,
+			o1,
+			o2,
 		)
-		return "BIT 4,E", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x64:
+		o1 := 4
+		o2 := c.H
 		c.BIT(
-			4,
-			c.H,
+			o1,
+			o2,
 		)
-		return "BIT 4,H", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x65:
+		o1 := 4
+		o2 := c.L
 		c.BIT(
-			4,
-			c.L,
+			o1,
+			o2,
 		)
-		return "BIT 4,L", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x66:
+		o1 := 4
+		o2 := c.MemoryAt(c.HL)
 		c.BIT(
-			4,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "BIT 4,(HL)", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0x67:
+		o1 := 4
+		o2 := c.A
 		c.BIT(
-			4,
-			c.A,
+			o1,
+			o2,
 		)
-		return "BIT 4,A", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x68:
+		o1 := 5
+		o2 := c.B
 		c.BIT(
-			5,
-			c.B,
+			o1,
+			o2,
 		)
-		return "BIT 5,B", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x69:
+		o1 := 5
+		o2 := c.C
 		c.BIT(
-			5,
-			c.C,
+			o1,
+			o2,
 		)
-		return "BIT 5,C", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x6a:
+		o1 := 5
+		o2 := c.D
 		c.BIT(
-			5,
-			c.D,
+			o1,
+			o2,
 		)
-		return "BIT 5,D", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x6b:
+		o1 := 5
+		o2 := c.E
 		c.BIT(
-			5,
-			c.E,
+			o1,
+			o2,
 		)
-		return "BIT 5,E", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x6c:
+		o1 := 5
+		o2 := c.H
 		c.BIT(
-			5,
-			c.H,
+			o1,
+			o2,
 		)
-		return "BIT 5,H", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x6d:
+		o1 := 5
+		o2 := c.L
 		c.BIT(
-			5,
-			c.L,
+			o1,
+			o2,
 		)
-		return "BIT 5,L", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x6e:
+		o1 := 5
+		o2 := c.MemoryAt(c.HL)
 		c.BIT(
-			5,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "BIT 5,(HL)", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0x6f:
+		o1 := 5
+		o2 := c.A
 		c.BIT(
-			5,
-			c.A,
+			o1,
+			o2,
 		)
-		return "BIT 5,A", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x7:
+		o1 := c.A
 		c.RLC(
-			c.A,
+			o1,
 		)
-		return "RLC A", []int{
+		description := fmt.Sprint(
+			"RLC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x70:
+		o1 := 6
+		o2 := c.B
 		c.BIT(
-			6,
-			c.B,
+			o1,
+			o2,
 		)
-		return "BIT 6,B", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x71:
+		o1 := 6
+		o2 := c.C
 		c.BIT(
-			6,
-			c.C,
+			o1,
+			o2,
 		)
-		return "BIT 6,C", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x72:
+		o1 := 6
+		o2 := c.D
 		c.BIT(
-			6,
-			c.D,
+			o1,
+			o2,
 		)
-		return "BIT 6,D", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x73:
+		o1 := 6
+		o2 := c.E
 		c.BIT(
-			6,
-			c.E,
+			o1,
+			o2,
 		)
-		return "BIT 6,E", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x74:
+		o1 := 6
+		o2 := c.H
 		c.BIT(
-			6,
-			c.H,
+			o1,
+			o2,
 		)
-		return "BIT 6,H", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x75:
+		o1 := 6
+		o2 := c.L
 		c.BIT(
-			6,
-			c.L,
+			o1,
+			o2,
 		)
-		return "BIT 6,L", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x76:
+		o1 := 6
+		o2 := c.MemoryAt(c.HL)
 		c.BIT(
-			6,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "BIT 6,(HL)", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0x77:
+		o1 := 6
+		o2 := c.A
 		c.BIT(
-			6,
-			c.A,
+			o1,
+			o2,
 		)
-		return "BIT 6,A", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x78:
+		o1 := 7
+		o2 := c.B
 		c.BIT(
-			7,
-			c.B,
+			o1,
+			o2,
 		)
-		return "BIT 7,B", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x79:
+		o1 := 7
+		o2 := c.C
 		c.BIT(
-			7,
-			c.C,
+			o1,
+			o2,
 		)
-		return "BIT 7,C", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x7a:
+		o1 := 7
+		o2 := c.D
 		c.BIT(
-			7,
-			c.D,
+			o1,
+			o2,
 		)
-		return "BIT 7,D", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x7b:
+		o1 := 7
+		o2 := c.E
 		c.BIT(
-			7,
-			c.E,
+			o1,
+			o2,
 		)
-		return "BIT 7,E", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x7c:
+		o1 := 7
+		o2 := c.H
 		c.BIT(
-			7,
-			c.H,
+			o1,
+			o2,
 		)
-		return "BIT 7,H", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x7d:
+		o1 := 7
+		o2 := c.L
 		c.BIT(
-			7,
-			c.L,
+			o1,
+			o2,
 		)
-		return "BIT 7,L", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x7e:
+		o1 := 7
+		o2 := c.MemoryAt(c.HL)
 		c.BIT(
-			7,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "BIT 7,(HL)", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0x7f:
+		o1 := 7
+		o2 := c.A
 		c.BIT(
-			7,
-			c.A,
+			o1,
+			o2,
 		)
-		return "BIT 7,A", []int{
+		description := fmt.Sprint(
+			"BIT ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x8:
+		o1 := c.B
 		c.RRC(
-			c.B,
+			o1,
 		)
-		return "RRC B", []int{
+		description := fmt.Sprint(
+			"RRC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x80:
+		o1 := 0
+		o2 := c.B
 		c.RES(
-			0,
-			c.B,
+			o1,
+			o2,
 		)
-		return "RES 0,B", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x81:
+		o1 := 0
+		o2 := c.C
 		c.RES(
-			0,
-			c.C,
+			o1,
+			o2,
 		)
-		return "RES 0,C", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x82:
+		o1 := 0
+		o2 := c.D
 		c.RES(
-			0,
-			c.D,
+			o1,
+			o2,
 		)
-		return "RES 0,D", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x83:
+		o1 := 0
+		o2 := c.E
 		c.RES(
-			0,
-			c.E,
+			o1,
+			o2,
 		)
-		return "RES 0,E", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x84:
+		o1 := 0
+		o2 := c.H
 		c.RES(
-			0,
-			c.H,
+			o1,
+			o2,
 		)
-		return "RES 0,H", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x85:
+		o1 := 0
+		o2 := c.L
 		c.RES(
-			0,
-			c.L,
+			o1,
+			o2,
 		)
-		return "RES 0,L", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x86:
+		o1 := 0
+		o2 := c.MemoryAt(c.HL)
 		c.RES(
-			0,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "RES 0,(HL)", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0x87:
+		o1 := 0
+		o2 := c.A
 		c.RES(
-			0,
-			c.A,
+			o1,
+			o2,
 		)
-		return "RES 0,A", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x88:
+		o1 := 1
+		o2 := c.B
 		c.RES(
-			1,
-			c.B,
+			o1,
+			o2,
 		)
-		return "RES 1,B", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x89:
+		o1 := 1
+		o2 := c.C
 		c.RES(
-			1,
-			c.C,
+			o1,
+			o2,
 		)
-		return "RES 1,C", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x8a:
+		o1 := 1
+		o2 := c.D
 		c.RES(
-			1,
-			c.D,
+			o1,
+			o2,
 		)
-		return "RES 1,D", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x8b:
+		o1 := 1
+		o2 := c.E
 		c.RES(
-			1,
-			c.E,
+			o1,
+			o2,
 		)
-		return "RES 1,E", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x8c:
+		o1 := 1
+		o2 := c.H
 		c.RES(
-			1,
-			c.H,
+			o1,
+			o2,
 		)
-		return "RES 1,H", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x8d:
+		o1 := 1
+		o2 := c.L
 		c.RES(
-			1,
-			c.L,
+			o1,
+			o2,
 		)
-		return "RES 1,L", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x8e:
+		o1 := 1
+		o2 := c.MemoryAt(c.HL)
 		c.RES(
-			1,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "RES 1,(HL)", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0x8f:
+		o1 := 1
+		o2 := c.A
 		c.RES(
-			1,
-			c.A,
+			o1,
+			o2,
 		)
-		return "RES 1,A", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x9:
+		o1 := c.C
 		c.RRC(
-			c.C,
+			o1,
 		)
-		return "RRC C", []int{
+		description := fmt.Sprint(
+			"RRC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x90:
+		o1 := 2
+		o2 := c.B
 		c.RES(
-			2,
-			c.B,
+			o1,
+			o2,
 		)
-		return "RES 2,B", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x91:
+		o1 := 2
+		o2 := c.C
 		c.RES(
-			2,
-			c.C,
+			o1,
+			o2,
 		)
-		return "RES 2,C", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x92:
+		o1 := 2
+		o2 := c.D
 		c.RES(
-			2,
-			c.D,
+			o1,
+			o2,
 		)
-		return "RES 2,D", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x93:
+		o1 := 2
+		o2 := c.E
 		c.RES(
-			2,
-			c.E,
+			o1,
+			o2,
 		)
-		return "RES 2,E", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x94:
+		o1 := 2
+		o2 := c.H
 		c.RES(
-			2,
-			c.H,
+			o1,
+			o2,
 		)
-		return "RES 2,H", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x95:
+		o1 := 2
+		o2 := c.L
 		c.RES(
-			2,
-			c.L,
+			o1,
+			o2,
 		)
-		return "RES 2,L", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x96:
+		o1 := 2
+		o2 := c.MemoryAt(c.HL)
 		c.RES(
-			2,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "RES 2,(HL)", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0x97:
+		o1 := 2
+		o2 := c.A
 		c.RES(
-			2,
-			c.A,
+			o1,
+			o2,
 		)
-		return "RES 2,A", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x98:
+		o1 := 3
+		o2 := c.B
 		c.RES(
-			3,
-			c.B,
+			o1,
+			o2,
 		)
-		return "RES 3,B", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x99:
+		o1 := 3
+		o2 := c.C
 		c.RES(
-			3,
-			c.C,
+			o1,
+			o2,
 		)
-		return "RES 3,C", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x9a:
+		o1 := 3
+		o2 := c.D
 		c.RES(
-			3,
-			c.D,
+			o1,
+			o2,
 		)
-		return "RES 3,D", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x9b:
+		o1 := 3
+		o2 := c.E
 		c.RES(
-			3,
-			c.E,
+			o1,
+			o2,
 		)
-		return "RES 3,E", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x9c:
+		o1 := 3
+		o2 := c.H
 		c.RES(
-			3,
-			c.H,
+			o1,
+			o2,
 		)
-		return "RES 3,H", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x9d:
+		o1 := 3
+		o2 := c.L
 		c.RES(
-			3,
-			c.L,
+			o1,
+			o2,
 		)
-		return "RES 3,L", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x9e:
+		o1 := 3
+		o2 := c.MemoryAt(c.HL)
 		c.RES(
-			3,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "RES 3,(HL)", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0x9f:
+		o1 := 3
+		o2 := c.A
 		c.RES(
-			3,
-			c.A,
+			o1,
+			o2,
 		)
-		return "RES 3,A", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xa:
+		o1 := c.D
 		c.RRC(
-			c.D,
+			o1,
 		)
-		return "RRC D", []int{
+		description := fmt.Sprint(
+			"RRC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xa0:
+		o1 := 4
+		o2 := c.B
 		c.RES(
-			4,
-			c.B,
+			o1,
+			o2,
 		)
-		return "RES 4,B", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xa1:
+		o1 := 4
+		o2 := c.C
 		c.RES(
-			4,
-			c.C,
+			o1,
+			o2,
 		)
-		return "RES 4,C", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xa2:
+		o1 := 4
+		o2 := c.D
 		c.RES(
-			4,
-			c.D,
+			o1,
+			o2,
 		)
-		return "RES 4,D", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xa3:
+		o1 := 4
+		o2 := c.E
 		c.RES(
-			4,
-			c.E,
+			o1,
+			o2,
 		)
-		return "RES 4,E", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xa4:
+		o1 := 4
+		o2 := c.H
 		c.RES(
-			4,
-			c.H,
+			o1,
+			o2,
 		)
-		return "RES 4,H", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xa5:
+		o1 := 4
+		o2 := c.L
 		c.RES(
-			4,
-			c.L,
+			o1,
+			o2,
 		)
-		return "RES 4,L", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xa6:
+		o1 := 4
+		o2 := c.MemoryAt(c.HL)
 		c.RES(
-			4,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "RES 4,(HL)", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xa7:
+		o1 := 4
+		o2 := c.A
 		c.RES(
-			4,
-			c.A,
+			o1,
+			o2,
 		)
-		return "RES 4,A", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xa8:
+		o1 := 5
+		o2 := c.B
 		c.RES(
-			5,
-			c.B,
+			o1,
+			o2,
 		)
-		return "RES 5,B", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xa9:
+		o1 := 5
+		o2 := c.C
 		c.RES(
-			5,
-			c.C,
+			o1,
+			o2,
 		)
-		return "RES 5,C", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xaa:
+		o1 := 5
+		o2 := c.D
 		c.RES(
-			5,
-			c.D,
+			o1,
+			o2,
 		)
-		return "RES 5,D", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xab:
+		o1 := 5
+		o2 := c.E
 		c.RES(
-			5,
-			c.E,
+			o1,
+			o2,
 		)
-		return "RES 5,E", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xac:
+		o1 := 5
+		o2 := c.H
 		c.RES(
-			5,
-			c.H,
+			o1,
+			o2,
 		)
-		return "RES 5,H", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xad:
+		o1 := 5
+		o2 := c.L
 		c.RES(
-			5,
-			c.L,
+			o1,
+			o2,
 		)
-		return "RES 5,L", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xae:
+		o1 := 5
+		o2 := c.MemoryAt(c.HL)
 		c.RES(
-			5,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "RES 5,(HL)", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xaf:
+		o1 := 5
+		o2 := c.A
 		c.RES(
-			5,
-			c.A,
+			o1,
+			o2,
 		)
-		return "RES 5,A", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xb:
+		o1 := c.E
 		c.RRC(
-			c.E,
+			o1,
 		)
-		return "RRC E", []int{
+		description := fmt.Sprint(
+			"RRC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xb0:
+		o1 := 6
+		o2 := c.B
 		c.RES(
-			6,
-			c.B,
+			o1,
+			o2,
 		)
-		return "RES 6,B", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xb1:
+		o1 := 6
+		o2 := c.C
 		c.RES(
-			6,
-			c.C,
+			o1,
+			o2,
 		)
-		return "RES 6,C", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xb2:
+		o1 := 6
+		o2 := c.D
 		c.RES(
-			6,
-			c.D,
+			o1,
+			o2,
 		)
-		return "RES 6,D", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xb3:
+		o1 := 6
+		o2 := c.E
 		c.RES(
-			6,
-			c.E,
+			o1,
+			o2,
 		)
-		return "RES 6,E", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xb4:
+		o1 := 6
+		o2 := c.H
 		c.RES(
-			6,
-			c.H,
+			o1,
+			o2,
 		)
-		return "RES 6,H", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xb5:
+		o1 := 6
+		o2 := c.L
 		c.RES(
-			6,
-			c.L,
+			o1,
+			o2,
 		)
-		return "RES 6,L", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xb6:
+		o1 := 6
+		o2 := c.MemoryAt(c.HL)
 		c.RES(
-			6,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "RES 6,(HL)", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xb7:
+		o1 := 6
+		o2 := c.A
 		c.RES(
-			6,
-			c.A,
+			o1,
+			o2,
 		)
-		return "RES 6,A", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xb8:
+		o1 := 7
+		o2 := c.B
 		c.RES(
-			7,
-			c.B,
+			o1,
+			o2,
 		)
-		return "RES 7,B", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xb9:
+		o1 := 7
+		o2 := c.C
 		c.RES(
-			7,
-			c.C,
+			o1,
+			o2,
 		)
-		return "RES 7,C", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xba:
+		o1 := 7
+		o2 := c.D
 		c.RES(
-			7,
-			c.D,
+			o1,
+			o2,
 		)
-		return "RES 7,D", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xbb:
+		o1 := 7
+		o2 := c.E
 		c.RES(
-			7,
-			c.E,
+			o1,
+			o2,
 		)
-		return "RES 7,E", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xbc:
+		o1 := 7
+		o2 := c.H
 		c.RES(
-			7,
-			c.H,
+			o1,
+			o2,
 		)
-		return "RES 7,H", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xbd:
+		o1 := 7
+		o2 := c.L
 		c.RES(
-			7,
-			c.L,
+			o1,
+			o2,
 		)
-		return "RES 7,L", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xbe:
+		o1 := 7
+		o2 := c.MemoryAt(c.HL)
 		c.RES(
-			7,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "RES 7,(HL)", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xbf:
+		o1 := 7
+		o2 := c.A
 		c.RES(
-			7,
-			c.A,
+			o1,
+			o2,
 		)
-		return "RES 7,A", []int{
+		description := fmt.Sprint(
+			"RES ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xc:
+		o1 := c.H
 		c.RRC(
-			c.H,
+			o1,
 		)
-		return "RRC H", []int{
+		description := fmt.Sprint(
+			"RRC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xc0:
+		o1 := 0
+		o2 := c.B
 		c.SET(
-			0,
-			c.B,
+			o1,
+			o2,
 		)
-		return "SET 0,B", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xc1:
+		o1 := 0
+		o2 := c.C
 		c.SET(
-			0,
-			c.C,
+			o1,
+			o2,
 		)
-		return "SET 0,C", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xc2:
+		o1 := 0
+		o2 := c.D
 		c.SET(
-			0,
-			c.D,
+			o1,
+			o2,
 		)
-		return "SET 0,D", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xc3:
+		o1 := 0
+		o2 := c.E
 		c.SET(
-			0,
-			c.E,
+			o1,
+			o2,
 		)
-		return "SET 0,E", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xc4:
+		o1 := 0
+		o2 := c.H
 		c.SET(
-			0,
-			c.H,
+			o1,
+			o2,
 		)
-		return "SET 0,H", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xc5:
+		o1 := 0
+		o2 := c.L
 		c.SET(
-			0,
-			c.L,
+			o1,
+			o2,
 		)
-		return "SET 0,L", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xc6:
+		o1 := 0
+		o2 := c.MemoryAt(c.HL)
 		c.SET(
-			0,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "SET 0,(HL)", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xc7:
+		o1 := 0
+		o2 := c.A
 		c.SET(
-			0,
-			c.A,
+			o1,
+			o2,
 		)
-		return "SET 0,A", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xc8:
+		o1 := 1
+		o2 := c.B
 		c.SET(
-			1,
-			c.B,
+			o1,
+			o2,
 		)
-		return "SET 1,B", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xc9:
+		o1 := 1
+		o2 := c.C
 		c.SET(
-			1,
-			c.C,
+			o1,
+			o2,
 		)
-		return "SET 1,C", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xca:
+		o1 := 1
+		o2 := c.D
 		c.SET(
-			1,
-			c.D,
+			o1,
+			o2,
 		)
-		return "SET 1,D", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xcb:
+		o1 := 1
+		o2 := c.E
 		c.SET(
-			1,
-			c.E,
+			o1,
+			o2,
 		)
-		return "SET 1,E", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xcc:
+		o1 := 1
+		o2 := c.H
 		c.SET(
-			1,
-			c.H,
+			o1,
+			o2,
 		)
-		return "SET 1,H", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xcd:
+		o1 := 1
+		o2 := c.L
 		c.SET(
-			1,
-			c.L,
+			o1,
+			o2,
 		)
-		return "SET 1,L", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xce:
+		o1 := 1
+		o2 := c.MemoryAt(c.HL)
 		c.SET(
-			1,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "SET 1,(HL)", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xcf:
+		o1 := 1
+		o2 := c.A
 		c.SET(
-			1,
-			c.A,
+			o1,
+			o2,
 		)
-		return "SET 1,A", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xd:
+		o1 := c.L
 		c.RRC(
-			c.L,
+			o1,
 		)
-		return "RRC L", []int{
+		description := fmt.Sprint(
+			"RRC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xd0:
+		o1 := 2
+		o2 := c.B
 		c.SET(
-			2,
-			c.B,
+			o1,
+			o2,
 		)
-		return "SET 2,B", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xd1:
+		o1 := 2
+		o2 := c.C
 		c.SET(
-			2,
-			c.C,
+			o1,
+			o2,
 		)
-		return "SET 2,C", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xd2:
+		o1 := 2
+		o2 := c.D
 		c.SET(
-			2,
-			c.D,
+			o1,
+			o2,
 		)
-		return "SET 2,D", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xd3:
+		o1 := 2
+		o2 := c.E
 		c.SET(
-			2,
-			c.E,
+			o1,
+			o2,
 		)
-		return "SET 2,E", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xd4:
+		o1 := 2
+		o2 := c.H
 		c.SET(
-			2,
-			c.H,
+			o1,
+			o2,
 		)
-		return "SET 2,H", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xd5:
+		o1 := 2
+		o2 := c.L
 		c.SET(
-			2,
-			c.L,
+			o1,
+			o2,
 		)
-		return "SET 2,L", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xd6:
+		o1 := 2
+		o2 := c.MemoryAt(c.HL)
 		c.SET(
-			2,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "SET 2,(HL)", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xd7:
+		o1 := 2
+		o2 := c.A
 		c.SET(
-			2,
-			c.A,
+			o1,
+			o2,
 		)
-		return "SET 2,A", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xd8:
+		o1 := 3
+		o2 := c.B
 		c.SET(
-			3,
-			c.B,
+			o1,
+			o2,
 		)
-		return "SET 3,B", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xd9:
+		o1 := 3
+		o2 := c.C
 		c.SET(
-			3,
-			c.C,
+			o1,
+			o2,
 		)
-		return "SET 3,C", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xda:
+		o1 := 3
+		o2 := c.D
 		c.SET(
-			3,
-			c.D,
+			o1,
+			o2,
 		)
-		return "SET 3,D", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xdb:
+		o1 := 3
+		o2 := c.E
 		c.SET(
-			3,
-			c.E,
+			o1,
+			o2,
 		)
-		return "SET 3,E", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xdc:
+		o1 := 3
+		o2 := c.H
 		c.SET(
-			3,
-			c.H,
+			o1,
+			o2,
 		)
-		return "SET 3,H", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xdd:
+		o1 := 3
+		o2 := c.L
 		c.SET(
-			3,
-			c.L,
+			o1,
+			o2,
 		)
-		return "SET 3,L", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xde:
+		o1 := 3
+		o2 := c.MemoryAt(c.HL)
 		c.SET(
-			3,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "SET 3,(HL)", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xdf:
+		o1 := 3
+		o2 := c.A
 		c.SET(
-			3,
-			c.A,
+			o1,
+			o2,
 		)
-		return "SET 3,A", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xe:
+		o1 := c.MemoryAt(c.HL)
 		c.RRC(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "RRC (HL)", []int{
+		description := fmt.Sprint(
+			"RRC ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0xe0:
+		o1 := 4
+		o2 := c.B
 		c.SET(
-			4,
-			c.B,
+			o1,
+			o2,
 		)
-		return "SET 4,B", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xe1:
+		o1 := 4
+		o2 := c.C
 		c.SET(
-			4,
-			c.C,
+			o1,
+			o2,
 		)
-		return "SET 4,C", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xe2:
+		o1 := 4
+		o2 := c.D
 		c.SET(
-			4,
-			c.D,
+			o1,
+			o2,
 		)
-		return "SET 4,D", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xe3:
+		o1 := 4
+		o2 := c.E
 		c.SET(
-			4,
-			c.E,
+			o1,
+			o2,
 		)
-		return "SET 4,E", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xe4:
+		o1 := 4
+		o2 := c.H
 		c.SET(
-			4,
-			c.H,
+			o1,
+			o2,
 		)
-		return "SET 4,H", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xe5:
+		o1 := 4
+		o2 := c.L
 		c.SET(
-			4,
-			c.L,
+			o1,
+			o2,
 		)
-		return "SET 4,L", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xe6:
+		o1 := 4
+		o2 := c.MemoryAt(c.HL)
 		c.SET(
-			4,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "SET 4,(HL)", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xe7:
+		o1 := 4
+		o2 := c.A
 		c.SET(
-			4,
-			c.A,
+			o1,
+			o2,
 		)
-		return "SET 4,A", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xe8:
+		o1 := 5
+		o2 := c.B
 		c.SET(
-			5,
-			c.B,
+			o1,
+			o2,
 		)
-		return "SET 5,B", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xe9:
+		o1 := 5
+		o2 := c.C
 		c.SET(
-			5,
-			c.C,
+			o1,
+			o2,
 		)
-		return "SET 5,C", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xea:
+		o1 := 5
+		o2 := c.D
 		c.SET(
-			5,
-			c.D,
+			o1,
+			o2,
 		)
-		return "SET 5,D", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xeb:
+		o1 := 5
+		o2 := c.E
 		c.SET(
-			5,
-			c.E,
+			o1,
+			o2,
 		)
-		return "SET 5,E", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xec:
+		o1 := 5
+		o2 := c.H
 		c.SET(
-			5,
-			c.H,
+			o1,
+			o2,
 		)
-		return "SET 5,H", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xed:
+		o1 := 5
+		o2 := c.L
 		c.SET(
-			5,
-			c.L,
+			o1,
+			o2,
 		)
-		return "SET 5,L", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xee:
+		o1 := 5
+		o2 := c.MemoryAt(c.HL)
 		c.SET(
-			5,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "SET 5,(HL)", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xef:
+		o1 := 5
+		o2 := c.A
 		c.SET(
-			5,
-			c.A,
+			o1,
+			o2,
 		)
-		return "SET 5,A", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xf:
+		o1 := c.A
 		c.RRC(
-			c.A,
+			o1,
 		)
-		return "RRC A", []int{
+		description := fmt.Sprint(
+			"RRC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xf0:
+		o1 := 6
+		o2 := c.B
 		c.SET(
-			6,
-			c.B,
+			o1,
+			o2,
 		)
-		return "SET 6,B", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xf1:
+		o1 := 6
+		o2 := c.C
 		c.SET(
-			6,
-			c.C,
+			o1,
+			o2,
 		)
-		return "SET 6,C", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xf2:
+		o1 := 6
+		o2 := c.D
 		c.SET(
-			6,
-			c.D,
+			o1,
+			o2,
 		)
-		return "SET 6,D", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xf3:
+		o1 := 6
+		o2 := c.E
 		c.SET(
-			6,
-			c.E,
+			o1,
+			o2,
 		)
-		return "SET 6,E", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xf4:
+		o1 := 6
+		o2 := c.H
 		c.SET(
-			6,
-			c.H,
+			o1,
+			o2,
 		)
-		return "SET 6,H", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xf5:
+		o1 := 6
+		o2 := c.L
 		c.SET(
-			6,
-			c.L,
+			o1,
+			o2,
 		)
-		return "SET 6,L", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xf6:
+		o1 := 6
+		o2 := c.MemoryAt(c.HL)
 		c.SET(
-			6,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "SET 6,(HL)", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xf7:
+		o1 := 6
+		o2 := c.A
 		c.SET(
-			6,
-			c.A,
+			o1,
+			o2,
 		)
-		return "SET 6,A", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xf8:
+		o1 := 7
+		o2 := c.B
 		c.SET(
-			7,
-			c.B,
+			o1,
+			o2,
 		)
-		return "SET 7,B", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xf9:
+		o1 := 7
+		o2 := c.C
 		c.SET(
-			7,
-			c.C,
+			o1,
+			o2,
 		)
-		return "SET 7,C", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xfa:
+		o1 := 7
+		o2 := c.D
 		c.SET(
-			7,
-			c.D,
+			o1,
+			o2,
 		)
-		return "SET 7,D", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xfb:
+		o1 := 7
+		o2 := c.E
 		c.SET(
-			7,
-			c.E,
+			o1,
+			o2,
 		)
-		return "SET 7,E", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xfc:
+		o1 := 7
+		o2 := c.H
 		c.SET(
-			7,
-			c.H,
+			o1,
+			o2,
 		)
-		return "SET 7,H", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xfd:
+		o1 := 7
+		o2 := c.L
 		c.SET(
-			7,
-			c.L,
+			o1,
+			o2,
 		)
-		return "SET 7,L", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xfe:
+		o1 := 7
+		o2 := c.MemoryAt(c.HL)
 		c.SET(
-			7,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "SET 7,(HL)", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xff:
+		o1 := 7
+		o2 := c.A
 		c.SET(
-			7,
-			c.A,
+			o1,
+			o2,
 		)
-		return "SET 7,A", []int{
+		description := fmt.Sprint(
+			"SET ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	default:
 		panic(fmt.Sprintf("unknown opcode: 0x%X", code))
@@ -1740,1599 +3404,3070 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int) {
 	switch code {
 	case 0x0:
 		c.NOP()
-		return "NOP", []int{
+		description := fmt.Sprint(
+			"NOP ",
+		)
+		return description, []int{
 			4}
 	case 0x1:
+		o1 := c.BC
+		o2 := c.D16()
 		c.LD(
-			c.BC,
-			c.D16(),
+			o1,
+			o2,
 		)
-		return "LD BC,d16", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			12}
 	case 0x10:
+		o1 := 0
 		c.STOP(
-			0,
+			o1,
 		)
-		return "STOP 0", []int{
+		description := fmt.Sprint(
+			"STOP ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x11:
+		o1 := c.DE
+		o2 := c.D16()
 		c.LD(
-			c.DE,
-			c.D16(),
+			o1,
+			o2,
 		)
-		return "LD DE,d16", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			12}
 	case 0x12:
+		o1 := c.MemoryAt(c.DE)
+		o2 := c.A
 		c.LD(
-			c.MemoryAt(c.DE),
-			c.A,
+			o1,
+			o2,
 		)
-		return "LD (DE),A", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x13:
+		o1 := c.DE
 		c.INC(
-			c.DE,
+			o1,
 		)
-		return "INC DE", []int{
+		description := fmt.Sprint(
+			"INC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x14:
+		o1 := c.D
 		c.INC(
-			c.D,
+			o1,
 		)
-		return "INC D", []int{
+		description := fmt.Sprint(
+			"INC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x15:
+		o1 := c.D
 		c.DEC(
-			c.D,
+			o1,
 		)
-		return "DEC D", []int{
+		description := fmt.Sprint(
+			"DEC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x16:
+		o1 := c.D
+		o2 := c.D8()
 		c.LD(
-			c.D,
-			c.D8(),
+			o1,
+			o2,
 		)
-		return "LD D,d8", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x17:
+		o1 := c.A
 		c.RL(
-			c.A,
+			o1,
 		)
-		return "RLA", []int{
+		description := fmt.Sprint(
+			"RLA ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x18:
+		o1 := c.R8()
 		c.JR(
-			c.R8(),
+			o1,
 		)
-		return "JR r8", []int{
+		description := fmt.Sprint(
+			"JR ",
+			o1,
+		)
+		return description, []int{
 			12}
 	case 0x19:
+		o1 := c.HL
+		o2 := c.DE
 		c.ADD(
-			c.HL,
-			c.DE,
+			o1,
+			o2,
 		)
-		return "ADD HL,DE", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x1a:
+		o1 := c.A
+		o2 := c.MemoryAt(c.DE)
 		c.LD(
-			c.A,
-			c.MemoryAt(c.DE),
+			o1,
+			o2,
 		)
-		return "LD A,(DE)", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x1b:
+		o1 := c.DE
 		c.DEC(
-			c.DE,
+			o1,
 		)
-		return "DEC DE", []int{
+		description := fmt.Sprint(
+			"DEC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x1c:
+		o1 := c.E
 		c.INC(
-			c.E,
+			o1,
 		)
-		return "INC E", []int{
+		description := fmt.Sprint(
+			"INC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x1d:
+		o1 := c.E
 		c.DEC(
-			c.E,
+			o1,
 		)
-		return "DEC E", []int{
+		description := fmt.Sprint(
+			"DEC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x1e:
+		o1 := c.E
+		o2 := c.D8()
 		c.LD(
-			c.E,
-			c.D8(),
+			o1,
+			o2,
 		)
-		return "LD E,d8", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x1f:
 		c.RRA()
-		return "RRA", []int{
+		description := fmt.Sprint(
+			"RRA ",
+		)
+		return description, []int{
 			4}
 	case 0x2:
+		o1 := c.MemoryAt(c.BC)
+		o2 := c.A
 		c.LD(
-			c.MemoryAt(c.BC),
-			c.A,
+			o1,
+			o2,
 		)
-		return "LD (BC),A", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x20:
+		o1 := CaseNZ
+		o2 := c.R8()
 		c.JRC(
-			CaseNZ,
-			c.R8(),
+			o1,
+			o2,
 		)
-		return "JR NZ,r8", []int{
+		description := fmt.Sprint(
+			"JR ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			12,
 			8}
 	case 0x21:
+		o1 := c.HL
+		o2 := c.D16()
 		c.LD(
-			c.HL,
-			c.D16(),
+			o1,
+			o2,
 		)
-		return "LD HL,d16", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			12}
 	case 0x22:
+		o1 := c.MemoryAt(c.HL)
+		o2 := c.A
 		c.LDI(
-			c.MemoryAt(c.HL),
-			c.A,
+			o1,
+			o2,
 		)
-		return "LDI (HL),A", []int{
+		description := fmt.Sprint(
+			"LDI ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x23:
+		o1 := c.HL
 		c.INC(
-			c.HL,
+			o1,
 		)
-		return "INC HL", []int{
+		description := fmt.Sprint(
+			"INC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x24:
+		o1 := c.H
 		c.INC(
-			c.H,
+			o1,
 		)
-		return "INC H", []int{
+		description := fmt.Sprint(
+			"INC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x25:
+		o1 := c.H
 		c.DEC(
-			c.H,
+			o1,
 		)
-		return "DEC H", []int{
+		description := fmt.Sprint(
+			"DEC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x26:
+		o1 := c.H
+		o2 := c.D8()
 		c.LD(
-			c.H,
-			c.D8(),
+			o1,
+			o2,
 		)
-		return "LD H,d8", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x27:
 		c.DAA()
-		return "DAA", []int{
+		description := fmt.Sprint(
+			"DAA ",
+		)
+		return description, []int{
 			4}
 	case 0x28:
+		o1 := CaseZ
+		o2 := c.R8()
 		c.JRC(
-			CaseZ,
-			c.R8(),
+			o1,
+			o2,
 		)
-		return "JR Z,r8", []int{
+		description := fmt.Sprint(
+			"JR ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			12,
 			8}
 	case 0x29:
+		o1 := c.HL
+		o2 := c.HL
 		c.ADD(
-			c.HL,
-			c.HL,
+			o1,
+			o2,
 		)
-		return "ADD HL,HL", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x2a:
+		o1 := c.A
+		o2 := c.MemoryAt(c.HL)
 		c.LDI(
-			c.A,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "LDI A,(HL)", []int{
+		description := fmt.Sprint(
+			"LDI ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x2b:
+		o1 := c.HL
 		c.DEC(
-			c.HL,
+			o1,
 		)
-		return "DEC HL", []int{
+		description := fmt.Sprint(
+			"DEC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x2c:
+		o1 := c.L
 		c.INC(
-			c.L,
+			o1,
 		)
-		return "INC L", []int{
+		description := fmt.Sprint(
+			"INC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x2d:
+		o1 := c.L
 		c.DEC(
-			c.L,
+			o1,
 		)
-		return "DEC L", []int{
+		description := fmt.Sprint(
+			"DEC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x2e:
+		o1 := c.L
+		o2 := c.D8()
 		c.LD(
-			c.L,
-			c.D8(),
+			o1,
+			o2,
 		)
-		return "LD L,d8", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x2f:
 		c.CPL()
-		return "CPL", []int{
+		description := fmt.Sprint(
+			"CPL ",
+		)
+		return description, []int{
 			4}
 	case 0x3:
+		o1 := c.BC
 		c.INC(
-			c.BC,
+			o1,
 		)
-		return "INC BC", []int{
+		description := fmt.Sprint(
+			"INC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x30:
+		o1 := CaseNC
+		o2 := c.R8()
 		c.JRC(
-			CaseNC,
-			c.R8(),
+			o1,
+			o2,
 		)
-		return "JR NC,r8", []int{
+		description := fmt.Sprint(
+			"JR ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			12,
 			8}
 	case 0x31:
+		o1 := c.SP
+		o2 := c.D16()
 		c.LD(
-			c.SP,
-			c.D16(),
+			o1,
+			o2,
 		)
-		return "LD SP,d16", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			12}
 	case 0x32:
+		o1 := c.MemoryAt(c.HL)
+		o2 := c.A
 		c.LDD(
-			c.MemoryAt(c.HL),
-			c.A,
+			o1,
+			o2,
 		)
-		return "LDD (HL),A", []int{
+		description := fmt.Sprint(
+			"LDD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x33:
+		o1 := c.SP
 		c.INC(
-			c.SP,
+			o1,
 		)
-		return "INC SP", []int{
+		description := fmt.Sprint(
+			"INC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x34:
+		o1 := c.MemoryAt(c.HL)
 		c.INC(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "INC (HL)", []int{
+		description := fmt.Sprint(
+			"INC ",
+			o1,
+		)
+		return description, []int{
 			12}
 	case 0x35:
+		o1 := c.MemoryAt(c.HL)
 		c.DEC(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "DEC (HL)", []int{
+		description := fmt.Sprint(
+			"DEC ",
+			o1,
+		)
+		return description, []int{
 			12}
 	case 0x36:
+		o1 := c.MemoryAt(c.HL)
+		o2 := c.D8()
 		c.LD(
-			c.MemoryAt(c.HL),
-			c.D8(),
+			o1,
+			o2,
 		)
-		return "LD (HL),d8", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			12}
 	case 0x37:
 		c.SCF()
-		return "SCF", []int{
+		description := fmt.Sprint(
+			"SCF ",
+		)
+		return description, []int{
 			4}
 	case 0x38:
+		o1 := CaseC
+		o2 := c.R8()
 		c.JRC(
-			CaseC,
-			c.R8(),
+			o1,
+			o2,
 		)
-		return "JR C,r8", []int{
+		description := fmt.Sprint(
+			"JR ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			12,
 			8}
 	case 0x39:
+		o1 := c.HL
+		o2 := c.SP
 		c.ADD(
-			c.HL,
-			c.SP,
+			o1,
+			o2,
 		)
-		return "ADD HL,SP", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x3a:
+		o1 := c.A
+		o2 := c.MemoryAt(c.HL)
 		c.LDD(
-			c.A,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "LDD A,(HL)", []int{
+		description := fmt.Sprint(
+			"LDD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x3b:
+		o1 := c.SP
 		c.DEC(
-			c.SP,
+			o1,
 		)
-		return "DEC SP", []int{
+		description := fmt.Sprint(
+			"DEC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x3c:
+		o1 := c.A
 		c.INC(
-			c.A,
+			o1,
 		)
-		return "INC A", []int{
+		description := fmt.Sprint(
+			"INC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x3d:
+		o1 := c.A
 		c.DEC(
-			c.A,
+			o1,
 		)
-		return "DEC A", []int{
+		description := fmt.Sprint(
+			"DEC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x3e:
+		o1 := c.A
+		o2 := c.D8()
 		c.LD(
-			c.A,
-			c.D8(),
+			o1,
+			o2,
 		)
-		return "LD A,d8", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x3f:
 		c.CCF()
-		return "CCF", []int{
+		description := fmt.Sprint(
+			"CCF ",
+		)
+		return description, []int{
 			4}
 	case 0x4:
+		o1 := c.B
 		c.INC(
-			c.B,
+			o1,
 		)
-		return "INC B", []int{
+		description := fmt.Sprint(
+			"INC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x40:
+		o1 := c.B
+		o2 := c.B
 		c.LD(
-			c.B,
-			c.B,
+			o1,
+			o2,
 		)
-		return "LD B,B", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x41:
+		o1 := c.B
+		o2 := c.C
 		c.LD(
-			c.B,
-			c.C,
+			o1,
+			o2,
 		)
-		return "LD B,C", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x42:
+		o1 := c.B
+		o2 := c.D
 		c.LD(
-			c.B,
-			c.D,
+			o1,
+			o2,
 		)
-		return "LD B,D", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x43:
+		o1 := c.B
+		o2 := c.E
 		c.LD(
-			c.B,
-			c.E,
+			o1,
+			o2,
 		)
-		return "LD B,E", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x44:
+		o1 := c.B
+		o2 := c.H
 		c.LD(
-			c.B,
-			c.H,
+			o1,
+			o2,
 		)
-		return "LD B,H", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x45:
+		o1 := c.B
+		o2 := c.L
 		c.LD(
-			c.B,
-			c.L,
+			o1,
+			o2,
 		)
-		return "LD B,L", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x46:
+		o1 := c.B
+		o2 := c.MemoryAt(c.HL)
 		c.LD(
-			c.B,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "LD B,(HL)", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x47:
+		o1 := c.B
+		o2 := c.A
 		c.LD(
-			c.B,
-			c.A,
+			o1,
+			o2,
 		)
-		return "LD B,A", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x48:
+		o1 := c.C
+		o2 := c.B
 		c.LD(
-			c.C,
-			c.B,
+			o1,
+			o2,
 		)
-		return "LD C,B", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x49:
+		o1 := c.C
+		o2 := c.C
 		c.LD(
-			c.C,
-			c.C,
+			o1,
+			o2,
 		)
-		return "LD C,C", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x4a:
+		o1 := c.C
+		o2 := c.D
 		c.LD(
-			c.C,
-			c.D,
+			o1,
+			o2,
 		)
-		return "LD C,D", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x4b:
+		o1 := c.C
+		o2 := c.E
 		c.LD(
-			c.C,
-			c.E,
+			o1,
+			o2,
 		)
-		return "LD C,E", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x4c:
+		o1 := c.C
+		o2 := c.H
 		c.LD(
-			c.C,
-			c.H,
+			o1,
+			o2,
 		)
-		return "LD C,H", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x4d:
+		o1 := c.C
+		o2 := c.L
 		c.LD(
-			c.C,
-			c.L,
+			o1,
+			o2,
 		)
-		return "LD C,L", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x4e:
+		o1 := c.C
+		o2 := c.MemoryAt(c.HL)
 		c.LD(
-			c.C,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "LD C,(HL)", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x4f:
+		o1 := c.C
+		o2 := c.A
 		c.LD(
-			c.C,
-			c.A,
+			o1,
+			o2,
 		)
-		return "LD C,A", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x5:
+		o1 := c.B
 		c.DEC(
-			c.B,
+			o1,
 		)
-		return "DEC B", []int{
+		description := fmt.Sprint(
+			"DEC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x50:
+		o1 := c.D
+		o2 := c.B
 		c.LD(
-			c.D,
-			c.B,
+			o1,
+			o2,
 		)
-		return "LD D,B", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x51:
+		o1 := c.D
+		o2 := c.C
 		c.LD(
-			c.D,
-			c.C,
+			o1,
+			o2,
 		)
-		return "LD D,C", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x52:
+		o1 := c.D
+		o2 := c.D
 		c.LD(
-			c.D,
-			c.D,
+			o1,
+			o2,
 		)
-		return "LD D,D", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x53:
+		o1 := c.D
+		o2 := c.E
 		c.LD(
-			c.D,
-			c.E,
+			o1,
+			o2,
 		)
-		return "LD D,E", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x54:
+		o1 := c.D
+		o2 := c.H
 		c.LD(
-			c.D,
-			c.H,
+			o1,
+			o2,
 		)
-		return "LD D,H", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x55:
+		o1 := c.D
+		o2 := c.L
 		c.LD(
-			c.D,
-			c.L,
+			o1,
+			o2,
 		)
-		return "LD D,L", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x56:
+		o1 := c.D
+		o2 := c.MemoryAt(c.HL)
 		c.LD(
-			c.D,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "LD D,(HL)", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x57:
+		o1 := c.D
+		o2 := c.A
 		c.LD(
-			c.D,
-			c.A,
+			o1,
+			o2,
 		)
-		return "LD D,A", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x58:
+		o1 := c.E
+		o2 := c.B
 		c.LD(
-			c.E,
-			c.B,
+			o1,
+			o2,
 		)
-		return "LD E,B", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x59:
+		o1 := c.E
+		o2 := c.C
 		c.LD(
-			c.E,
-			c.C,
+			o1,
+			o2,
 		)
-		return "LD E,C", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x5a:
+		o1 := c.E
+		o2 := c.D
 		c.LD(
-			c.E,
-			c.D,
+			o1,
+			o2,
 		)
-		return "LD E,D", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x5b:
+		o1 := c.E
+		o2 := c.E
 		c.LD(
-			c.E,
-			c.E,
+			o1,
+			o2,
 		)
-		return "LD E,E", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x5c:
+		o1 := c.E
+		o2 := c.H
 		c.LD(
-			c.E,
-			c.H,
+			o1,
+			o2,
 		)
-		return "LD E,H", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x5d:
+		o1 := c.E
+		o2 := c.L
 		c.LD(
-			c.E,
-			c.L,
+			o1,
+			o2,
 		)
-		return "LD E,L", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x5e:
+		o1 := c.E
+		o2 := c.MemoryAt(c.HL)
 		c.LD(
-			c.E,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "LD E,(HL)", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x5f:
+		o1 := c.E
+		o2 := c.A
 		c.LD(
-			c.E,
-			c.A,
+			o1,
+			o2,
 		)
-		return "LD E,A", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x6:
+		o1 := c.B
+		o2 := c.D8()
 		c.LD(
-			c.B,
-			c.D8(),
+			o1,
+			o2,
 		)
-		return "LD B,d8", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x60:
+		o1 := c.H
+		o2 := c.B
 		c.LD(
-			c.H,
-			c.B,
+			o1,
+			o2,
 		)
-		return "LD H,B", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x61:
+		o1 := c.H
+		o2 := c.C
 		c.LD(
-			c.H,
-			c.C,
+			o1,
+			o2,
 		)
-		return "LD H,C", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x62:
+		o1 := c.H
+		o2 := c.D
 		c.LD(
-			c.H,
-			c.D,
+			o1,
+			o2,
 		)
-		return "LD H,D", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x63:
+		o1 := c.H
+		o2 := c.E
 		c.LD(
-			c.H,
-			c.E,
+			o1,
+			o2,
 		)
-		return "LD H,E", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x64:
+		o1 := c.H
+		o2 := c.H
 		c.LD(
-			c.H,
-			c.H,
+			o1,
+			o2,
 		)
-		return "LD H,H", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x65:
+		o1 := c.H
+		o2 := c.L
 		c.LD(
-			c.H,
-			c.L,
+			o1,
+			o2,
 		)
-		return "LD H,L", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x66:
+		o1 := c.H
+		o2 := c.MemoryAt(c.HL)
 		c.LD(
-			c.H,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "LD H,(HL)", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x67:
+		o1 := c.H
+		o2 := c.A
 		c.LD(
-			c.H,
-			c.A,
+			o1,
+			o2,
 		)
-		return "LD H,A", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x68:
+		o1 := c.L
+		o2 := c.B
 		c.LD(
-			c.L,
-			c.B,
+			o1,
+			o2,
 		)
-		return "LD L,B", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x69:
+		o1 := c.L
+		o2 := c.C
 		c.LD(
-			c.L,
-			c.C,
+			o1,
+			o2,
 		)
-		return "LD L,C", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x6a:
+		o1 := c.L
+		o2 := c.D
 		c.LD(
-			c.L,
-			c.D,
+			o1,
+			o2,
 		)
-		return "LD L,D", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x6b:
+		o1 := c.L
+		o2 := c.E
 		c.LD(
-			c.L,
-			c.E,
+			o1,
+			o2,
 		)
-		return "LD L,E", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x6c:
+		o1 := c.L
+		o2 := c.H
 		c.LD(
-			c.L,
-			c.H,
+			o1,
+			o2,
 		)
-		return "LD L,H", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x6d:
+		o1 := c.L
+		o2 := c.L
 		c.LD(
-			c.L,
-			c.L,
+			o1,
+			o2,
 		)
-		return "LD L,L", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x6e:
+		o1 := c.L
+		o2 := c.MemoryAt(c.HL)
 		c.LD(
-			c.L,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "LD L,(HL)", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x6f:
+		o1 := c.L
+		o2 := c.A
 		c.LD(
-			c.L,
-			c.A,
+			o1,
+			o2,
 		)
-		return "LD L,A", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x7:
 		c.RLCA()
-		return "RLCA", []int{
+		description := fmt.Sprint(
+			"RLCA ",
+		)
+		return description, []int{
 			4}
 	case 0x70:
+		o1 := c.MemoryAt(c.HL)
+		o2 := c.B
 		c.LD(
-			c.MemoryAt(c.HL),
-			c.B,
+			o1,
+			o2,
 		)
-		return "LD (HL),B", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x71:
+		o1 := c.MemoryAt(c.HL)
+		o2 := c.C
 		c.LD(
-			c.MemoryAt(c.HL),
-			c.C,
+			o1,
+			o2,
 		)
-		return "LD (HL),C", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x72:
+		o1 := c.MemoryAt(c.HL)
+		o2 := c.D
 		c.LD(
-			c.MemoryAt(c.HL),
-			c.D,
+			o1,
+			o2,
 		)
-		return "LD (HL),D", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x73:
+		o1 := c.MemoryAt(c.HL)
+		o2 := c.E
 		c.LD(
-			c.MemoryAt(c.HL),
-			c.E,
+			o1,
+			o2,
 		)
-		return "LD (HL),E", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x74:
+		o1 := c.MemoryAt(c.HL)
+		o2 := c.H
 		c.LD(
-			c.MemoryAt(c.HL),
-			c.H,
+			o1,
+			o2,
 		)
-		return "LD (HL),H", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x75:
+		o1 := c.MemoryAt(c.HL)
+		o2 := c.L
 		c.LD(
-			c.MemoryAt(c.HL),
-			c.L,
+			o1,
+			o2,
 		)
-		return "LD (HL),L", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x76:
 		c.HALT()
-		return "HALT", []int{
+		description := fmt.Sprint(
+			"HALT ",
+		)
+		return description, []int{
 			4}
 	case 0x77:
+		o1 := c.MemoryAt(c.HL)
+		o2 := c.A
 		c.LD(
-			c.MemoryAt(c.HL),
-			c.A,
+			o1,
+			o2,
 		)
-		return "LD (HL),A", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x78:
+		o1 := c.A
+		o2 := c.B
 		c.LD(
-			c.A,
-			c.B,
+			o1,
+			o2,
 		)
-		return "LD A,B", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x79:
+		o1 := c.A
+		o2 := c.C
 		c.LD(
-			c.A,
-			c.C,
+			o1,
+			o2,
 		)
-		return "LD A,C", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x7a:
+		o1 := c.A
+		o2 := c.D
 		c.LD(
-			c.A,
-			c.D,
+			o1,
+			o2,
 		)
-		return "LD A,D", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x7b:
+		o1 := c.A
+		o2 := c.E
 		c.LD(
-			c.A,
-			c.E,
+			o1,
+			o2,
 		)
-		return "LD A,E", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x7c:
+		o1 := c.A
+		o2 := c.H
 		c.LD(
-			c.A,
-			c.H,
+			o1,
+			o2,
 		)
-		return "LD A,H", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x7d:
+		o1 := c.A
+		o2 := c.L
 		c.LD(
-			c.A,
-			c.L,
+			o1,
+			o2,
 		)
-		return "LD A,L", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x7e:
+		o1 := c.A
+		o2 := c.MemoryAt(c.HL)
 		c.LD(
-			c.A,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "LD A,(HL)", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x7f:
+		o1 := c.A
+		o2 := c.A
 		c.LD(
-			c.A,
-			c.A,
+			o1,
+			o2,
 		)
-		return "LD A,A", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x8:
+		o1 := c.MemoryAt(c.A16())
+		o2 := c.SP
 		c.LD(
-			c.MemoryAt(c.A16()),
-			c.SP,
+			o1,
+			o2,
 		)
-		return "LD (a16),SP", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			20}
 	case 0x80:
+		o1 := c.A
+		o2 := c.B
 		c.ADD(
-			c.A,
-			c.B,
+			o1,
+			o2,
 		)
-		return "ADD A,B", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x81:
+		o1 := c.A
+		o2 := c.C
 		c.ADD(
-			c.A,
-			c.C,
+			o1,
+			o2,
 		)
-		return "ADD A,C", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x82:
+		o1 := c.A
+		o2 := c.D
 		c.ADD(
-			c.A,
-			c.D,
+			o1,
+			o2,
 		)
-		return "ADD A,D", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x83:
+		o1 := c.A
+		o2 := c.E
 		c.ADD(
-			c.A,
-			c.E,
+			o1,
+			o2,
 		)
-		return "ADD A,E", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x84:
+		o1 := c.A
+		o2 := c.H
 		c.ADD(
-			c.A,
-			c.H,
+			o1,
+			o2,
 		)
-		return "ADD A,H", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x85:
+		o1 := c.A
+		o2 := c.L
 		c.ADD(
-			c.A,
-			c.L,
+			o1,
+			o2,
 		)
-		return "ADD A,L", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x86:
+		o1 := c.A
+		o2 := c.MemoryAt(c.HL)
 		c.ADD(
-			c.A,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "ADD A,(HL)", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x87:
+		o1 := c.A
+		o2 := c.A
 		c.ADD(
-			c.A,
-			c.A,
+			o1,
+			o2,
 		)
-		return "ADD A,A", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x88:
+		o1 := c.A
+		o2 := c.B
 		c.ADC(
-			c.A,
-			c.B,
+			o1,
+			o2,
 		)
-		return "ADC A,B", []int{
+		description := fmt.Sprint(
+			"ADC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x89:
+		o1 := c.A
+		o2 := c.C
 		c.ADC(
-			c.A,
-			c.C,
+			o1,
+			o2,
 		)
-		return "ADC A,C", []int{
+		description := fmt.Sprint(
+			"ADC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x8a:
+		o1 := c.A
+		o2 := c.D
 		c.ADC(
-			c.A,
-			c.D,
+			o1,
+			o2,
 		)
-		return "ADC A,D", []int{
+		description := fmt.Sprint(
+			"ADC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x8b:
+		o1 := c.A
+		o2 := c.E
 		c.ADC(
-			c.A,
-			c.E,
+			o1,
+			o2,
 		)
-		return "ADC A,E", []int{
+		description := fmt.Sprint(
+			"ADC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x8c:
+		o1 := c.A
+		o2 := c.H
 		c.ADC(
-			c.A,
-			c.H,
+			o1,
+			o2,
 		)
-		return "ADC A,H", []int{
+		description := fmt.Sprint(
+			"ADC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x8d:
+		o1 := c.A
+		o2 := c.L
 		c.ADC(
-			c.A,
-			c.L,
+			o1,
+			o2,
 		)
-		return "ADC A,L", []int{
+		description := fmt.Sprint(
+			"ADC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x8e:
+		o1 := c.A
+		o2 := c.MemoryAt(c.HL)
 		c.ADC(
-			c.A,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "ADC A,(HL)", []int{
+		description := fmt.Sprint(
+			"ADC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x8f:
+		o1 := c.A
+		o2 := c.A
 		c.ADC(
-			c.A,
-			c.A,
+			o1,
+			o2,
 		)
-		return "ADC A,A", []int{
+		description := fmt.Sprint(
+			"ADC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x9:
+		o1 := c.HL
+		o2 := c.BC
 		c.ADD(
-			c.HL,
-			c.BC,
+			o1,
+			o2,
 		)
-		return "ADD HL,BC", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x90:
+		o1 := c.B
 		c.SUB(
-			c.B,
+			o1,
 		)
-		return "SUB B", []int{
+		description := fmt.Sprint(
+			"SUB ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x91:
+		o1 := c.C
 		c.SUB(
-			c.C,
+			o1,
 		)
-		return "SUB C", []int{
+		description := fmt.Sprint(
+			"SUB ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x92:
+		o1 := c.D
 		c.SUB(
-			c.D,
+			o1,
 		)
-		return "SUB D", []int{
+		description := fmt.Sprint(
+			"SUB ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x93:
+		o1 := c.E
 		c.SUB(
-			c.E,
+			o1,
 		)
-		return "SUB E", []int{
+		description := fmt.Sprint(
+			"SUB ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x94:
+		o1 := c.H
 		c.SUB(
-			c.H,
+			o1,
 		)
-		return "SUB H", []int{
+		description := fmt.Sprint(
+			"SUB ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x95:
+		o1 := c.L
 		c.SUB(
-			c.L,
+			o1,
 		)
-		return "SUB L", []int{
+		description := fmt.Sprint(
+			"SUB ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x96:
+		o1 := c.MemoryAt(c.HL)
 		c.SUB(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "SUB (HL)", []int{
+		description := fmt.Sprint(
+			"SUB ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0x97:
+		o1 := c.A
 		c.SUB(
-			c.A,
+			o1,
 		)
-		return "SUB A", []int{
+		description := fmt.Sprint(
+			"SUB ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0x98:
+		o1 := c.A
+		o2 := c.B
 		c.SBC(
-			c.A,
-			c.B,
+			o1,
+			o2,
 		)
-		return "SBC A,B", []int{
+		description := fmt.Sprint(
+			"SBC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x99:
+		o1 := c.A
+		o2 := c.C
 		c.SBC(
-			c.A,
-			c.C,
+			o1,
+			o2,
 		)
-		return "SBC A,C", []int{
+		description := fmt.Sprint(
+			"SBC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x9a:
+		o1 := c.A
+		o2 := c.D
 		c.SBC(
-			c.A,
-			c.D,
+			o1,
+			o2,
 		)
-		return "SBC A,D", []int{
+		description := fmt.Sprint(
+			"SBC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x9b:
+		o1 := c.A
+		o2 := c.E
 		c.SBC(
-			c.A,
-			c.E,
+			o1,
+			o2,
 		)
-		return "SBC A,E", []int{
+		description := fmt.Sprint(
+			"SBC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x9c:
+		o1 := c.A
+		o2 := c.H
 		c.SBC(
-			c.A,
-			c.H,
+			o1,
+			o2,
 		)
-		return "SBC A,H", []int{
+		description := fmt.Sprint(
+			"SBC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x9d:
+		o1 := c.A
+		o2 := c.L
 		c.SBC(
-			c.A,
-			c.L,
+			o1,
+			o2,
 		)
-		return "SBC A,L", []int{
+		description := fmt.Sprint(
+			"SBC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0x9e:
+		o1 := c.A
+		o2 := c.MemoryAt(c.HL)
 		c.SBC(
-			c.A,
-			c.MemoryAt(c.HL),
+			o1,
+			o2,
 		)
-		return "SBC A,(HL)", []int{
+		description := fmt.Sprint(
+			"SBC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0x9f:
+		o1 := c.A
+		o2 := c.A
 		c.SBC(
-			c.A,
-			c.A,
+			o1,
+			o2,
 		)
-		return "SBC A,A", []int{
+		description := fmt.Sprint(
+			"SBC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			4}
 	case 0xa:
+		o1 := c.A
+		o2 := c.MemoryAt(c.BC)
 		c.LD(
-			c.A,
-			c.MemoryAt(c.BC),
+			o1,
+			o2,
 		)
-		return "LD A,(BC)", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xa0:
+		o1 := c.B
 		c.AND(
-			c.B,
+			o1,
 		)
-		return "AND B", []int{
+		description := fmt.Sprint(
+			"AND ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xa1:
+		o1 := c.C
 		c.AND(
-			c.C,
+			o1,
 		)
-		return "AND C", []int{
+		description := fmt.Sprint(
+			"AND ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xa2:
+		o1 := c.D
 		c.AND(
-			c.D,
+			o1,
 		)
-		return "AND D", []int{
+		description := fmt.Sprint(
+			"AND ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xa3:
+		o1 := c.E
 		c.AND(
-			c.E,
+			o1,
 		)
-		return "AND E", []int{
+		description := fmt.Sprint(
+			"AND ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xa4:
+		o1 := c.H
 		c.AND(
-			c.H,
+			o1,
 		)
-		return "AND H", []int{
+		description := fmt.Sprint(
+			"AND ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xa5:
+		o1 := c.L
 		c.AND(
-			c.L,
+			o1,
 		)
-		return "AND L", []int{
+		description := fmt.Sprint(
+			"AND ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xa6:
+		o1 := c.MemoryAt(c.HL)
 		c.AND(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "AND (HL)", []int{
+		description := fmt.Sprint(
+			"AND ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xa7:
+		o1 := c.A
 		c.AND(
-			c.A,
+			o1,
 		)
-		return "AND A", []int{
+		description := fmt.Sprint(
+			"AND ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xa8:
+		o1 := c.B
 		c.XOR(
-			c.B,
+			o1,
 		)
-		return "XOR B", []int{
+		description := fmt.Sprint(
+			"XOR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xa9:
+		o1 := c.C
 		c.XOR(
-			c.C,
+			o1,
 		)
-		return "XOR C", []int{
+		description := fmt.Sprint(
+			"XOR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xaa:
+		o1 := c.D
 		c.XOR(
-			c.D,
+			o1,
 		)
-		return "XOR D", []int{
+		description := fmt.Sprint(
+			"XOR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xab:
+		o1 := c.E
 		c.XOR(
-			c.E,
+			o1,
 		)
-		return "XOR E", []int{
+		description := fmt.Sprint(
+			"XOR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xac:
+		o1 := c.H
 		c.XOR(
-			c.H,
+			o1,
 		)
-		return "XOR H", []int{
+		description := fmt.Sprint(
+			"XOR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xad:
+		o1 := c.L
 		c.XOR(
-			c.L,
+			o1,
 		)
-		return "XOR L", []int{
+		description := fmt.Sprint(
+			"XOR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xae:
+		o1 := c.MemoryAt(c.HL)
 		c.XOR(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "XOR (HL)", []int{
+		description := fmt.Sprint(
+			"XOR ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xaf:
+		o1 := c.A
 		c.XOR(
-			c.A,
+			o1,
 		)
-		return "XOR A", []int{
+		description := fmt.Sprint(
+			"XOR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xb:
+		o1 := c.BC
 		c.DEC(
-			c.BC,
+			o1,
 		)
-		return "DEC BC", []int{
+		description := fmt.Sprint(
+			"DEC ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xb0:
+		o1 := c.B
 		c.OR(
-			c.B,
+			o1,
 		)
-		return "OR B", []int{
+		description := fmt.Sprint(
+			"OR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xb1:
+		o1 := c.C
 		c.OR(
-			c.C,
+			o1,
 		)
-		return "OR C", []int{
+		description := fmt.Sprint(
+			"OR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xb2:
+		o1 := c.D
 		c.OR(
-			c.D,
+			o1,
 		)
-		return "OR D", []int{
+		description := fmt.Sprint(
+			"OR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xb3:
+		o1 := c.E
 		c.OR(
-			c.E,
+			o1,
 		)
-		return "OR E", []int{
+		description := fmt.Sprint(
+			"OR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xb4:
+		o1 := c.H
 		c.OR(
-			c.H,
+			o1,
 		)
-		return "OR H", []int{
+		description := fmt.Sprint(
+			"OR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xb5:
+		o1 := c.L
 		c.OR(
-			c.L,
+			o1,
 		)
-		return "OR L", []int{
+		description := fmt.Sprint(
+			"OR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xb6:
+		o1 := c.MemoryAt(c.HL)
 		c.OR(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "OR (HL)", []int{
+		description := fmt.Sprint(
+			"OR ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xb7:
+		o1 := c.A
 		c.OR(
-			c.A,
+			o1,
 		)
-		return "OR A", []int{
+		description := fmt.Sprint(
+			"OR ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xb8:
+		o1 := c.B
 		c.CP(
-			c.B,
+			o1,
 		)
-		return "CP B", []int{
+		description := fmt.Sprint(
+			"CP ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xb9:
+		o1 := c.C
 		c.CP(
-			c.C,
+			o1,
 		)
-		return "CP C", []int{
+		description := fmt.Sprint(
+			"CP ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xba:
+		o1 := c.D
 		c.CP(
-			c.D,
+			o1,
 		)
-		return "CP D", []int{
+		description := fmt.Sprint(
+			"CP ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xbb:
+		o1 := c.E
 		c.CP(
-			c.E,
+			o1,
 		)
-		return "CP E", []int{
+		description := fmt.Sprint(
+			"CP ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xbc:
+		o1 := c.H
 		c.CP(
-			c.H,
+			o1,
 		)
-		return "CP H", []int{
+		description := fmt.Sprint(
+			"CP ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xbd:
+		o1 := c.L
 		c.CP(
-			c.L,
+			o1,
 		)
-		return "CP L", []int{
+		description := fmt.Sprint(
+			"CP ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xbe:
+		o1 := c.MemoryAt(c.HL)
 		c.CP(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "CP (HL)", []int{
+		description := fmt.Sprint(
+			"CP ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xbf:
+		o1 := c.A
 		c.CP(
-			c.A,
+			o1,
 		)
-		return "CP A", []int{
+		description := fmt.Sprint(
+			"CP ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xc:
+		o1 := c.C
 		c.INC(
-			c.C,
+			o1,
 		)
-		return "INC C", []int{
+		description := fmt.Sprint(
+			"INC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xc0:
+		o1 := CaseNZ
 		c.RETC(
-			CaseNZ,
+			o1,
 		)
-		return "RET NZ", []int{
+		description := fmt.Sprint(
+			"RET ",
+			o1,
+		)
+		return description, []int{
 			20,
 			8}
 	case 0xc1:
+		o1 := c.BC
 		c.POP(
-			c.BC,
+			o1,
 		)
-		return "POP BC", []int{
+		description := fmt.Sprint(
+			"POP ",
+			o1,
+		)
+		return description, []int{
 			12}
 	case 0xc2:
+		o1 := CaseNZ
+		o2 := c.A16()
 		c.JPC(
-			CaseNZ,
-			c.A16(),
+			o1,
+			o2,
 		)
-		return "JP NZ,a16", []int{
+		description := fmt.Sprint(
+			"JP ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16,
 			12}
 	case 0xc3:
+		o1 := c.A16()
 		c.JP(
-			c.A16(),
+			o1,
 		)
-		return "JP a16", []int{
+		description := fmt.Sprint(
+			"JP ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0xc4:
+		o1 := CaseNZ
+		o2 := c.A16()
 		c.CALLC(
-			CaseNZ,
-			c.A16(),
+			o1,
+			o2,
 		)
-		return "CALL NZ,a16", []int{
+		description := fmt.Sprint(
+			"CALL ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			24,
 			12}
 	case 0xc5:
+		o1 := c.BC
 		c.PUSH(
-			c.BC,
+			o1,
 		)
-		return "PUSH BC", []int{
+		description := fmt.Sprint(
+			"PUSH ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0xc6:
+		o1 := c.A
+		o2 := c.D8()
 		c.ADD(
-			c.A,
-			c.D8(),
+			o1,
+			o2,
 		)
-		return "ADD A,d8", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xc7:
+		o1 := 0x00
 		c.RST(
-			0x00,
+			o1,
 		)
-		return "RST 00H", []int{
+		description := fmt.Sprint(
+			"RST ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0xc8:
+		o1 := CaseZ
 		c.RETC(
-			CaseZ,
+			o1,
 		)
-		return "RET Z", []int{
+		description := fmt.Sprint(
+			"RET ",
+			o1,
+		)
+		return description, []int{
 			20,
 			8}
 	case 0xc9:
 		c.RET()
-		return "RET", []int{
+		description := fmt.Sprint(
+			"RET ",
+		)
+		return description, []int{
 			16}
 	case 0xca:
+		o1 := CaseZ
+		o2 := c.A16()
 		c.JPC(
-			CaseZ,
-			c.A16(),
+			o1,
+			o2,
 		)
-		return "JP Z,a16", []int{
+		description := fmt.Sprint(
+			"JP ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16,
 			12}
 	case 0xcb:
+		o1 := c.CB
 		c.PREFIX(
-			c.CB,
+			o1,
 		)
-		return "PREFIX CB", []int{
+		description := fmt.Sprint(
+			"PREFIX ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xcc:
+		o1 := CaseZ
+		o2 := c.A16()
 		c.CALLC(
-			CaseZ,
-			c.A16(),
+			o1,
+			o2,
 		)
-		return "CALL Z,a16", []int{
+		description := fmt.Sprint(
+			"CALL ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			24,
 			12}
 	case 0xcd:
+		o1 := c.A16()
 		c.CALL(
-			c.A16(),
+			o1,
 		)
-		return "CALL a16", []int{
+		description := fmt.Sprint(
+			"CALL ",
+			o1,
+		)
+		return description, []int{
 			24}
 	case 0xce:
+		o1 := c.A
+		o2 := c.D8()
 		c.ADC(
-			c.A,
-			c.D8(),
+			o1,
+			o2,
 		)
-		return "ADC A,d8", []int{
+		description := fmt.Sprint(
+			"ADC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xcf:
+		o1 := 0x08
 		c.RST(
-			0x08,
+			o1,
 		)
-		return "RST 08H", []int{
+		description := fmt.Sprint(
+			"RST ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0xd:
+		o1 := c.C
 		c.DEC(
-			c.C,
+			o1,
 		)
-		return "DEC C", []int{
+		description := fmt.Sprint(
+			"DEC ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xd0:
+		o1 := CaseNC
 		c.RETC(
-			CaseNC,
+			o1,
 		)
-		return "RET NC", []int{
+		description := fmt.Sprint(
+			"RET ",
+			o1,
+		)
+		return description, []int{
 			20,
 			8}
 	case 0xd1:
+		o1 := c.DE
 		c.POP(
-			c.DE,
+			o1,
 		)
-		return "POP DE", []int{
+		description := fmt.Sprint(
+			"POP ",
+			o1,
+		)
+		return description, []int{
 			12}
 	case 0xd2:
+		o1 := CaseNC
+		o2 := c.A16()
 		c.JPC(
-			CaseNC,
-			c.A16(),
+			o1,
+			o2,
 		)
-		return "JP NC,a16", []int{
+		description := fmt.Sprint(
+			"JP ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16,
 			12}
 	case 0xd4:
+		o1 := CaseNC
+		o2 := c.A16()
 		c.CALLC(
-			CaseNC,
-			c.A16(),
+			o1,
+			o2,
 		)
-		return "CALL NC,a16", []int{
+		description := fmt.Sprint(
+			"CALL ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			24,
 			12}
 	case 0xd5:
+		o1 := c.DE
 		c.PUSH(
-			c.DE,
+			o1,
 		)
-		return "PUSH DE", []int{
+		description := fmt.Sprint(
+			"PUSH ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0xd6:
+		o1 := c.D8()
 		c.SUB(
-			c.D8(),
+			o1,
 		)
-		return "SUB d8", []int{
+		description := fmt.Sprint(
+			"SUB ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xd7:
+		o1 := 0x10
 		c.RST(
-			0x10,
+			o1,
 		)
-		return "RST 10H", []int{
+		description := fmt.Sprint(
+			"RST ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0xd8:
+		o1 := CaseC
 		c.RETC(
-			CaseC,
+			o1,
 		)
-		return "RET C", []int{
+		description := fmt.Sprint(
+			"RET ",
+			o1,
+		)
+		return description, []int{
 			20,
 			8}
 	case 0xd9:
 		c.RETI()
-		return "RETI", []int{
+		description := fmt.Sprint(
+			"RETI ",
+		)
+		return description, []int{
 			16}
 	case 0xda:
+		o1 := CaseC
+		o2 := c.A16()
 		c.JPC(
-			CaseC,
-			c.A16(),
+			o1,
+			o2,
 		)
-		return "JP C,a16", []int{
+		description := fmt.Sprint(
+			"JP ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16,
 			12}
 	case 0xdc:
+		o1 := CaseC
+		o2 := c.A16()
 		c.CALLC(
-			CaseC,
-			c.A16(),
+			o1,
+			o2,
 		)
-		return "CALL C,a16", []int{
+		description := fmt.Sprint(
+			"CALL ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			24,
 			12}
 	case 0xde:
+		o1 := c.A
+		o2 := c.D8()
 		c.SBC(
-			c.A,
-			c.D8(),
+			o1,
+			o2,
 		)
-		return "SBC A,d8", []int{
+		description := fmt.Sprint(
+			"SBC ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xdf:
+		o1 := 0x18
 		c.RST(
-			0x18,
+			o1,
 		)
-		return "RST 18H", []int{
+		description := fmt.Sprint(
+			"RST ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0xe:
+		o1 := c.C
+		o2 := c.D8()
 		c.LD(
-			c.C,
-			c.D8(),
+			o1,
+			o2,
 		)
-		return "LD C,d8", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xe0:
+		o1 := c.MemoryAt(c.A8())
+		o2 := c.A
 		c.LDH(
-			c.MemoryAt(c.A8()),
-			c.A,
+			o1,
+			o2,
 		)
-		return "LDH (a8),A", []int{
+		description := fmt.Sprint(
+			"LDH ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			12}
 	case 0xe1:
+		o1 := c.HL
 		c.POP(
-			c.HL,
+			o1,
 		)
-		return "POP HL", []int{
+		description := fmt.Sprint(
+			"POP ",
+			o1,
+		)
+		return description, []int{
 			12}
 	case 0xe2:
+		o1 := c.MemoryAt(c.C)
+		o2 := c.A
 		c.LD(
-			c.MemoryAt(c.C),
-			c.A,
+			o1,
+			o2,
 		)
-		return "LD (C),A", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xe5:
+		o1 := c.HL
 		c.PUSH(
-			c.HL,
+			o1,
 		)
-		return "PUSH HL", []int{
+		description := fmt.Sprint(
+			"PUSH ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0xe6:
+		o1 := c.D8()
 		c.AND(
-			c.D8(),
+			o1,
 		)
-		return "AND d8", []int{
+		description := fmt.Sprint(
+			"AND ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xe7:
+		o1 := 0x20
 		c.RST(
-			0x20,
+			o1,
 		)
-		return "RST 20H", []int{
+		description := fmt.Sprint(
+			"RST ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0xe8:
+		o1 := c.SP
+		o2 := c.R8()
 		c.ADD(
-			c.SP,
-			c.R8(),
+			o1,
+			o2,
 		)
-		return "ADD SP,r8", []int{
+		description := fmt.Sprint(
+			"ADD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xe9:
+		o1 := c.MemoryAt(c.HL)
 		c.JP(
-			c.MemoryAt(c.HL),
+			o1,
 		)
-		return "JP (HL)", []int{
+		description := fmt.Sprint(
+			"JP ",
+			o1,
+		)
+		return description, []int{
 			4}
 	case 0xea:
+		o1 := c.MemoryAt(c.A16())
+		o2 := c.A
 		c.LD(
-			c.MemoryAt(c.A16()),
-			c.A,
+			o1,
+			o2,
 		)
-		return "LD (a16),A", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xee:
+		o1 := c.D8()
 		c.XOR(
-			c.D8(),
+			o1,
 		)
-		return "XOR d8", []int{
+		description := fmt.Sprint(
+			"XOR ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xef:
+		o1 := 0x28
 		c.RST(
-			0x28,
+			o1,
 		)
-		return "RST 28H", []int{
+		description := fmt.Sprint(
+			"RST ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0xf:
 		c.RRCA()
-		return "RRCA", []int{
+		description := fmt.Sprint(
+			"RRCA ",
+		)
+		return description, []int{
 			4}
 	case 0xf0:
+		o1 := c.A
+		o2 := c.MemoryAt(c.A8())
 		c.LDH(
-			c.A,
-			c.MemoryAt(c.A8()),
+			o1,
+			o2,
 		)
-		return "LDH A,(a8)", []int{
+		description := fmt.Sprint(
+			"LDH ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			12}
 	case 0xf1:
+		o1 := c.AF
 		c.POP(
-			c.AF,
+			o1,
 		)
-		return "POP AF", []int{
+		description := fmt.Sprint(
+			"POP ",
+			o1,
+		)
+		return description, []int{
 			12}
 	case 0xf2:
+		o1 := c.A
+		o2 := c.MemoryAt(c.C)
 		c.LD(
-			c.A,
-			c.MemoryAt(c.C),
+			o1,
+			o2,
 		)
-		return "LD A,(C)", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xf3:
 		c.DI()
-		return "DI", []int{
+		description := fmt.Sprint(
+			"DI ",
+		)
+		return description, []int{
 			4}
 	case 0xf5:
+		o1 := c.AF
 		c.PUSH(
-			c.AF,
+			o1,
 		)
-		return "PUSH AF", []int{
+		description := fmt.Sprint(
+			"PUSH ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0xf6:
+		o1 := c.D8()
 		c.OR(
-			c.D8(),
+			o1,
 		)
-		return "OR d8", []int{
+		description := fmt.Sprint(
+			"OR ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xf7:
+		o1 := 0x30
 		c.RST(
-			0x30,
+			o1,
 		)
-		return "RST 30H", []int{
+		description := fmt.Sprint(
+			"RST ",
+			o1,
+		)
+		return description, []int{
 			16}
 	case 0xf8:
+		o1 := c.SP
+		o2 := c.R8()
 		c.LDHL(
-			c.SP,
-			c.R8(),
+			o1,
+			o2,
 		)
-		return "LDHL SP,r8", []int{
+		description := fmt.Sprint(
+			"LDHL ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			12}
 	case 0xf9:
+		o1 := c.SP
+		o2 := c.HL
 		c.LD(
-			c.SP,
-			c.HL,
+			o1,
+			o2,
 		)
-		return "LD SP,HL", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			8}
 	case 0xfa:
+		o1 := c.A
+		o2 := c.MemoryAt(c.A16())
 		c.LD(
-			c.A,
-			c.MemoryAt(c.A16()),
+			o1,
+			o2,
 		)
-		return "LD A,(a16)", []int{
+		description := fmt.Sprint(
+			"LD ",
+			o1,
+			o2,
+		)
+		return description, []int{
 			16}
 	case 0xfb:
 		c.EI()
-		return "EI", []int{
+		description := fmt.Sprint(
+			"EI ",
+		)
+		return description, []int{
 			4}
 	case 0xfe:
+		o1 := c.D8()
 		c.CP(
-			c.D8(),
+			o1,
 		)
-		return "CP d8", []int{
+		description := fmt.Sprint(
+			"CP ",
+			o1,
+		)
+		return description, []int{
 			8}
 	case 0xff:
+		o1 := 0x38
 		c.RST(
-			0x38,
+			o1,
 		)
-		return "RST 38H", []int{
+		description := fmt.Sprint(
+			"RST ",
+			o1,
+		)
+		return description, []int{
 			16}
 	default:
 		panic(fmt.Sprintf("unknown opcode: 0x%X", code))

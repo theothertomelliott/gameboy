@@ -37,15 +37,7 @@ func (o *Opcode) UnmarshalJSON(d []byte) error {
 	if err != nil {
 		return err
 	}
-	if textValues.Operand1 == "" {
-		o.Description = textValues.Mnemonic
-	}
-	if textValues.Operand1 != "" {
-		o.Description = fmt.Sprintf("%v %v", textValues.Mnemonic, textValues.Operand1)
-	}
-	if textValues.Operand2 != "" {
-		o.Description = fmt.Sprintf("%v %v,%v", textValues.Mnemonic, textValues.Operand1, textValues.Operand2)
-	}
+	o.Description = textValues.Mnemonic
 
 	// Set RLA to RL A
 	if o.Mnemonic == "RLA" {

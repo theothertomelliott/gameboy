@@ -2,24 +2,13 @@ package main
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
-	"runtime/pprof"
 
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/theothertomelliott/gameboy"
 )
 
 func main() {
-	f, err := os.Create("profile.out")
-	if err != nil {
-		log.Fatal("could not create CPU profile: ", err)
-	}
-	if err := pprof.StartCPUProfile(f); err != nil {
-		log.Fatal("could not start CPU profile: ", err)
-	}
-	defer pprof.StopCPUProfile()
-
 	tracer := gameboy.NewTracer()
 	defer tracer.Close()
 

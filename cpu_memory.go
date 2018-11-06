@@ -18,8 +18,7 @@ func (m *Memory) GetIndex() Param {
 }
 
 func (m *Memory) String() string {
-	p := m.pos()
-	return fmt.Sprintf("0x%X(0x%X)", p, m.cpu.MMU.Read8(p))
+	return fmt.Sprintf("(%v)", m.index)
 }
 
 func (m *Memory) pos() uint16 {
@@ -67,6 +66,10 @@ var _ ValueSigned8 = DirectSigned8(0)
 
 type Direct8 byte
 
+func (b Direct8) String() string {
+	return fmt.Sprintf("0x%X", byte(b))
+}
+
 func (b Direct8) Read8() byte {
 	return byte(b)
 }
@@ -77,11 +80,19 @@ func (b Direct8) Write8(byte) {
 
 type DirectSigned8 int8
 
+func (b DirectSigned8) String() string {
+	return fmt.Sprintf("%d", int8(b))
+}
+
 func (b DirectSigned8) ReadSigned8() int8 {
 	return int8(b)
 }
 
 type Direct16 uint16
+
+func (b Direct16) String() string {
+	return fmt.Sprintf("0x%X", uint16(b))
+}
 
 func (b Direct16) Read16() uint16 {
 	return uint16(b)

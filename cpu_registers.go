@@ -2,13 +2,25 @@ package gameboy
 
 type (
 	Register struct {
-		value byte
+		value       byte
+		description string
 	}
 	RegisterPair struct {
-		Low  Value8
-		High Value8
+		Low         Value8
+		High        Value8
+		description string
 	}
 )
+
+func NewRegister(description string) *Register {
+	return &Register{
+		description: description,
+	}
+}
+
+func (r *Register) String() string {
+	return r.description
+}
 
 func (r *Register) Write8(value byte) {
 	r.value = value
@@ -19,6 +31,18 @@ func (r *Register) Read8() byte {
 		return r.value
 	}
 	return 0
+}
+
+func NewRegisterPair(description string, high, low *Register) *RegisterPair {
+	return &RegisterPair{
+		High:        high,
+		Low:         low,
+		description: description,
+	}
+}
+
+func (r *RegisterPair) String() string {
+	return r.description
 }
 
 func (r *RegisterPair) Write16(value uint16) {

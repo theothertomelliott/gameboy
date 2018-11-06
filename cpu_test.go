@@ -2,6 +2,7 @@ package gameboy_test
 
 import (
 	"fmt"
+	"log"
 	"runtime/debug"
 	"testing"
 
@@ -116,11 +117,20 @@ func TestPrograms(t *testing.T) {
 			mmu := gameboy.NewMMU()
 			mmu.LoadROM(append(test.rom, make([]byte, 0xFF00)...))
 
-			cpu := gameboy.NewCPU(mmu)
+			tracer := gameboy.NewTracer()
+			defer tracer.Close()
+
+			cpu := gameboy.NewCPU(mmu, tracer)
 			cpu.SP.Write16(0xFFFE) // Set up stack
 
+			go func() {
+				for t := range tracer.Event {
+					log.Print(t.Event.Description)
+				}
+			}()
+
 			for count := 0; count < test.cycles; count++ {
-				cpu.Step()
+				_ = cpu.Step()
 			}
 			test.expected.compare(t, cpu)
 		})

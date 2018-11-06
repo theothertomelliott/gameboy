@@ -49,32 +49,29 @@ type CPU struct {
 func NewCPU(mmu *MMU, tracer *Tracer) *CPU {
 	cpu := &CPU{
 		MMU: mmu,
-		A:   &Register{}, F: &Register{},
-		B: &Register{}, C: &Register{},
-		D: &Register{}, E: &Register{},
-		H: &Register{}, L: &Register{},
+
+		A: NewRegister("A"), F: NewRegister("F"),
+		B: NewRegister("B"), C: NewRegister("C"),
+		D: NewRegister("D"), E: NewRegister("E"),
+		H: NewRegister("H"), L: NewRegister("L"),
 
 		SP: &Address{}, PC: &Address{},
 		tracer: tracer,
 	}
-	cpu.AF = &RegisterPair{
-		Low: cpu.F, High: cpu.A,
-	}
-	cpu.BC = &RegisterPair{
-		Low: cpu.C, High: cpu.B,
-	}
-	cpu.DE = &RegisterPair{
-		Low: cpu.E, High: cpu.D,
-	}
-	cpu.HL = &RegisterPair{
-		Low: cpu.L, High: cpu.H,
-	}
+	cpu.AF = NewRegisterPair("AF", cpu.A, cpu.F)
+	cpu.BC = NewRegisterPair("BC", cpu.B, cpu.C)
+	cpu.DE = NewRegisterPair("DE", cpu.D, cpu.E)
+	cpu.HL = NewRegisterPair("HL", cpu.H, cpu.L)
 
 	return cpu
 }
 
 type Address struct {
 	value uint16
+}
+
+func (a *Address) String() string {
+	return fmt.Sprintf("0x%X", a.value)
 }
 
 func (a *Address) Read16() uint16 {
@@ -161,30 +158,6 @@ func (c *CPU) CountSpeed() {
 	}
 }
 
-func (c *CPU) ExecuteOperation() (string, []int) {
-	c.CountSpeed()
-	pcBefore := c.PC.Read16()
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Printf("Panic at: 0x%X\n", pcBefore)
-			panic(r)
-		}
-	}()
-
-	var handler func(*CPU, Opcode) (string, []int)
-	opcode := Opcode(c.MMU.Read8(c.PC.Read16()))
-	switch opcode {
-	case 0xCB:
-		c.PC.Inc(1)
-		opcode = Opcode(c.MMU.Read8(c.PC.Read16()))
-		handler = cbprefixedHandler
-	default:
-		handler = unprefixedHandler
-	}
-	c.PC.Inc(1)
-	return handler(c, opcode)
-}
-
 // Step handles the next operation
 func (c *CPU) Step() int {
 
@@ -203,8 +176,6 @@ func (c *CPU) Step() int {
 	c.vblankInterrupt()
 
 	pcBefore := c.PC.Read16()
-	flagsBefore := flagsToString(c.F)
-
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("0x%Xn", pcBefore)
@@ -216,43 +187,24 @@ func (c *CPU) Step() int {
 		c.tracer.Log(TraceEvent{
 			PC:          pcBefore,
 			Description: description,
-			FlagsBefore: flagsBefore,
-			FlagsAfter:  flagsToString(c.F),
 		})
 	}
 
 	return cycles[0]
 }
 
-func paramsToString(params ...Param) []string {
-	var out []string
-	for _, param := range params {
-		if s, isString := param.(fmt.Stringer); isString {
-			out = append(out, s.String())
-			continue
-		}
-		if n, is8Bit := param.(Value8); is8Bit {
-			out = append(out, fmt.Sprintf("0x%X", n.Read8()))
-			continue
-		}
-		if n, is8BitSigned := param.(ValueSigned8); is8BitSigned {
-			out = append(out, fmt.Sprintf("%d", n.ReadSigned8()))
-			continue
-		}
-		if n, is16Bit := param.(Value16); is16Bit {
-			out = append(out, fmt.Sprintf("0x%X", n.Read16()))
-			continue
-		}
+func (c *CPU) ExecuteOperation() (string, []int) {
+	c.CountSpeed()
+	var handler func(*CPU, Opcode) (string, []int)
+	opcode := Opcode(c.MMU.Read8(c.PC.Read16()))
+	switch opcode {
+	case 0xCB:
+		c.PC.Inc(1)
+		opcode = Opcode(c.MMU.Read8(c.PC.Read16()))
+		handler = cbprefixedHandler
+	default:
+		handler = unprefixedHandler
 	}
-	return out
-}
-
-func flagsToString(f *Register) string {
-	return fmt.Sprintf(
-		"Z=%v, N=%v, H=%v, C=%v",
-		f.Z(),
-		f.N(),
-		f.H(),
-		f.C(),
-	)
+	c.PC.Inc(1)
+	return handler(c, opcode)
 }

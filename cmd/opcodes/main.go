@@ -33,20 +33,37 @@ func main() {
 var opcodes = `
 package gameboy
 
+import "fmt"
+
 {{range $prefixType, $opcodes := . -}}
 func {{$prefixType}}Handler(c *CPU, code Opcode) (string, []int) {
 	switch code {
 		{{- range $opcodes}}
 		case {{.Addr}}:
+			{{- if .Operand1}}
+				o1 := {{.Operand1}}
+			{{- end -}}
+			{{- if .Operand2}}
+				o2 := {{.Operand2}}
+			{{- end}}
 			c.{{.Mnemonic}}(
 				{{- if .Operand1}}
-				{{.Operand1}},
+				o1,
 				{{- end -}}
 				{{- if .Operand2}}
-				{{.Operand2}},
+				o2,
 				{{- end}}
 			)
-			return "{{.Description}}", []int{
+			description := fmt.Sprint(
+				"{{.Description}} ",
+				{{- if .Operand1}}
+				o1,
+				{{- end -}}
+				{{- if .Operand2}}
+				o2,
+				{{- end}}
+			)
+			return description, []int{
 				{{- range .Cycles}}
 					{{.}},
 				{{- end -}}
