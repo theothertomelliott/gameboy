@@ -10,7 +10,6 @@ import (
 
 func main() {
 	tracer := gameboy.NewTracer()
-	defer tracer.Close()
 
 	mmu := gameboy.NewMMU()
 	cpu := gameboy.NewCPU(mmu, tracer)
@@ -33,10 +32,16 @@ func main() {
 	}
 
 	control := gameboy.NewControl(cpu, ppu)
+	control.Breakpoints = []uint16{0x0095, 0xC3C3}
 	control.Start()
 	defer control.Stop()
 
-	cui, err := setupCUI(cpu, tracer, control)
+	cui, err := setupCUI(
+		cpu,
+		mmu,
+		tracer,
+		control,
+	)
 	if err != nil {
 		panic(err)
 	}

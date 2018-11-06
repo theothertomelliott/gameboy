@@ -11,32 +11,23 @@ type TraceEvent struct {
 }
 
 type Tracer struct {
-	Event chan TraceMessage
 	Count int64
+
+	Logger func(ev TraceMessage)
 }
 
 func NewTracer() *Tracer {
-	return &Tracer{
-		Event: make(chan TraceMessage, 8),
-	}
+	return &Tracer{}
 }
 
 func (t *Tracer) Log(ev TraceEvent) {
-	if t.Event == nil {
+	if t.Logger == nil {
 		return
 	}
 
-	select {
-	case t.Event <- TraceMessage{
+	t.Logger(TraceMessage{
 		Count: t.Count,
 		Event: ev,
-	}:
-	default:
-	}
+	})
 	t.Count++
-}
-
-func (t *Tracer) Close() {
-	close(t.Event)
-	t.Event = nil
 }

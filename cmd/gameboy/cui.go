@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"sort"
 
 	"github.com/jroimartin/gocui"
 	"github.com/theothertomelliott/gameboy"
@@ -11,18 +12,25 @@ import (
 type cui struct {
 	gui     *gocui.Gui
 	cpu     *gameboy.CPU
+	mmu     *gameboy.MMU
 	tracer  *gameboy.Tracer
 	control *gameboy.Control
 
-	traceBuffer      []gameboy.TraceMessage
-	traceBufferIndex int
+	traceBuffer []gameboy.TraceMessage
+
+	decompilation map[uint16]string
 }
 
 func (c *cui) Close() {
 	c.gui.Close()
 }
 
-func setupCUI(cpu *gameboy.CPU, tracer *gameboy.Tracer, control *gameboy.Control) (*cui, error) {
+func setupCUI(
+	cpu *gameboy.CPU,
+	mmu *gameboy.MMU,
+	tracer *gameboy.Tracer,
+	control *gameboy.Control,
+) (*cui, error) {
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		return nil, err
@@ -31,27 +39,49 @@ func setupCUI(cpu *gameboy.CPU, tracer *gameboy.Tracer, control *gameboy.Control
 	cui := &cui{
 		gui:     g,
 		cpu:     cpu,
+		mmu:     mmu,
 		tracer:  tracer,
 		control: control,
 
-		traceBuffer: make([]gameboy.TraceMessage, 10000),
+		decompilation: make(map[uint16]string),
 	}
 
 	g.SetManagerFunc(cui.layout)
 	return cui, nil
 }
 
-func (c *cui) updateTrace() {
-	c.gui.Update(func(g *gocui.Gui) error {
-		v, err := g.View("trace")
-		if err != nil {
-			return nil
-		}
-		for _, trace := range c.traceBuffer {
-			fmt.Fprintf(v, "0x%X: %v\n", trace.Event.PC, trace.Event.Description)
-		}
-		return nil
+func (c *cui) updateTrace(traces ...gameboy.TraceMessage) {
+	v, err := c.gui.View("trace")
+	if err != nil {
+		panic(err)
+	}
+
+	for _, trace := range traces {
+		fmt.Fprintf(v, "0x%04X: %v\n", trace.Event.PC, trace.Event.Description)
+	}
+}
+
+func (c *cui) updateDecompilation(traces ...gameboy.TraceMessage) {
+	v, err := c.gui.View("decompilation")
+	if err != nil {
+		panic(err)
+	}
+
+	for _, trace := range traces {
+		c.decompilation[trace.Event.PC] = trace.Event.Description
+	}
+	var indices []uint16
+	for index := range c.decompilation {
+		indices = append(indices, index)
+	}
+	sort.Slice(indices, func(i, j int) bool {
+		return indices[i] < indices[j]
 	})
+	v.Clear()
+	for _, index := range indices {
+		fmt.Fprintf(v, "0x%04X: %v\n", index, c.decompilation[index])
+	}
+
 }
 
 func (c *cui) updateRegisters() {
@@ -80,18 +110,21 @@ func (c *cui) updateRegisters() {
 	})
 }
 
+func (c *cui) handleTrace(trace gameboy.TraceMessage) {
+	c.traceBuffer = append(c.traceBuffer, trace)
+	if len(c.traceBuffer) < 1000 && !c.control.IsPaused() {
+		return
+	}
+	traces := c.traceBuffer
+	c.updateTrace(traces...)
+	c.updateDecompilation(traces...)
+	c.updateRegisters()
+	c.traceBuffer = nil
+}
+
 func startCUI(cui *cui) {
-	go func() {
-		for trace := range cui.tracer.Event {
-			cui.traceBuffer = append(cui.traceBuffer, trace)
-			if len(cui.traceBuffer) < 1000 {
-				continue
-			}
-			cui.updateTrace()
-			cui.updateRegisters()
-			cui.traceBuffer = nil
-		}
-	}()
+	// Start tracing
+	cui.tracer.Logger = cui.handleTrace
 
 	g := cui.gui
 	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
@@ -117,24 +150,30 @@ func (c *cui) pause(g *gocui.Gui, v *gocui.View) error {
 
 func (c *cui) step(g *gocui.Gui, v *gocui.View) error {
 	c.control.Step()
-	c.updateTrace()
-	c.updateRegisters()
-	c.traceBuffer = nil
 	return nil
 }
 
 func (c *cui) layout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
-	if v, err := g.SetView("trace", 0, 0, (maxX/3)*2, maxY-6); err != nil {
+	if v, err := g.SetView("trace", 0, 0, (maxX / 3), maxY-6); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
+		v.Title = "Trace"
+		fmt.Fprint(v, "Empty")
 		v.Autoscroll = true
 	}
-	if _, err := g.SetView("registers", (maxX/3)*2+1, 0, maxX-1, maxY-6); err != nil {
+	if v, err := g.SetView("decompilation", (maxX/3)+1, 0, (maxX/3)*2, maxY-6); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
+		v.Title = "Decompile"
+	}
+	if v, err := g.SetView("registers", (maxX/3)*2+1, 0, maxX-1, maxY-6); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Title = "Registers"
 	}
 	if v, err := g.SetView("instructions", 0, maxY-5, maxX-1, maxY-1); err != nil {
 		if err != gocui.ErrUnknownView {

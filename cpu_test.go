@@ -118,16 +118,12 @@ func TestPrograms(t *testing.T) {
 			mmu.LoadROM(append(test.rom, make([]byte, 0xFF00)...))
 
 			tracer := gameboy.NewTracer()
-			defer tracer.Close()
+			tracer.Logger = func(t gameboy.TraceMessage) {
+				log.Print(t.Event.Description)
+			}
 
 			cpu := gameboy.NewCPU(mmu, tracer)
 			cpu.SP.Write16(0xFFFE) // Set up stack
-
-			go func() {
-				for t := range tracer.Event {
-					log.Print(t.Event.Description)
-				}
-			}()
 
 			for count := 0; count < test.cycles; count++ {
 				_ = cpu.Step()

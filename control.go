@@ -10,6 +10,8 @@ type Control struct {
 	paused bool
 
 	done chan struct{}
+
+	Breakpoints []uint16
 }
 
 // NewControl creates a Control from a CPU and PPU.
@@ -47,11 +49,22 @@ func (c *Control) TogglePaused() {
 	c.paused = !c.paused
 }
 
+func (c *Control) IsPaused() bool {
+	return c.paused
+}
+
 // Step will execute the next operation.
 // This should usually only be used when paused.
 func (c *Control) Step() {
 	t := c.cpu.Step()
 	c.ppu.Step(t)
+
+	for _, bp := range c.Breakpoints {
+		if c.cpu.PC.Read16() == bp {
+			c.paused = true
+			return
+		}
+	}
 }
 
 // Stop will stop the emulation.
