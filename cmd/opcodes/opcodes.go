@@ -99,6 +99,7 @@ func (o *Operand) UnmarshalJSON(d []byte) error {
 	s = strings.Replace(s, "a16", "A16()", 1)
 	s = strings.Replace(s, "d16", "D16()", 1)
 	s = strings.Replace(s, "a8", "A8()", 1)
+	s = strings.Replace(s, "(C)", "MemoryAtH(c.C)", 1)
 
 	if strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
 		s = strings.Replace(s, "(", "", 1)

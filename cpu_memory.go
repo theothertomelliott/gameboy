@@ -60,6 +60,14 @@ func (c *CPU) MemoryAt(pos Param) *Memory {
 	}
 }
 
+func (c *CPU) MemoryAtH(pos Param) *Memory {
+	return &Memory{
+		index:  pos,
+		cpu:    c,
+		offset: 0xFF00,
+	}
+}
+
 var _ Value8 = Direct8(0)
 var _ Value16 = Direct16(0)
 var _ ValueSigned8 = DirectSigned8(0)
