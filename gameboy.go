@@ -1,11 +1,14 @@
 package gameboy
 
-import "time"
+import (
+	"time"
+)
 
-// Control provides a means of managing running emulation
-type Control struct {
-	cpu *CPU
-	ppu *PPU
+// DMG provides a means of managing running emulation
+type DMG struct {
+	cpu    *CPU
+	ppu    *PPU
+	tracer *Tracer
 
 	paused bool
 
@@ -14,19 +17,40 @@ type Control struct {
 	Breakpoints []uint16
 }
 
-// NewControl creates a Control from a CPU and PPU.
-// It is assumed they share an MMU.
-func NewControl(cpu *CPU, ppu *PPU) *Control {
-	return &Control{
-		cpu:  cpu,
-		ppu:  ppu,
-		done: make(chan struct{}),
+// NewDMG creates a Game Boy in an uninitialized state
+func NewDMG() *DMG {
+	tracer := NewTracer()
+	mmu := NewMMU()
+	cpu := NewCPU(mmu, tracer)
+	ppu := NewPPU(mmu)
+
+	return &DMG{
+		cpu:    cpu,
+		ppu:    ppu,
+		tracer: tracer,
+		done:   make(chan struct{}),
 	}
+}
+
+func (c *DMG) CPU() *CPU {
+	return c.cpu
+}
+
+func (c *DMG) PPU() *PPU {
+	return c.ppu
+}
+
+func (c *DMG) Tracer() *Tracer {
+	return c.tracer
+}
+
+func (c *DMG) MMU() *MMU {
+	return c.cpu.MMU
 }
 
 // Start will begin running emulation.
 // Emulation will step repeatedly until paused or stopped.
-func (c *Control) Start() {
+func (c *DMG) Start() {
 	go func() {
 		for true {
 			if c.paused {
@@ -40,22 +64,23 @@ func (c *Control) Start() {
 				return
 			default:
 			}
+			time.Sleep(time.Nanosecond)
 		}
 	}()
 }
 
 // TogglePaused with toggle the paused state of the control.
-func (c *Control) TogglePaused() {
+func (c *DMG) TogglePaused() {
 	c.paused = !c.paused
 }
 
-func (c *Control) IsPaused() bool {
+func (c *DMG) IsPaused() bool {
 	return c.paused
 }
 
 // Step will execute the next operation.
 // This should usually only be used when paused.
-func (c *Control) Step() {
+func (c *DMG) Step() {
 	t := c.cpu.Step()
 	c.ppu.Step(t)
 
@@ -69,6 +94,6 @@ func (c *Control) Step() {
 
 // Stop will stop the emulation.
 // Once stopped, it cannot be restarted.
-func (c *Control) Stop() {
+func (c *DMG) Stop() {
 	close(c.done)
 }

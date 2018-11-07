@@ -7,10 +7,10 @@ import (
 )
 
 func run(
-	cpu *gameboy.CPU,
-	mmu *gameboy.MMU,
-	ppu *gameboy.PPU,
+	gb *gameboy.DMG,
 ) {
+	ppu := gb.PPU()
+
 	setupGraphics()
 	//setupMemView()
 

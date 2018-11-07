@@ -9,47 +9,40 @@ import (
 )
 
 func main() {
-	tracer := gameboy.NewTracer()
-
-	mmu := gameboy.NewMMU()
-	cpu := gameboy.NewCPU(mmu, tracer)
-	ppu := gameboy.NewPPU(mmu)
+	gb := gameboy.NewDMG()
 
 	data, err := ioutil.ReadFile(os.Args[1])
 	if err != nil {
 		panic(err)
 	}
-	mmu.LoadCartridge(data)
+	gb.MMU().LoadCartridge(data)
 
 	if len(os.Args) > 2 {
 		data, err = ioutil.ReadFile(os.Args[2])
 		if err != nil {
 			panic(err)
 		}
-		mmu.LoadROM(data)
+		gb.MMU().LoadROM(data)
 	} else {
-		cpu.Init()
+		gb.CPU().Init()
 	}
 
-	control := gameboy.NewControl(cpu, ppu)
-	control.Breakpoints = []uint16{0x0095, 0xC3C3}
-	control.Start()
-	defer control.Stop()
+	gb.Breakpoints = []uint16{0x0095, 0xC3C3}
 
-	cui, err := setupCUI(
-		cpu,
-		mmu,
-		tracer,
-		control,
-	)
-	if err != nil {
-		panic(err)
-	}
-	defer cui.Close()
+	gb.Start()
+	defer gb.Stop()
 
-	go startCUI(cui)
+	term := NewTerminalUI(gb)
+	defer term.Stop()
+
+	go func() {
+		err := term.Run()
+		if err != nil {
+			panic(err)
+		}
+	}()
 
 	pixelgl.Run(func() {
-		run(cpu, mmu, ppu)
+		run(gb)
 	})
 }
