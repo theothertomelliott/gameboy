@@ -18,6 +18,9 @@ func (m *Memory) GetIndex() Param {
 }
 
 func (m *Memory) String() string {
+	if m.offset != 0 {
+		return fmt.Sprintf("(0x%04X+%v)", m.offset, m.index)
+	}
 	return fmt.Sprintf("(%v)", m.index)
 }
 
