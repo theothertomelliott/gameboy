@@ -66,8 +66,8 @@ func (t *TerminalUI) setupRoot() {
 	root := tview.NewFlex().
 		AddItem(t.traceView, 0, 1, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-			AddItem(t.decompileView, 0, 4, false).
-			AddItem(t.testOutputView, 5, 1, false), 0, 2, false).
+			AddItem(t.decompileView, 0, 4, true).
+			AddItem(t.testOutputView, 5, 1, false), 0, 2, true).
 		AddItem(t.registerView, 20, 1, false)
 
 	t.app.SetRoot(root, true)
@@ -80,7 +80,16 @@ func (t *TerminalUI) setupTraceView() {
 }
 
 func (t *TerminalUI) setupDecompileView() {
-	t.decompileView = tview.NewTable().SetBorders(false)
+	t.decompileView = tview.NewTable().
+		SetBorders(false).SetDoneFunc(func(key tcell.Key) {
+		if key == tcell.KeyEnter {
+			t.decompileView.SetSelectable(true, true)
+		}
+	}).
+		SetSelectedFunc(func(row int, column int) {
+			t.decompileView.GetCell(row, column).SetTextColor(tcell.ColorRed)
+			t.decompileView.SetSelectable(false, false)
+		})
 	t.decompileView.SetBorder(true).SetTitle("Decompile")
 }
 
