@@ -16,7 +16,8 @@ type TerminalUI struct {
 
 	updateTicker *time.Ticker
 
-	app            *tview.Application
+	app *tview.Application
+
 	traceView      *tview.Table
 	registerView   *tview.Table
 	memoryView     *tview.Table
@@ -81,16 +82,26 @@ func (t *TerminalUI) setupTraceView() {
 
 func (t *TerminalUI) setupDecompileView() {
 	t.decompileView = tview.NewTable().
-		SetBorders(false).SetDoneFunc(func(key tcell.Key) {
-		if key == tcell.KeyEnter {
-			t.decompileView.SetSelectable(true, true)
+		SetBorders(false).SetSelectable(true, false)
+	t.decompileView.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		row, col := t.decompileView.GetSelection()
+		pageSize := 50
+		switch event.Rune() {
+		case '[':
+			if row-pageSize > 0 {
+				t.decompileView.Select(row-pageSize, col)
+			} else {
+				t.decompileView.Select(0, col)
+			}
+		case ']':
+			if row+pageSize < t.decompileView.GetRowCount() {
+				t.decompileView.Select(row+pageSize, col)
+			} else {
+				t.decompileView.Select(t.decompileView.GetRowCount()-1, col)
+			}
 		}
-	}).
-		SetSelectedFunc(func(row int, column int) {
-			t.decompileView.GetCell(row, column).SetTextColor(tcell.ColorRed)
-			t.decompileView.SetSelectable(false, false)
-		})
-	t.decompileView.SetBorder(true).SetTitle("Decompile")
+		return event
+	}).SetBorder(true).SetTitle("Decompile")
 }
 
 func (t *TerminalUI) setupTestOutputView() {
