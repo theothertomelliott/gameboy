@@ -1,13 +1,13 @@
 package gameboy
 
-import "log"
-
 type MMU struct {
 	RAM            []byte
 	CartridgeBanks [][]byte
 	ROM            []byte
 
 	inROM bool
+
+	testOutput []byte
 }
 
 type Range struct {
@@ -80,8 +80,11 @@ func (m *MMU) Read8(pos uint16) byte {
 func (m *MMU) Write8(pos uint16, values ...byte) {
 	// Turn off ROM
 	if pos == 0xFFFF && m.inROM {
-		log.Print("Disabling ROM")
 		m.inROM = false
+	}
+
+	if pos == 0xFF02 && values[0] == 0x81 {
+		m.testOutput = append(m.testOutput, m.Read8(0xFF01))
 	}
 
 	for _, value := range values {
@@ -116,4 +119,8 @@ func (m *MMU) Write16(pos uint16, value uint16) {
 // Clear resets the RAM to 0
 func (m *MMU) Clear() {
 	m.RAM = make([]byte, 0x10000)
+}
+
+func (m *MMU) TestOutput() string {
+	return string(m.testOutput)
 }
