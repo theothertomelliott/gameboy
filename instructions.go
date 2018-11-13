@@ -98,6 +98,10 @@ func (c *CPU) LDI(params ...Param) {
 		index := mem.GetIndex().(Value16)
 		index.Write16(index.Read16() + 1)
 	}
+	if mem, isMem := src.(*Memory); isMem {
+		index := mem.GetIndex().(Value16)
+		index.Write16(index.Read16() + 1)
+	}
 }
 
 // LDD loads src into dst and decrements src
@@ -106,6 +110,10 @@ func (c *CPU) LDD(params ...Param) {
 	src := params[1].(Value8)
 	dst.Write8(src.Read8())
 	if mem, isMem := dst.(*Memory); isMem {
+		index := mem.GetIndex().(Value16)
+		index.Write16(index.Read16() - 1)
+	}
+	if mem, isMem := src.(*Memory); isMem {
 		index := mem.GetIndex().(Value16)
 		index.Write16(index.Read16() - 1)
 	}
@@ -165,9 +173,15 @@ func (c *CPU) LDHL(params ...Param) {
 //  nn = AF,BC,DE,HL
 func (c *CPU) PUSH(params ...Param) {
 	nn := params[0].(Value16)
+	v := nn.Read16()
+	high := byte((0xFF00 & v) >> 8)
+	low := byte(0xFF & v)
+	c.SP.Inc(-1)
 	m := c.MemoryAt(c.SP)
-	m.Write16(nn.Read16())
-	c.SP.Inc(-2)
+	m.Write8(high)
+	c.SP.Inc(-1)
+	m = c.MemoryAt(c.SP)
+	m.Write8(low)
 }
 
 // POP pops from the stack into nn
@@ -176,9 +190,14 @@ func (c *CPU) PUSH(params ...Param) {
 // nn = AF,BC,DE,HL
 func (c *CPU) POP(params ...Param) {
 	nn := params[0].(Value16)
-	c.SP.Inc(2)
 	m := c.MemoryAt(c.SP)
-	nn.Write16(m.Read16())
+	low := m.Read8()
+	m = c.MemoryAt(c.SP)
+	c.SP.Inc(1)
+	high := m.Read8()
+	v := uint16(low) + (uint16(high) << 8)
+	nn.Write16(v)
+	c.SP.Inc(1)
 }
 
 // ADD adds n to A
