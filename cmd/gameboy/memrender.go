@@ -72,6 +72,7 @@ func drawTiles(ppu *gameboy.PPU) {
 
 	drawPixel(imd, pixel.V(800, 0), pixel.V(200, 800), colornames.White)
 	for tileIndex, tile := range tiles {
+		drawBoundingRect(imd, pixel.V(256, float64(tileIndex*8)), pixel.V(8, 8), memoryScale(), pixel.RGB(1, 0, 0))
 		for y, row := range tile {
 			for x, value := range row {
 				colorVal := 1.0 - (float64(value) / 4)
@@ -80,7 +81,7 @@ func drawTiles(ppu *gameboy.PPU) {
 				if value != 0 {
 					drawPixel(
 						imd,
-						pixel.V(float64(256+x), float64(tileIndex*8+y)),
+						pixel.V(float64(256+x), float64(tileIndex*8+(8-y))),
 						memoryScale(),
 						color,
 					)
@@ -101,6 +102,16 @@ func tileScale() pixel.Vec {
 
 func drawPixel(imd *imdraw.IMDraw, pos, scale pixel.Vec, color color.Color) {
 	drawRect(imd, pos, pixel.V(1, 1), scale, color)
+}
+
+func drawBoundingRect(imd *imdraw.IMDraw, pos, size, scale pixel.Vec, color color.Color) {
+	posScaled := pos.ScaledXY(scale)
+	sizeScaled := size.ScaledXY(scale)
+
+	imd.Push(posScaled)
+	imd.Push(posScaled.Add(sizeScaled))
+	imd.Color = color
+	imd.Rectangle(1)
 }
 
 func drawRect(imd *imdraw.IMDraw, pos, size, scale pixel.Vec, color color.Color) {

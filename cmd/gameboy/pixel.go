@@ -12,7 +12,7 @@ func run(
 	ppu := gb.PPU()
 
 	setupGraphics()
-	//setupMemView()
+	setupMemView()
 
 	for !win.Closed() {
 		if ppu.LCDEnabled() {
@@ -24,13 +24,13 @@ func run(
 			)
 		}
 
-		// if !memWin.Closed() {
-		// 	drawMemory(
-		// 		mmu,
-		// 		ppu,
-		// 	)
-		// 	memWin.UpdateInput()
-		// }
+		if !memWin.Closed() {
+			drawMemory(
+				gb.MMU(),
+				gb.PPU(),
+			)
+			memWin.UpdateInput()
+		}
 		win.UpdateInput()
 
 		select {
