@@ -36,7 +36,7 @@ package gameboy
 import "fmt"
 
 {{range $prefixType, $opcodes := . -}}
-func {{$prefixType}}Handler(c *CPU, code Opcode) (string, []int) {
+func {{$prefixType}}Handler(c *CPU, code Opcode) (string, []int, error) {
 	switch code {
 		{{- range $opcodes}}
 		case {{.Addr}}:
@@ -67,10 +67,10 @@ func {{$prefixType}}Handler(c *CPU, code Opcode) (string, []int) {
 				{{- range .Cycles}}
 					{{.}},
 				{{- end -}}
-				}
+				}, nil
 		{{- end}}
 		default:
-			panic(fmt.Sprintf("unknown opcode: 0x%X", code))
+			return "", nil, fmt.Errorf("unknown opcode: 0x%X", code)
 	}
 }
 {{end}}

@@ -15,7 +15,7 @@ func NewPPU(mmu *MMU) *PPU {
 	}
 }
 
-func (p *PPU) Step(t int) {
+func (p *PPU) Step(t int) error {
 	p.modeclock += t
 
 	switch p.mode {
@@ -73,6 +73,8 @@ func (p *PPU) Step(t int) {
 		// Write the current line to memory
 		p.MMU.Write8(CURLINE, p.line)
 	}
+
+	return nil
 }
 
 func (p *PPU) Render() []byte {

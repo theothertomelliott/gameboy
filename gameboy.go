@@ -15,6 +15,8 @@ type DMG struct {
 	done chan struct{}
 
 	Breakpoints []uint16
+
+	err error
 }
 
 // NewDMG creates a Game Boy in an uninitialized state
@@ -53,12 +55,20 @@ func (c *DMG) MMU() *MMU {
 func (c *DMG) Start() {
 	go func() {
 		for true {
+			// Don't continue after error
+			if c.err != nil {
+				return
+			}
+
 			if c.paused {
 				// Avoid a busy wait
 				time.Sleep(time.Millisecond)
 				continue
 			}
-			c.Step()
+			err := c.Step()
+			if err != nil {
+				c.err = err
+			}
 			select {
 			case <-c.done:
 				return
@@ -69,27 +79,41 @@ func (c *DMG) Start() {
 	}()
 }
 
+// Err returns any error in emulation.
+// Emulation will stop running on the first error.
+func (c *DMG) Err() error {
+	return c.err
+}
+
 // TogglePaused with toggle the paused state of the control.
 func (c *DMG) TogglePaused() {
 	c.paused = !c.paused
 }
 
 func (c *DMG) IsPaused() bool {
-	return c.paused
+	return c.paused || c.err != nil
 }
 
 // Step will execute the next operation.
 // This should usually only be used when paused.
-func (c *DMG) Step() {
-	t := c.cpu.Step()
-	c.ppu.Step(t)
+func (c *DMG) Step() error {
+	t, err := c.cpu.Step()
+	if err != nil {
+		return err
+	}
+	err = c.ppu.Step(t)
+	if err != nil {
+		return err
+	}
 
 	for _, bp := range c.Breakpoints {
 		if c.cpu.PC.Read16() == bp {
 			c.paused = true
-			return
+			return nil
 		}
 	}
+
+	return nil
 }
 
 // Stop will stop the emulation.

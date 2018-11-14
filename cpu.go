@@ -159,7 +159,7 @@ func (c *CPU) CountSpeed() {
 }
 
 // Step handles the next operation
-func (c *CPU) Step() int {
+func (c *CPU) Step() (int, error) {
 
 	if c.isHalted {
 		// If interrupts are disabled (DI) then
@@ -169,20 +169,17 @@ func (c *CPU) Step() int {
 		if c.MMU.Read8(IE) == 0x0 {
 			c.PC.Inc(1)
 		}
-		return 0
+		return 0, nil
 	}
 
 	// Handle interrupts
 	c.vblankInterrupt()
 
 	pcBefore := c.PC.Read16()
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Printf("0x%Xn", pcBefore)
-			panic(r)
-		}
-	}()
-	description, cycles := c.ExecuteOperation()
+	description, cycles, err := c.ExecuteOperation()
+	if err != nil {
+		return 0, err
+	}
 	if c.tracer != nil {
 		c.tracer.Log(TraceEvent{
 			PC:          pcBefore,
@@ -190,12 +187,12 @@ func (c *CPU) Step() int {
 		})
 	}
 
-	return cycles[0]
+	return cycles[0], nil
 }
 
-func (c *CPU) ExecuteOperation() (string, []int) {
+func (c *CPU) ExecuteOperation() (string, []int, error) {
 	c.CountSpeed()
-	var handler func(*CPU, Opcode) (string, []int)
+	var handler func(*CPU, Opcode) (string, []int, error)
 	opcode := Opcode(c.MMU.Read8(c.PC.Read16()))
 	switch opcode {
 	case 0xCB:

@@ -73,7 +73,7 @@ func (t *TerminalUI) setupRoot() {
 		AddItem(t.testOutputView, 5, 1, false)
 
 	root := tview.NewFlex().
-		AddItem(t.traceView, 0, 1, false).
+		AddItem(t.traceView, 0, 1, true).
 		AddItem(center, 0, 4, true).
 		AddItem(t.registerView, 20, 1, false)
 
@@ -89,7 +89,7 @@ func (t *TerminalUI) Run() error {
 	t.updateTicker = time.NewTicker(time.Second / 30)
 	go func() {
 		for range t.updateTicker.C {
-			t.testOutputView.SetText(t.gb.MMU().TestOutput())
+			t.updateTestOutput()
 			t.updateRegisters()
 			t.updateMemory()
 			t.updateDecompilation()
@@ -97,6 +97,14 @@ func (t *TerminalUI) Run() error {
 		}
 	}()
 	return t.app.Run()
+}
+
+func (t *TerminalUI) updateTestOutput() {
+	if err := t.gb.Err(); err != nil {
+		t.testOutputView.SetText(fmt.Sprintf("Error: %v", err))
+		return
+	}
+	t.testOutputView.SetText(t.gb.MMU().TestOutput())
 }
 
 func (t *TerminalUI) Stop() {
