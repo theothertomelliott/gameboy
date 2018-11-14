@@ -10,8 +10,13 @@ import (
 
 func (t *TerminalUI) setupDecompileView() {
 	t.decompileView = tview.NewTable().
-		SetBorders(false).SetSelectable(true, false)
-	t.decompileView.SetInputCapture(t.pagingFunc(t.decompileView)).SetBorder(true).SetTitle("Decompile")
+		SetBorders(false).
+		SetSelectable(true, false)
+
+	t.decompileView.
+		SetInputCapture(t.pagingFunc(t.decompileView)).
+		SetBorder(true).
+		SetTitle("Decompile")
 }
 
 func (t *TerminalUI) updateDecompilation() {

@@ -9,55 +9,54 @@ import (
 
 func (t *TerminalUI) setupMemoryView() {
 	t.memoryView = tview.NewTable().
-		SetBorders(true).SetFixed(1, 1)
-	t.memoryView.SetBorder(true).
+		SetBorders(false).
+		SetFixed(1, 1).
+		SetSelectable(true, true)
+
+	t.memoryView.
+		SetInputCapture(t.pagingFunc(t.memoryView)).
+		SetBorder(true).
 		SetTitle("Memory")
 
-	for low := 0; low < 0xFF; low++ {
+	for pos := 0; pos <= 0xF; pos++ {
 		t.memoryView.SetCell(
 			0,
-			low,
-			tview.NewTableCell(fmt.Sprintf("0x%02X", low)).
+			pos+1,
+			tview.NewTableCell(fmt.Sprintf("0x%02X", pos)).
 				SetTextColor(tcell.ColorYellow).
 				SetAlign(tview.AlignCenter),
 		)
 	}
 
-	for high := 0; high < 0xFF; high++ {
-		t.memoryView.SetCell(
-			high,
-			0,
-			tview.NewTableCell(fmt.Sprintf("0x%02X", high)).
-				SetTextColor(tcell.ColorYellow).
-				SetAlign(tview.AlignCenter),
-		)
-	}
-
-	for low := 0; low < 0xFF; low++ {
-		for high := 0; high < 0xFF; high++ {
+	for pos := 0; pos <= 0xFFFF; pos++ {
+		row := (pos / 16) + 1
+		if pos%16 == 0 {
 			t.memoryView.SetCell(
-				high+1,
-				low+1,
-				tview.NewTableCell(fmt.Sprintf("0x%02X", 0)).
-					SetTextColor(tcell.ColorWhite).
+				row,
+				0,
+				tview.NewTableCell(fmt.Sprintf("0x%04X", pos)).
+					SetTextColor(tcell.ColorYellow).
 					SetAlign(tview.AlignCenter),
 			)
 		}
+
+		t.memoryView.SetCell(
+			row,
+			(pos%16)+1,
+			tview.NewTableCell(fmt.Sprintf("0x%02X", 0)).
+				SetTextColor(tcell.ColorWhite).
+				SetAlign(tview.AlignCenter),
+		)
 	}
 }
 
 func (t *TerminalUI) updateMemory() {
 	mmu := t.gb.MMU()
-	for low := 0; low < 0xFF; low++ {
-		for high := 0; high < 0xFF; high++ {
-			cell := t.memoryView.GetCell(high+1, low+1)
-			pos := uint16(low) | (uint16(high) << 8)
-			text := fmt.Sprintf("0x%02X", mmu.Read8(pos))
-			if cell.Text != text {
-				cell.SetText(text)
-				t.memoryView.Select(high+1, low+1)
-				t.memoryView.SetOffset(high, low)
-			}
-		}
+	for pos := 0; pos <= 0xFFFF; pos++ {
+		cell := t.memoryView.GetCell((pos/16)+1, (pos%16)+1)
+		value := mmu.Read8(uint16(pos))
+		cell.SetText(
+			fmt.Sprintf("0x%02X", value),
+		)
 	}
 }

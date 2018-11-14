@@ -17,6 +17,8 @@ func (t *TerminalUI) setupInput() {
 			t.app.SetFocus(t.traceView)
 		case 'd':
 			t.app.SetFocus(t.decompileView)
+		case 'm':
+			t.app.SetFocus(t.memoryView)
 		}
 		return event
 	})

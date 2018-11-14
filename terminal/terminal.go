@@ -66,7 +66,7 @@ func (t *TerminalUI) setupRoot() {
 	root := tview.NewFlex().
 		AddItem(t.traceView, 0, 1, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-			AddItem(t.decompileView, 0, 4, true).
+			AddItem(t.memoryView, 0, 4, true).
 			AddItem(t.testOutputView, 5, 1, false), 0, 2, true).
 		AddItem(t.registerView, 20, 1, false)
 
