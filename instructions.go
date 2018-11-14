@@ -941,6 +941,7 @@ func (c *CPU) RST(params ...Param) {
 // RET pops two bytes from stack & jumps to that address.
 func (c *CPU) RET(...Param) {
 	c.POP(c.PC)
+	c.PC.Inc(-1)
 }
 
 // RETC returns if following condition is true:
