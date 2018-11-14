@@ -40,9 +40,9 @@ func drawGraphics(graphics [][]byte, scrollX, scrollY byte) {
 	width, height := screenWidth/sizeX, screenHeight/sizeY
 	for x := 0; x < 160; x++ {
 		for y := 0; y < 144; y++ {
-			windowX := byte(x) + scrollX
-			windowY := byte(y) + scrollY
-			value := graphics[windowY][windowX]
+			windowX := byte(x) - scrollX
+			windowY := byte(y) - scrollY
+			value := graphics[144-windowY][windowX]
 			if value == 0 {
 				continue
 			}
