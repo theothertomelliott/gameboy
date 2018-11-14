@@ -6,6 +6,7 @@ import (
 
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/theothertomelliott/gameboy"
+	"github.com/theothertomelliott/gameboy/terminal"
 )
 
 func main() {
@@ -27,12 +28,12 @@ func main() {
 		gb.CPU().Init()
 	}
 
-	gb.Breakpoints = []uint16{0x0095, 0xC3C3}
+	gb.Breakpoints = []uint16{0xC0B1}
 
 	gb.Start()
 	defer gb.Stop()
 
-	term := NewTerminalUI(gb)
+	term := terminal.NewTerminalUI(gb)
 	defer term.Stop()
 
 	go func() {
