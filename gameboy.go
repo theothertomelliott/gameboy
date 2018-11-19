@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+const clockSpeedMHz = 0.8
+
 // DMG provides a means of managing running emulation
 type DMG struct {
 	cpu    *CPU
@@ -54,6 +56,12 @@ func (c *DMG) MMU() *MMU {
 // Emulation will step repeatedly until paused or stopped.
 func (c *DMG) Start() {
 	go func() {
+		var (
+			ticks               int
+			lastSync            = time.Now()
+			cyclesPerSecond     = clockSpeedMHz * 1000 * 1000
+			clockSyncsPerSecond = float64(1000)
+		)
 		for true {
 			// Don't continue after error
 			if c.err != nil {
@@ -69,12 +77,23 @@ func (c *DMG) Start() {
 			if err != nil {
 				c.err = err
 			}
+
+			// Correct timing
+			ticks++
+			if float64(ticks) >= cyclesPerSecond/clockSyncsPerSecond {
+				elapsed := time.Since(lastSync)
+				if elapsed < time.Second/time.Duration(clockSyncsPerSecond) {
+					time.Sleep(time.Second/time.Duration(clockSyncsPerSecond) - elapsed)
+				}
+				ticks = 0
+				lastSync = time.Now()
+			}
+
 			select {
 			case <-c.done:
 				return
 			default:
 			}
-			time.Sleep(time.Nanosecond)
 		}
 	}()
 }
