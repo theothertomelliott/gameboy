@@ -3,6 +3,8 @@ package gameboy
 import (
 	"fmt"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // Built while watching the ultimate Game Boy Talk
@@ -178,7 +180,7 @@ func (c *CPU) Step() (int, error) {
 	pcBefore := c.PC.Read16()
 	description, cycles, err := c.ExecuteOperation()
 	if err != nil {
-		return 0, err
+		return 0, errors.WithMessage(err, fmt.Sprintf("0x%04X", pcBefore))
 	}
 	if c.tracer != nil {
 		c.tracer.Log(TraceEvent{

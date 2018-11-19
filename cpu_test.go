@@ -62,6 +62,24 @@ func TestPrograms(t *testing.T) {
 			cycles: 10,
 		},
 		{
+			name: "Call and ret",
+			rom: []byte{
+				0xCD, 0x7, 0x0, // CALL 0x7
+				0xC3, 0xB, 0x0, // JP 0xD
+				0xDB,      // Bad opcode (should be skipped over)
+				0x06, 0x1, // LD B, 0x1
+				0x80,      // ADD B
+				0xC9,      // RET
+				0x0E, 0x5, // LD C, 0x1
+			},
+			expected: expectation{
+				A: 0x1,
+				B: 0x1,
+				C: 0x5,
+			},
+			cycles: 10,
+		},
+		{
 			name: "Copy into memory",
 			rom: []byte{
 				// Jump past data
@@ -126,7 +144,10 @@ func TestPrograms(t *testing.T) {
 			cpu.SP.Write16(0xFFFE) // Set up stack
 
 			for count := 0; count < test.cycles; count++ {
-				_ = cpu.Step()
+				_, err := cpu.Step()
+				if err != nil {
+					t.Fatal(err)
+				}
 			}
 			test.expected.compare(t, cpu)
 		})
