@@ -156,8 +156,7 @@ func (c *CPU) LDHL(params ...Param) {
 
 	total := int32(vSP) + int32(vN)
 
-	//halfCarry := vSP&0xFFF+vN&0xFFF > 0xFFF
-	halfCarry := false // TODO: Implement this correctly
+	halfCarry := int32(vSP&0xFFF)+int32(vN&0xFFF) > 0xFFF
 	carry := total > 0xFFFF
 
 	c.F.SetH(halfCarry)
