@@ -80,7 +80,7 @@ func (b *breakPoints) Set(value string) error {
 		if strings.HasPrefix(bp, "0x") {
 			bp = strings.Replace(bp, "0x", "", 1)
 		}
-		val, err := strconv.ParseInt(bp, 16, 16)
+		val, err := strconv.ParseInt(bp, 16, 64)
 		if err != nil {
 			return errors.WithMessage(err, "parsing breakpoint")
 		}

@@ -6,6 +6,6 @@ import (
 
 func (t *TerminalUI) setupTraceView() {
 	t.traceView = tview.NewTable().
-		SetBorders(false)
+		SetBorders(false).SetSelectable(true, false)
 	t.traceView.SetInputCapture(t.pagingFunc(t.traceView)).SetBorder(true).SetTitle("Trace")
 }
