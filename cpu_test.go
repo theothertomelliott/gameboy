@@ -2,7 +2,6 @@ package gameboy_test
 
 import (
 	"fmt"
-	"log"
 	"runtime/debug"
 	"testing"
 
@@ -80,6 +79,23 @@ func TestPrograms(t *testing.T) {
 			cycles: 10,
 		},
 		{
+			name: "JP (HL)",
+			rom: []byte{
+				0x06, 0x1, // LD B, 0x1
+				0x21, 0x7, 0x0, // LD HL, 0x7
+				0xE9,      // JP (HL)
+				0xDB,      // Bad opcode (should be skipped over)
+				0x9, 0x00, // Position we should move to
+				0x06, 0x2, // LD B, 0x2
+			},
+			expected: expectation{
+				B: 0x2,
+				H: 0x0,
+				L: 0x7,
+			},
+			cycles: 10,
+		},
+		{
 			name: "Copy into memory",
 			rom: []byte{
 				// Jump past data
@@ -136,8 +152,8 @@ func TestPrograms(t *testing.T) {
 			mmu.LoadROM(append(test.rom, make([]byte, 0xFF00)...))
 
 			tracer := gameboy.NewTracer()
-			tracer.Logger = func(t gameboy.TraceMessage) {
-				log.Print(t.Event.Description)
+			tracer.Logger = func(tm gameboy.TraceMessage) {
+				t.Logf("0x%04X: %v", tm.Event.PC, tm.Event.Description)
 			}
 
 			cpu := gameboy.NewCPU(mmu, tracer)
