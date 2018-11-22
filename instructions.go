@@ -934,7 +934,7 @@ func (c *CPU) CALLC(params ...Param) {
 func (c *CPU) RST(params ...Param) {
 	c.PUSH(c.PC)
 	i := params[0].(int)
-	c.SP.Write16(uint16(i))
+	c.PC.Write16(uint16(i))
 }
 
 // RET pops two bytes from stack & jumps to that address.
