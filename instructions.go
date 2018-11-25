@@ -162,7 +162,8 @@ func (c *CPU) LDHL(params ...Param) {
 	c.F.SetH(halfCarry)
 	c.F.SetC(carry)
 
-	c.HL.Write16(uint16(total))
+	valueOut := c.MMU.Read16(uint16(total))
+	c.HL.Write16(valueOut)
 }
 
 // PUSH pushes nn onto the stack.

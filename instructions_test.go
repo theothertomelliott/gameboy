@@ -1325,6 +1325,104 @@ func TestDAA(t *testing.T) {
 	}
 }
 
+func TestLDHL(t *testing.T) {
+	var tests = []struct {
+		name     string
+		a        uint16
+		b        int8
+		expected uint16
+		flags    expectedFlags
+	}{
+		{
+			name: "zero",
+		},
+		{
+			name:     "1 plus 1",
+			a:        1,
+			b:        1,
+			expected: 2,
+		},
+		{
+			name:     "half carry",
+			a:        0xFFF,
+			b:        1,
+			expected: 0x1000,
+			flags: expectedFlags{
+				h: true,
+			},
+		},
+		{
+			name:     "carry and half carry",
+			a:        0xFFFF,
+			b:        1,
+			expected: 0,
+			flags: expectedFlags{
+				h: true,
+				c: true,
+			},
+		},
+		{
+			name:     "carry and half carry (not on boundary",
+			a:        0xFFFE,
+			b:        3,
+			expected: 1,
+			flags: expectedFlags{
+				h: true,
+				c: true,
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mmu := gameboy.NewMMU()
+			mmu.Write16(test.expected, 0xAEBF)
+
+			cpu := gameboy.NewCPU(mmu, nil)
+			a := &gameboy.RegisterPair{}
+			a.Write16(test.a)
+			b := gameboy.DirectSigned8(test.b)
+
+			cpu.LDHL(a, b)
+
+			if got := cpu.HL.Read16(); got != 0xAEBF {
+				t.Errorf("HL: expected %d, got %d", 0xAEBF, got)
+			}
+			test.flags.compare(t, cpu)
+		})
+	}
+}
+
+func TestCCF(t *testing.T) {
+	cpu := gameboy.NewCPU(gameboy.NewMMU(), nil)
+
+	cpu.F.SetZ(true)
+	cpu.F.SetN(true)
+	cpu.F.SetH(true)
+	cpu.F.SetC(true)
+
+	cpu.CCF()
+
+	expectedFlags{
+		z: true,
+	}.compare(t, cpu)
+}
+
+func TestSCF(t *testing.T) {
+	cpu := gameboy.NewCPU(gameboy.NewMMU(), nil)
+
+	cpu.F.SetZ(true)
+	cpu.F.SetN(true)
+	cpu.F.SetH(true)
+	cpu.F.SetC(false)
+
+	cpu.SCF()
+
+	expectedFlags{
+		z: true,
+		c: true,
+	}.compare(t, cpu)
+}
+
 type expectedFlags struct {
 	z, n, h, c bool
 }
