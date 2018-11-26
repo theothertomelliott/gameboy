@@ -86,17 +86,23 @@ func (t *TerminalUI) setupTestOutputView() {
 }
 
 func (t *TerminalUI) Run() error {
-	t.updateTicker = time.NewTicker(time.Second / 30)
+	t.updateTicker = time.NewTicker(time.Second / 10)
 	go func() {
 		for range t.updateTicker.C {
-			t.updateTestOutput()
-			t.updateRegisters()
-			t.updateMemory()
-			t.updateDecompilation()
+			if !t.gb.IsPaused() {
+				t.update()
+			}
 			t.app.Draw()
 		}
 	}()
 	return t.app.Run()
+}
+
+func (t *TerminalUI) update() {
+	t.updateTestOutput()
+	t.updateRegisters()
+	t.updateMemory()
+	t.updateDecompilation()
 }
 
 func (t *TerminalUI) updateTestOutput() {
@@ -131,6 +137,10 @@ func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 	t.traceView.ScrollToEnd()
 
 	t.decompileMtx.Lock()
-	defer t.decompileMtx.Unlock()
 	t.decompilation[ev.Event.PC] = ev.Event.Description
+	t.decompileMtx.Unlock()
+
+	if t.gb.IsPaused() {
+		t.update()
+	}
 }
