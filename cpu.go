@@ -28,8 +28,8 @@ type CPU struct {
 	D, E *Register
 	H, L *Register
 
-	SP *Address
-	PC *Address
+	SP *StackPointer
+	PC *ProgramCounter
 
 	// CB is a placeholder for the prefix
 	CB struct{}
@@ -57,7 +57,7 @@ func NewCPU(mmu *MMU, tracer *Tracer) *CPU {
 		D: NewRegister("D"), E: NewRegister("E"),
 		H: NewRegister("H"), L: NewRegister("L"),
 
-		SP: &Address{}, PC: &Address{},
+		SP: &StackPointer{}, PC: &ProgramCounter{},
 		tracer: tracer,
 	}
 	cpu.AF = NewRegisterPair("AF", cpu.A, cpu.F)
@@ -66,6 +66,22 @@ func NewCPU(mmu *MMU, tracer *Tracer) *CPU {
 	cpu.HL = NewRegisterPair("HL", cpu.H, cpu.L)
 
 	return cpu
+}
+
+type StackPointer struct {
+	Address
+}
+
+func (s *StackPointer) String() string {
+	return "SP"
+}
+
+type ProgramCounter struct {
+	Address
+}
+
+func (s *ProgramCounter) String() string {
+	return "PC"
 }
 
 type Address struct {
