@@ -6266,7 +6266,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 		return description, []int{
 			16}, nil
 	case 0xe9:
-		o1 := c.MemoryAt(c.HL)
+		o1 := c.HL
 		c.JP(
 			o1,
 		)

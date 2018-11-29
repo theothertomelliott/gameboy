@@ -45,6 +45,26 @@ func (o *Opcode) UnmarshalJSON(d []byte) error {
 		o.Operand1 = "c.A"
 	}
 
+	if o.Mnemonic == "JP" &&
+		strings.HasPrefix(string(o.Operand1), "c.MemoryAt(") {
+		o.Operand1 = Operand(
+			strings.Replace(
+				string(o.Operand1),
+				"c.MemoryAt(",
+				"",
+				1,
+			),
+		)
+		o.Operand1 = Operand(
+			strings.Replace(
+				string(o.Operand1),
+				")",
+				"",
+				1,
+			),
+		)
+	}
+
 	if o.isConditional() {
 		o.Mnemonic = fmt.Sprintf("%sC", o.Mnemonic)
 		switch o.Operand1 {
