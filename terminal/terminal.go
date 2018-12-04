@@ -21,7 +21,7 @@ type TerminalUI struct {
 	registerView   *tview.Table
 	memoryView     *tview.Table
 	testOutputView *tview.TextView
-	decompileView  *tview.Table
+	debuggerView   *tview.Table
 
 	rCellA  *tview.TableCell
 	rCellF  *tview.TableCell
@@ -35,6 +35,7 @@ type TerminalUI struct {
 	rCellPC *tview.TableCell
 
 	decompilation map[uint16]string
+	latestPC      uint16
 	decompileMtx  sync.Mutex
 }
 
@@ -65,7 +66,7 @@ func NewTerminalUI(gb *gameboy.DMG) *TerminalUI {
 func (t *TerminalUI) setupRoot() {
 
 	diagnostic := tview.NewFlex().
-		AddItem(t.decompileView, 0, 1, true).
+		AddItem(t.debuggerView, 0, 1, true).
 		AddItem(t.memoryView, 0, 3, true)
 
 	center := tview.NewFlex().SetDirection(tview.FlexRow).
@@ -139,6 +140,8 @@ func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 	t.decompileMtx.Lock()
 	t.decompilation[ev.Event.PC] = ev.Event.Description
 	t.decompileMtx.Unlock()
+
+	t.latestPC = ev.Event.PC
 
 	if t.gb.IsPaused() {
 		t.update()

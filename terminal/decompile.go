@@ -9,14 +9,14 @@ import (
 )
 
 func (t *TerminalUI) setupDecompileView() {
-	t.decompileView = tview.NewTable().
+	t.debuggerView = tview.NewTable().
 		SetBorders(false).
 		SetSelectable(true, false)
 
-	t.decompileView.
-		SetInputCapture(t.pagingFunc(t.decompileView)).
+	t.debuggerView.
+		SetInputCapture(t.pagingFunc(t.debuggerView)).
 		SetBorder(true).
-		SetTitle("Decompile")
+		SetTitle("Debugger")
 }
 
 func (t *TerminalUI) updateDecompilation() {
@@ -31,21 +31,25 @@ func (t *TerminalUI) updateDecompilation() {
 		return pcs[i] < pcs[j]
 	})
 	for index, pc := range pcs {
-		t.decompileView.SetCell(
+		t.debuggerView.SetCell(
 			index,
 			0,
 			tview.NewTableCell(fmt.Sprintf("0x%X", pc)).
 				SetTextColor(tcell.ColorYellow).
 				SetAlign(tview.AlignRight),
 		)
-		t.decompileView.SetCell(
+		t.debuggerView.SetCell(
 			index,
 			1,
 			tview.NewTableCell(t.decompilation[pc]).
 				SetTextColor(tcell.ColorWhite).
 				SetAlign(tview.AlignLeft),
 		)
+
+		if pc == t.latestPC {
+			t.debuggerView.Select(index, 0)
+		}
 	}
 
-	t.decompileView.ScrollToBeginning()
+	t.debuggerView.ScrollToBeginning()
 }
