@@ -112,6 +112,7 @@ func (t *TerminalUI) updateTestOutput() {
 		return
 	}
 	t.testOutputView.SetText(t.gb.MMU().TestOutput())
+	t.testOutputView.ScrollToEnd()
 }
 
 func (t *TerminalUI) Stop() {
