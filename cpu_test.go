@@ -123,7 +123,6 @@ func TestPrograms(t *testing.T) {
 				0x21, 0x7, 0x0, // LD HL, 0x7
 				0xE9,      // JP (HL)
 				0xDB,      // Bad opcode (should be skipped over)
-				0x9, 0x00, // Position we should move to
 				0x06, 0x2, // LD B, 0x2
 			},
 			expected: expectation{
