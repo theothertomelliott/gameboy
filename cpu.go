@@ -40,15 +40,19 @@ type CPU struct {
 	// if true, the CPU and LCD are halted until a button is pressed
 	isStopped bool
 
-	tracer *Tracer
+	tracer CPUTracer
 
 	countStartTime      time.Time
 	opCount             uint64
 	OperationsPerSecond uint64
 }
 
+type CPUTracer interface {
+	AddCPU(pc uint16, description string)
+}
+
 // NewCPU creates a CPU in a zeroed initial state.
-func NewCPU(mmu *MMU, tracer *Tracer) *CPU {
+func NewCPU(mmu *MMU, tracer CPUTracer) *CPU {
 	cpu := &CPU{
 		MMU: mmu,
 
@@ -199,10 +203,7 @@ func (c *CPU) Step() (int, error) {
 		return 0, errors.WithMessage(err, fmt.Sprintf("0x%04X", pcBefore))
 	}
 	if c.tracer != nil {
-		c.tracer.Log(TraceEvent{
-			PC:          pcBefore,
-			Description: description,
-		})
+		c.tracer.AddCPU(pcBefore, description)
 	}
 
 	return cycles[0], nil

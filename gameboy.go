@@ -24,7 +24,7 @@ type DMG struct {
 // NewDMG creates a Game Boy in an uninitialized state
 func NewDMG() *DMG {
 	tracer := NewTracer()
-	mmu := NewMMU()
+	mmu := NewMMU(tracer)
 	cpu := NewCPU(mmu, tracer)
 	ppu := NewPPU(mmu)
 
@@ -131,6 +131,8 @@ func (c *DMG) Step() error {
 			return nil
 		}
 	}
+
+	c.tracer.Log()
 
 	return nil
 }

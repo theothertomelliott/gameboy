@@ -121,11 +121,15 @@ func (t *TerminalUI) Stop() {
 }
 
 func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
+	if ev.CPU == nil {
+		return
+	}
+
 	row := int(ev.Count)
 	t.traceView.SetCell(
 		row,
 		0,
-		tview.NewTableCell(fmt.Sprintf("0x%X", ev.Event.PC)).
+		tview.NewTableCell(fmt.Sprintf("0x%X", ev.CPU.PC)).
 			SetTextColor(tcell.ColorYellow).
 			SetAlign(tview.AlignRight),
 	)
@@ -133,16 +137,16 @@ func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 	t.traceView.SetCell(
 		row,
 		1,
-		tview.NewTableCell(ev.Event.Description).
+		tview.NewTableCell(ev.CPU.Description).
 			SetTextColor(tcell.ColorWhite))
 	t.traceView.Select(row, 0)
 	t.traceView.ScrollToEnd()
 
 	t.decompileMtx.Lock()
-	t.decompilation[ev.Event.PC] = ev.Event.Description
+	t.decompilation[ev.CPU.PC] = ev.CPU.Description
 	t.decompileMtx.Unlock()
 
-	t.latestPC = ev.Event.PC
+	t.latestPC = ev.CPU.PC
 
 	if t.gb.IsPaused() {
 		t.update()

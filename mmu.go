@@ -7,7 +7,13 @@ type MMU struct {
 
 	inROM bool
 
+	tracer MMUTracer
+
 	testOutput []byte
+}
+
+type MMUTracer interface {
+	AddMMU(pos uint16, values ...byte)
 }
 
 type Range struct {
@@ -15,9 +21,10 @@ type Range struct {
 	End   uint16
 }
 
-func NewMMU() *MMU {
+func NewMMU(tracer MMUTracer) *MMU {
 	return &MMU{
-		RAM: make([]byte, 0x10000),
+		RAM:    make([]byte, 0x10000),
+		tracer: tracer,
 	}
 }
 
@@ -95,6 +102,10 @@ func (m *MMU) Write8(pos uint16, values ...byte) {
 		}
 		m.RAM[pos] = value
 		pos++
+	}
+
+	if m.tracer != nil {
+		m.tracer.AddMMU(pos, values...)
 	}
 }
 

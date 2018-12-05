@@ -306,13 +306,16 @@ func TestPrograms(t *testing.T) {
 					debug.PrintStack()
 				}
 			}()
+			tracer := gameboy.NewTracer()
 
-			mmu := gameboy.NewMMU()
+			mmu := gameboy.NewMMU(tracer)
 			mmu.LoadROM(append(test.rom, make([]byte, 0xFF00)...))
 
-			tracer := gameboy.NewTracer()
 			tracer.Logger = func(tm gameboy.TraceMessage) {
-				t.Logf("0x%04X: %v", tm.Event.PC, tm.Event.Description)
+				if tm.CPU == nil {
+					return
+				}
+				t.Logf("0x%04X: %v", tm.CPU.PC, tm.CPU.Description)
 			}
 
 			cpu := gameboy.NewCPU(mmu, tracer)
@@ -323,6 +326,7 @@ func TestPrograms(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
+				tracer.Log()
 			}
 			test.expected.compare(t, cpu)
 		})
