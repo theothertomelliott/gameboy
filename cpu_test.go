@@ -297,6 +297,35 @@ func TestPrograms(t *testing.T) {
 			},
 			cycles: 100,
 		},
+		{
+			name: "POP AF",
+			rom: []byte{
+				0xC3, 0x4, 0x0, // 		JP 0x4
+				0xDB,             // 	text_failed (bad opcode)
+				0x01, 0x00, 0x12, // 	ld   bc,$1200
+				0xC5,       // -    	push bc
+				0xF1,       //      	pop  af
+				0xF5,       //      	push af
+				0xD1,       //      	pop  de
+				0x79,       //      	ld   a,c
+				0xE6, 0xF0, //      	and  $F0
+				0xBB,            //     cp   e
+				0xC2, 0x3, 0x00, //     jp   nz,test_failed
+				0x04,       //      	inc  b
+				0x0C,       //      	inc  c
+				0x20, 0xF1, //      	jr   nz,-
+				0x76, // HALT
+			},
+			expected: expectation{
+				A: 0x3F,
+				F: 0x20,
+				B: 0x3F,
+				C: 0x2D,
+				D: 0x3E,
+				E: 0x20,
+			},
+			cycles: 500,
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -311,15 +340,17 @@ func TestPrograms(t *testing.T) {
 			mmu := gameboy.NewMMU(tracer)
 			mmu.LoadROM(append(test.rom, make([]byte, 0xFF00)...))
 
+			cpu := gameboy.NewCPU(mmu, tracer)
+			cpu.SP.Write16(0xFFFE) // Set up stack
+
 			tracer.Logger = func(tm gameboy.TraceMessage) {
 				if tm.CPU == nil {
 					return
 				}
 				t.Logf("0x%04X: %v", tm.CPU.PC, tm.CPU.Description)
+				t.Logf("BC=%04X, AF=%04X, DE=%04X", cpu.BC.Read16(), cpu.AF.Read16(), cpu.DE.Read16())
+				t.Logf("A=0x%02X F=%02X", cpu.A.Read8(), cpu.F.Read8())
 			}
-
-			cpu := gameboy.NewCPU(mmu, tracer)
-			cpu.SP.Write16(0xFFFE) // Set up stack
 
 			for count := 0; count < test.cycles; count++ {
 				_, err := cpu.Step()
@@ -366,7 +397,7 @@ func (e expectation) compare(t *testing.T, cpu *gameboy.CPU) {
 	}
 }
 
-func (e expectation) compareReg(t *testing.T, name string, r *gameboy.Register, expected byte) {
+func (e expectation) compareReg(t *testing.T, name string, r gameboy.Value8, expected byte) {
 	t.Helper()
 	if got := r.Read8(); got != expected {
 		t.Errorf("%s: expected 0x%X, got 0x%X", name, expected, got)

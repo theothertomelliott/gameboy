@@ -85,6 +85,10 @@ func (m *MMU) Read8(pos uint16) byte {
 }
 
 func (m *MMU) Write8(pos uint16, values ...byte) {
+	if m.tracer != nil {
+		m.tracer.AddMMU(pos, values...)
+	}
+
 	// Turn off ROM
 	if pos == 0xFFFF && m.inROM {
 		m.inROM = false
@@ -102,10 +106,6 @@ func (m *MMU) Write8(pos uint16, values ...byte) {
 		}
 		m.RAM[pos] = value
 		pos++
-	}
-
-	if m.tracer != nil {
-		m.tracer.AddMMU(pos, values...)
 	}
 }
 

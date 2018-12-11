@@ -23,7 +23,7 @@ type CPU struct {
 	HL *RegisterPair
 
 	A    *Register
-	F    *Register
+	F    *FRegister
 	B, C *Register
 	D, E *Register
 	H, L *Register
@@ -56,7 +56,7 @@ func NewCPU(mmu *MMU, tracer CPUTracer) *CPU {
 	cpu := &CPU{
 		MMU: mmu,
 
-		A: NewRegister("A"), F: NewRegister("F"),
+		A: NewRegister("A"), F: &FRegister{Register: *NewRegister("F")},
 		B: NewRegister("B"), C: NewRegister("C"),
 		D: NewRegister("D"), E: NewRegister("E"),
 		H: NewRegister("H"), L: NewRegister("L"),

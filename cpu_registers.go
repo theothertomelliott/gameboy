@@ -5,6 +5,9 @@ type (
 		value       byte
 		description string
 	}
+	FRegister struct {
+		Register
+	}
 	RegisterPair struct {
 		Low         Value8
 		High        Value8
@@ -33,7 +36,7 @@ func (r *Register) Read8() byte {
 	return 0
 }
 
-func NewRegisterPair(description string, high, low *Register) *RegisterPair {
+func NewRegisterPair(description string, high, low Value8) *RegisterPair {
 	return &RegisterPair{
 		High:        high,
 		Low:         low,
@@ -105,4 +108,8 @@ func (r *Register) C() bool {
 
 func (r *Register) SetC(v bool) {
 	r.setBit(v, 4)
+}
+
+func (r *FRegister) Write8(value byte) {
+	r.value = value & 0xF0
 }
