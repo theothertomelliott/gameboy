@@ -1,6 +1,7 @@
 package gameboy_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/theothertomelliott/gameboy"
@@ -1317,11 +1318,147 @@ func TestRR(t *testing.T) {
 }
 
 func TestDAA(t *testing.T) {
-	cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-	cpu.A.Write8(55)
-	cpu.DAA()
-	if got := cpu.A.Read8(); got != 0x55 {
-		t.Errorf("value not as expected, got 0x%X", got)
+	var tests = []struct {
+		name    string
+		nBefore bool
+		cBefore bool
+		hBefore bool
+
+		upperMin byte
+		upperMax byte
+		lowerMin byte
+		lowerMax byte
+
+		correctionExpected byte
+		cExpected          bool
+	}{
+		// Based on table at:
+		// http://www.z80.info/z80syntx.htm#DAA
+		{
+			name:     "no change",
+			upperMin: 0x0, upperMax: 0x9,
+			lowerMin: 0x0, lowerMax: 0x9,
+			correctionExpected: 0x0,
+		},
+		{
+			name:     "add 06",
+			upperMin: 0x0, upperMax: 0x8,
+			lowerMin: 0xA, lowerMax: 0xF,
+			correctionExpected: 0x6,
+		},
+		{
+			name:     "add 06 (h = true)",
+			hBefore:  true,
+			upperMin: 0x0, upperMax: 0x9,
+			lowerMin: 0x0, lowerMax: 0x3,
+			correctionExpected: 0x6,
+		},
+		{
+			name:     "add 60",
+			upperMin: 0xA, upperMax: 0xF,
+			lowerMin: 0x0, lowerMax: 0x9,
+			correctionExpected: 0x60,
+			cExpected:          true,
+		},
+		{
+			name:     "add 66",
+			upperMin: 0x9, upperMax: 0xF,
+			lowerMin: 0xA, lowerMax: 0xF,
+			correctionExpected: 0x66,
+			cExpected:          true,
+		},
+		{
+			name:     "add 66 (h)",
+			hBefore:  true,
+			upperMin: 0xA, upperMax: 0xF,
+			lowerMin: 0x0, lowerMax: 0x3,
+			correctionExpected: 0x66,
+			cExpected:          true,
+		},
+		{
+			name:     "add 60 (c|h)",
+			cBefore:  true,
+			upperMin: 0x0, upperMax: 0x2,
+			lowerMin: 0x0, lowerMax: 0x9,
+			correctionExpected: 0x60,
+			cExpected:          true,
+		},
+		{
+			name:     "add 66 (c)",
+			cBefore:  true,
+			upperMin: 0x0, upperMax: 0x2,
+			lowerMin: 0xA, lowerMax: 0xF,
+			correctionExpected: 0x66,
+			cExpected:          true,
+		},
+		{
+			name:     "add 66 (c|h)",
+			cBefore:  true,
+			hBefore:  true,
+			upperMin: 0x0, upperMax: 0x3,
+			lowerMin: 0x0, lowerMax: 0x3,
+			correctionExpected: 0x66,
+			cExpected:          true,
+		},
+		{
+			name:     "sub 0",
+			nBefore:  true,
+			upperMin: 0x0, upperMax: 0x9,
+			lowerMin: 0x0, lowerMax: 0x9,
+		},
+		{
+			name:     "sub FA",
+			nBefore:  true,
+			hBefore:  true,
+			upperMin: 0x0, upperMax: 0x8,
+			lowerMin: 0x6, lowerMax: 0xF,
+			correctionExpected: 0xFA,
+		},
+		{
+			name:     "sub A0",
+			nBefore:  true,
+			cBefore:  true,
+			upperMin: 0x7, upperMax: 0xF,
+			lowerMin: 0x0, lowerMax: 0x9,
+			correctionExpected: 0xA0,
+			cExpected:          true,
+		},
+		{
+			name:     "sub A0",
+			nBefore:  true,
+			cBefore:  true,
+			hBefore:  true,
+			upperMin: 0x6, upperMax: 0xF,
+			lowerMin: 0x6, lowerMax: 0xF,
+			correctionExpected: 0x9A,
+			cExpected:          true,
+		},
+	}
+	for _, test := range tests {
+		for u := test.upperMin; u <= test.upperMax; u++ {
+			for l := test.lowerMin; l <= test.lowerMax; l++ {
+				valueBefore := u<<4 + l
+				valueExpected := valueBefore + test.correctionExpected
+				t.Run(fmt.Sprintf("%s: 0x%02X", test.name, valueBefore), func(t *testing.T) {
+					cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
+
+					cpu.F.SetN(test.nBefore)
+					cpu.F.SetC(test.cBefore)
+					cpu.F.SetH(test.hBefore)
+
+					cpu.A.Write8(valueBefore)
+
+					cpu.DAA(cpu.A)
+
+					if got := cpu.A.Read8(); got != valueExpected {
+						t.Errorf("expected 0x%X, got 0x%X", valueExpected, got)
+					}
+					if cpu.F.C() != test.cExpected {
+						t.Errorf("C, expected %v, got %v", test.cExpected, cpu.F.C())
+					}
+				})
+			}
+		}
 	}
 }
 
