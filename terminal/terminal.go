@@ -2,6 +2,7 @@ package terminal
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -37,6 +38,8 @@ type TerminalUI struct {
 	decompilation map[uint16]string
 	latestPC      uint16
 	decompileMtx  sync.Mutex
+
+	stepOut bool
 }
 
 func NewTerminalUI(gb *gameboy.DMG) *TerminalUI {
@@ -150,5 +153,15 @@ func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 
 	if t.gb.IsPaused() {
 		t.update()
+	}
+
+	if t.stepOut {
+		if strings.HasPrefix(ev.CPU.Description, "RET") ||
+			strings.HasPrefix(ev.CPU.Description, "RST") {
+			if !t.gb.IsPaused() {
+				t.gb.TogglePaused()
+			}
+			t.stepOut = false
+		}
 	}
 }

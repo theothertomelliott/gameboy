@@ -13,6 +13,11 @@ func (t *TerminalUI) setupInput() {
 			t.traceView.SetSelectable(t.gb.IsPaused(), false)
 		case 's':
 			t.gb.Step()
+		case 'o':
+			if t.gb.IsPaused() {
+				t.gb.TogglePaused()
+			}
+			t.stepOut = true
 		case 't':
 			t.app.SetFocus(t.traceView)
 		case 'd':
