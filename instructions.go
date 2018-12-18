@@ -619,14 +619,16 @@ func (c *CPU) STOP(...Param) {
 // immediately. Interrupts are disabled after
 // instruction after DI is executed.
 func (c *CPU) DI(...Param) {
-	c.MMU.Write8(IE, 0x0)
+	// TODO: Delay interrupts
+	c.IME = false
 }
 
 // EI enables interrupts. This intruction enables interrupts
 // but not immediately. Interrupts are enabled after
 // instruction after EI is executed.
 func (c *CPU) EI(...Param) {
-	c.MMU.Write8(IE, 0xFF)
+	// TODO: Delay interrupts
+	c.IME = true
 }
 
 // RLCA rotates A left.

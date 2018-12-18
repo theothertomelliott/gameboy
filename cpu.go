@@ -16,6 +16,9 @@ import (
 type CPU struct {
 	MMU *MMU
 
+	// Interrupt master enable
+	IME bool
+
 	// Registers
 	AF *RegisterPair
 	BC *RegisterPair
@@ -188,14 +191,16 @@ func (c *CPU) Step() (int, error) {
 		// halt doesn't suspend operation but it does cause
 		// the program counter to stop counting for one
 		// instruction
-		if c.MMU.Read8(IE) == 0x0 {
+		if !c.IME {
 			c.PC.Inc(1)
 		}
 		return 0, nil
 	}
 
 	// Handle interrupts
-	c.vblankInterrupt()
+	if c.IME {
+		c.vblankInterrupt()
+	}
 
 	pcBefore := c.PC.Read16()
 	description, cycles, err := c.ExecuteOperation()
