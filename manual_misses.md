@@ -19,3 +19,6 @@ Better outline
 https://ehaskins.com/2018-01-30%20Z80%20DAA/
 Table:
 http://www.z80.info/z80syntx.htm#DAA
+
+A great resource:
+http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Input
