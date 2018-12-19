@@ -11,6 +11,7 @@ type DMG struct {
 	cpu    *CPU
 	ppu    *PPU
 	tracer *Tracer
+	input  *Input
 
 	paused bool
 
@@ -32,6 +33,7 @@ func NewDMG() *DMG {
 		cpu:    cpu,
 		ppu:    ppu,
 		tracer: tracer,
+		input:  NewInput(),
 		done:   make(chan struct{}),
 	}
 }
@@ -50,6 +52,10 @@ func (c *DMG) Tracer() *Tracer {
 
 func (c *DMG) MMU() *MMU {
 	return c.cpu.MMU
+}
+
+func (c *DMG) Input() *Input {
+	return c.input
 }
 
 // Start will begin running emulation.
@@ -131,6 +137,9 @@ func (c *DMG) Step() error {
 			return nil
 		}
 	}
+
+	// Write input to memory
+	c.input.Write(c.MMU())
 
 	c.tracer.Log()
 

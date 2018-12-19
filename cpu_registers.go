@@ -66,16 +66,12 @@ func (r *RegisterPair) Read16() uint16 {
 	return 0
 }
 
-func (r *Register) getBit(pos uint) bool {
-	return r.value&(1<<pos) > 0
+func (r *Register) getBit(pos byte) bool {
+	return bitValue(pos, r.value) == 1
 }
 
-func (r *Register) setBit(v bool, pos uint) {
-	if v {
-		r.value |= (1 << pos)
-	} else {
-		r.value &^= (1 << pos)
-	}
+func (r *Register) setBit(v bool, pos byte) {
+	r.value = setBitValue(pos, r.value, v)
 }
 
 func (r *Register) Z() bool {
