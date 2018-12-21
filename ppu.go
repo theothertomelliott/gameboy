@@ -33,9 +33,6 @@ func (p *PPU) Step(t int) error {
 			// Enter hblank
 			p.modeclock = 0
 			p.mode = 0
-
-			// Write a scanline to the framebuffer
-			//GPU.renderscan()
 		}
 	// Hblank
 	// After the last hblank, push the screen data to canvas
@@ -105,12 +102,43 @@ func (p *PPU) ScrollY() byte {
 	return p.MMU.Read8(SCROLLY)
 }
 
-func (p *PPU) GetBackgroundTiles() [][][]byte {
-	lcdControl := p.MMU.Read8(LCDCONT)
+func (p *PPU) RenderScreen() [][]byte {
+	screen := p.renderBackground()
+	screen = p.renderSprites(screen)
+	return screen
+}
 
-	// Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
-	tileDataSelect := bitValue(4, lcdControl)
+func (p *PPU) renderSprites(screen [][]byte) [][]byte {
+	// Get tiles from sprite pattern table
+	tiles := p.getTilesByIndex(1)
 
+	for pos := uint16(0xFE00); pos < 0xFE9F; pos += 4 {
+		yPos := p.MMU.Read8(pos)
+		y := int(yPos) - 16
+		xPos := p.MMU.Read8(pos + 1)
+		x := int(xPos) - 8
+		tileNumber := p.MMU.Read8(pos + 2)
+		//flags := p.MMU.Read8(pos + 3)
+
+		renderedTile := tiles[tileNumber]
+
+		// Skip offscreen sprites
+		if x < 0 || y < 0 || x >= 168 || y >= 160 {
+			continue
+		}
+
+		// Write the sprite to the screen
+		for tr, rowValues := range renderedTile {
+			for tc, value := range rowValues {
+				screen[8*y+tr][8*x+tc] = value
+			}
+		}
+
+	}
+	return screen
+}
+
+func (p *PPU) getTilesByIndex(tileDataSelect byte) [][][]byte {
 	tileData := p.MMU.ReadRange(PatternTables[tileDataSelect])
 
 	var tilesByIndex [][][]byte
@@ -124,7 +152,15 @@ func (p *PPU) GetBackgroundTiles() [][][]byte {
 	return tilesByIndex
 }
 
-func (p *PPU) RenderBackground() [][]byte {
+func (p *PPU) GetBackgroundTiles() [][][]byte {
+	lcdControl := p.MMU.Read8(LCDCONT)
+
+	// Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
+	tileDataSelect := bitValue(4, lcdControl)
+	return p.getTilesByIndex(tileDataSelect)
+}
+
+func (p *PPU) renderBackground() [][]byte {
 	lcdControl := p.MMU.Read8(LCDCONT)
 
 	// Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)

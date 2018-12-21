@@ -20,7 +20,7 @@ func run(
 
 	for !win.Closed() {
 		if ppu.LCDEnabled() {
-			bg := ppu.RenderBackground()
+			bg := ppu.RenderScreen()
 			drawGraphics(
 				bg,
 				ppu.ScrollX(),
