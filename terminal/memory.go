@@ -8,13 +8,12 @@ import (
 )
 
 func (t *TerminalUI) setupMemoryView() {
-	t.memoryView = tview.NewTable().
+	t.memoryView = NewPagingTable(t).
 		SetBorders(false).
 		SetFixed(1, 1).
 		SetSelectable(true, true)
 
 	t.memoryView.
-		SetInputCapture(t.pagingFunc(t.memoryView)).
 		SetBorder(true).
 		SetTitle("Memory")
 

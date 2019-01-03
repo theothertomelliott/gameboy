@@ -9,12 +9,12 @@ import (
 )
 
 func (t *TerminalUI) setupDecompileView() {
-	t.debuggerView = tview.NewTable().
+	t.debuggerView = NewPagingTable(t).
+		SetMatchColumn(0).
 		SetBorders(false).
 		SetSelectable(true, false)
 
 	t.debuggerView.
-		SetInputCapture(t.pagingFunc(t.debuggerView)).
 		SetBorder(true).
 		SetTitle("Debugger")
 }

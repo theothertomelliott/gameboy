@@ -24,6 +24,8 @@ type TerminalUI struct {
 	testOutputView *tview.TextView
 	debuggerView   *tview.Table
 
+	rootView tview.Primitive
+
 	rCellA  *tview.TableCell
 	rCellF  *tview.TableCell
 	rCellB  *tview.TableCell
@@ -76,12 +78,16 @@ func (t *TerminalUI) setupRoot() {
 		AddItem(diagnostic, 0, 4, true).
 		AddItem(t.testOutputView, 5, 1, false)
 
-	root := tview.NewFlex().
+	t.rootView = tview.NewFlex().
 		AddItem(t.traceView, 0, 1, true).
 		AddItem(center, 0, 4, true).
 		AddItem(t.registerView, 20, 1, false)
 
-	t.app.SetRoot(root, true)
+	t.GoToRoot()
+}
+
+func (t *TerminalUI) GoToRoot() {
+	t.app.SetRoot(t.rootView, true)
 }
 
 func (t *TerminalUI) setupTestOutputView() {
@@ -132,7 +138,7 @@ func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 	t.traceView.SetCell(
 		row,
 		0,
-		tview.NewTableCell(fmt.Sprintf("0x%X", ev.CPU.PC)).
+		tview.NewTableCell(fmt.Sprintf("0x%X", row)).
 			SetTextColor(tcell.ColorYellow).
 			SetAlign(tview.AlignRight),
 	)
@@ -140,6 +146,14 @@ func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 	t.traceView.SetCell(
 		row,
 		1,
+		tview.NewTableCell(fmt.Sprintf("0x%X", ev.CPU.PC)).
+			SetTextColor(tcell.ColorYellow).
+			SetAlign(tview.AlignRight),
+	)
+
+	t.traceView.SetCell(
+		row,
+		2,
 		tview.NewTableCell(ev.CPU.Description).
 			SetTextColor(tcell.ColorWhite))
 	t.traceView.Select(row, 0)
