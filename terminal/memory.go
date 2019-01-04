@@ -2,6 +2,8 @@ package terminal
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
@@ -9,6 +11,18 @@ import (
 
 func (t *TerminalUI) setupMemoryView() {
 	t.memoryView = NewPagingTable(t).
+		SetGotoFunc(func(textValue string) (int, int) {
+			if strings.HasPrefix(textValue, "0x") {
+				textValue = strings.Replace(textValue, "0x", "", 1)
+			}
+			val, err := strconv.ParseInt(textValue, 16, 64)
+			if err != nil {
+				// TODO: Handle error
+				return 0, 0
+			}
+			row, col := int(val&0xFFF0)>>4, int(val&0xF)
+			return row + 1, col + 1
+		}).
 		SetBorders(false).
 		SetFixed(1, 1).
 		SetSelectable(true, true)

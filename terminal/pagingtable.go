@@ -13,7 +13,7 @@ type PagingTable struct {
 
 	ui *TerminalUI
 
-	matchCol *int
+	gotoCell func(string) (int, int)
 }
 
 func NewPagingTable(ui *TerminalUI) *PagingTable {
@@ -21,12 +21,40 @@ func NewPagingTable(ui *TerminalUI) *PagingTable {
 		Table: tview.NewTable(),
 		ui:    ui,
 	}
+	pt.gotoCell = func(textValue string) (int, int) {
+		if strings.HasPrefix(textValue, "0x") {
+			textValue = strings.Replace(textValue, "0x", "", 1)
+		}
+		val, err := strconv.ParseInt(textValue, 16, 64)
+		if err != nil {
+			// TODO: Handle error
+			return 0, 0
+		}
+		return int(val), 0
+	}
 	pt.SetInputCapture(pt.pagingFunc)
 	return pt
 }
 
+// SetMatchColumn configures a column in the table that will be used
+// to identify the row to be selected when the goto dialog is filled.
 func (pt *PagingTable) SetMatchColumn(col int) *PagingTable {
-	pt.matchCol = &col
+	return pt.SetGotoFunc(
+		func(textValue string) (int, int) {
+			// Find a column matching the input
+			for row := 0; row < pt.GetRowCount(); row++ {
+				cell := pt.GetCell(row, col)
+				if cell.Text == textValue {
+					return row, col
+				}
+			}
+			return 0, 0
+		},
+	)
+}
+
+func (pt *PagingTable) SetGotoFunc(gf func(string) (int, int)) *PagingTable {
+	pt.gotoCell = gf
 	return pt
 }
 
@@ -66,26 +94,8 @@ func (pt *PagingTable) showGotoModal() {
 			pt.ui.GoToRoot()
 			pt.ui.app.SetFocus(pt)
 
-			if pt.matchCol == nil {
-				if strings.HasPrefix(textValue, "0x") {
-					textValue = strings.Replace(textValue, "0x", "", 1)
-				}
-				val, err := strconv.ParseInt(textValue, 16, 64)
-				if err != nil {
-					// TODO: Handle error
-					return
-				}
-				pt.Select(int(val), 0)
-				return
-			}
-
-			// Find a column matching the input
-			for row := 0; row < pt.GetRowCount(); row++ {
-				cell := pt.GetCell(row, *pt.matchCol)
-				if cell.Text == textValue {
-					pt.Select(row, *pt.matchCol)
-				}
-			}
+			row, col := pt.gotoCell(textValue)
+			pt.Select(row, col)
 		})
 
 	pt.ui.app.SetRoot(modal, true)
