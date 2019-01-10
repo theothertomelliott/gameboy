@@ -120,7 +120,8 @@ func (t *TerminalUI) updateTestOutput() {
 		t.testOutputView.SetText(fmt.Sprintf("Error: %v", err))
 		return
 	}
-	t.testOutputView.SetText(t.gb.MMU().TestOutput())
+	testOutput := t.gb.MMU().TestOutput()
+	t.testOutputView.SetText(testOutput)
 	t.testOutputView.ScrollToEnd()
 }
 
@@ -132,6 +133,12 @@ func (t *TerminalUI) Stop() {
 func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 	if ev.CPU == nil {
 		return
+	}
+
+	if ev.MMU != nil && ev.MMU.Pos == 0xFF02 && ev.MMU.Values[0] == 0x81 {
+		if !t.gb.IsPaused() {
+			t.gb.TogglePaused()
+		}
 	}
 
 	row := int(ev.Count)
@@ -156,6 +163,13 @@ func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 		2,
 		tview.NewTableCell(ev.CPU.Description).
 			SetTextColor(tcell.ColorWhite))
+
+	t.traceView.SetCell(
+		row,
+		3,
+		tview.NewTableCell(fmt.Sprint(ev.MMU)).
+			SetTextColor(tcell.ColorWhite))
+
 	t.traceView.Select(row, 0)
 	t.traceView.ScrollToEnd()
 

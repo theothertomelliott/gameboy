@@ -122,6 +122,7 @@ func (c *DMG) IsPaused() bool {
 // Step will execute the next operation.
 // This should usually only be used when paused.
 func (c *DMG) Step() error {
+	c.tracer.Reset()
 	t, err := c.cpu.Step()
 	if err != nil {
 		return err
@@ -130,6 +131,7 @@ func (c *DMG) Step() error {
 	if err != nil {
 		return err
 	}
+	c.tracer.Log()
 
 	for _, bp := range c.Breakpoints {
 		if c.cpu.PC.Read16() == bp {
@@ -140,8 +142,6 @@ func (c *DMG) Step() error {
 
 	// Write input to memory
 	c.input.Write(c.MMU())
-
-	c.tracer.Log()
 
 	return nil
 }

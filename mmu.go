@@ -125,6 +125,9 @@ func (m *MMU) Write16(pos uint16, value uint16) {
 	high := byte(value >> 8)
 	m.RAM[pos] = low
 	m.RAM[pos+1] = high
+	if m.tracer != nil {
+		m.tracer.AddMMU(pos, low, high)
+	}
 }
 
 // Clear resets the RAM to 0

@@ -1,5 +1,7 @@
 package gameboy
 
+import "fmt"
+
 type TraceMessage struct {
 	Count int64
 	CPU   *CPUEvent
@@ -12,8 +14,15 @@ type CPUEvent struct {
 }
 
 type MMUEvent struct {
-	Pos    uint16
-	Values []byte
+	Pos         uint16
+	ValuesAfter []byte
+}
+
+func (m *MMUEvent) String() string {
+	if m == nil {
+		return ""
+	}
+	return fmt.Sprintf("0x%02X: 0x%02X", m.Pos, m.ValuesAfter)
 }
 
 type Tracer struct {
@@ -38,9 +47,14 @@ func (t *Tracer) AddCPU(pc uint16, description string) {
 
 func (t *Tracer) AddMMU(pos uint16, values ...byte) {
 	t.CurrentMMU = &MMUEvent{
-		Pos:    pos,
-		Values: values,
+		Pos:         pos,
+		ValuesAfter: values,
 	}
+}
+
+func (t *Tracer) Reset() {
+	t.CurrentCPU = nil
+	t.CurrentMMU = nil
 }
 
 func (t *Tracer) Log() {
@@ -53,7 +67,6 @@ func (t *Tracer) Log() {
 		CPU:   t.CurrentCPU,
 		MMU:   t.CurrentMMU,
 	})
-	t.CurrentCPU = nil
-	t.CurrentMMU = nil
 	t.Count++
+	t.Reset()
 }
