@@ -135,7 +135,7 @@ func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 		return
 	}
 
-	if ev.MMU != nil && ev.MMU.Pos == 0xFF02 && ev.MMU.Values[0] == 0x81 {
+	if ev.MMU != nil && ev.MMU.Pos == 0xFF02 && ev.MMU.ValuesAfter[0] == 0x81 {
 		if !t.gb.IsPaused() {
 			t.gb.TogglePaused()
 		}
@@ -162,13 +162,28 @@ func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 		row,
 		2,
 		tview.NewTableCell(ev.CPU.Description).
-			SetTextColor(tcell.ColorWhite))
+			SetTextColor(tcell.ColorWhite),
+	)
 
-	t.traceView.SetCell(
-		row,
-		3,
-		tview.NewTableCell(fmt.Sprint(ev.MMU)).
-			SetTextColor(tcell.ColorWhite))
+	var col = 3
+	if ev.MMU != nil {
+		t.traceView.SetCell(
+			row,
+			col,
+			tview.NewTableCell(fmt.Sprint(ev.MMU)).
+				SetTextColor(tcell.ColorWhite),
+		)
+		col++
+	}
+	for _, reg := range ev.Registers {
+		t.traceView.SetCell(
+			row,
+			col,
+			tview.NewTableCell(fmt.Sprint(reg)).
+				SetTextColor(tcell.ColorWhite),
+		)
+		col++
+	}
 
 	t.traceView.Select(row, 0)
 	t.traceView.ScrollToEnd()

@@ -127,11 +127,11 @@ func (c *DMG) Step() error {
 	if err != nil {
 		return err
 	}
+	c.tracer.Log()
 	err = c.ppu.Step(t)
 	if err != nil {
 		return err
 	}
-	c.tracer.Log()
 
 	for _, bp := range c.Breakpoints {
 		if c.cpu.PC.Read16() == bp {

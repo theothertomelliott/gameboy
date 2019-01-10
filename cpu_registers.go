@@ -4,6 +4,7 @@ type (
 	Register struct {
 		value       byte
 		description string
+		tracer      RegisterTracer
 	}
 	FRegister struct {
 		Register
@@ -13,11 +14,16 @@ type (
 		High        Value8
 		description string
 	}
+
+	RegisterTracer interface {
+		AddRegister(name string, valueBefore byte, valueAfter byte)
+	}
 )
 
-func NewRegister(description string) *Register {
+func NewRegister(description string, tracer RegisterTracer) *Register {
 	return &Register{
 		description: description,
+		tracer:      tracer,
 	}
 }
 
@@ -26,6 +32,9 @@ func (r *Register) String() string {
 }
 
 func (r *Register) Write8(value byte) {
+	if r.tracer != nil {
+		r.tracer.AddRegister(r.description, r.value, value)
+	}
 	r.value = value
 }
 
@@ -107,5 +116,5 @@ func (r *Register) SetC(v bool) {
 }
 
 func (r *FRegister) Write8(value byte) {
-	r.value = value & 0xF0
+	r.Register.Write8(value & 0xF0)
 }

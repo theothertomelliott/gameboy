@@ -174,14 +174,9 @@ func (c *CPU) LDHL(params ...Param) {
 func (c *CPU) PUSH(params ...Param) {
 	nn := params[0].(Value16)
 	v := nn.Read16()
-	high := byte((0xFF00 & v) >> 8)
-	low := byte(0xFF & v)
-	c.SP.Inc(-1)
+	c.SP.Inc(-2)
 	m := c.MemoryAt(c.SP)
-	m.Write8(high)
-	c.SP.Inc(-1)
-	m = c.MemoryAt(c.SP)
-	m.Write8(low)
+	m.Write16(v)
 }
 
 // POP pops from the stack into nn

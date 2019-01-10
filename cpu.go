@@ -51,6 +51,7 @@ type CPU struct {
 }
 
 type CPUTracer interface {
+	RegisterTracer
 	AddCPU(pc uint16, description string)
 }
 
@@ -59,10 +60,10 @@ func NewCPU(mmu *MMU, tracer CPUTracer) *CPU {
 	cpu := &CPU{
 		MMU: mmu,
 
-		A: NewRegister("A"), F: &FRegister{Register: *NewRegister("F")},
-		B: NewRegister("B"), C: NewRegister("C"),
-		D: NewRegister("D"), E: NewRegister("E"),
-		H: NewRegister("H"), L: NewRegister("L"),
+		A: NewRegister("A", tracer), F: &FRegister{Register: *NewRegister("F", tracer)},
+		B: NewRegister("B", tracer), C: NewRegister("C", tracer),
+		D: NewRegister("D", tracer), E: NewRegister("E", tracer),
+		H: NewRegister("H", tracer), L: NewRegister("L", tracer),
 
 		SP: &StackPointer{}, PC: &ProgramCounter{},
 		tracer: tracer,
