@@ -2,14 +2,25 @@ package gameboy
 
 import (
 	"fmt"
+	"runtime/debug"
 	"strings"
 )
+
+type LogTracer interface {
+	Logf(string, ...interface{})
+}
+type LogMessage struct {
+	Text  string
+	Stack []byte
+}
 
 type TraceMessage struct {
 	Count     int64
 	CPU       *CPUEvent
 	MMU       *MMUEvent
 	Registers []RegisterEvent
+	Stack     []StackEvent
+	Log       []LogMessage
 }
 
 type CPUEvent struct {
@@ -25,6 +36,19 @@ type RegisterEvent struct {
 
 func (r RegisterEvent) String() string {
 	return fmt.Sprintf("%v: 0x%02X -> 0x%02X", r.Name, r.ValueBefore, r.ValueAfter)
+}
+
+type StackEvent struct {
+	Pos      uint16
+	ValueIn  uint16
+	ValueOut uint16
+}
+
+func (s StackEvent) String() string {
+	if s.ValueIn != 0 {
+		return fmt.Sprintf("(SP)=0x%04X<-0x%04X", s.Pos, s.ValueIn)
+	}
+	return fmt.Sprintf("(SP)=0x%04X->0x%04X", s.Pos, s.ValueOut)
 }
 
 type MMUEvent struct {
@@ -48,9 +72,7 @@ type Tracer struct {
 
 	Logger func(ev TraceMessage)
 
-	CurrentCPU      *CPUEvent
-	CurrentMMU      *MMUEvent
-	CurrentRegister []RegisterEvent
+	currentMessage TraceMessage
 }
 
 func NewTracer() *Tracer {
@@ -58,44 +80,64 @@ func NewTracer() *Tracer {
 }
 
 func (t *Tracer) AddRegister(name string, valueBefore byte, valueAfter byte) {
-	t.CurrentRegister = append(t.CurrentRegister, RegisterEvent{
-		Name:        name,
-		ValueBefore: valueBefore,
-		ValueAfter:  valueAfter,
-	})
+	t.currentMessage.Registers = append(
+		t.currentMessage.Registers,
+		RegisterEvent{
+			Name:        name,
+			ValueBefore: valueBefore,
+			ValueAfter:  valueAfter,
+		},
+	)
 }
 
 func (t *Tracer) AddCPU(pc uint16, description string) {
-	t.CurrentCPU = &CPUEvent{
+	t.currentMessage.CPU = &CPUEvent{
 		PC:          pc,
 		Description: description,
 	}
 }
 
+func (t *Tracer) AddStack(pos, in, out uint16) {
+	t.currentMessage.Stack = append(
+		t.currentMessage.Stack,
+		StackEvent{
+			Pos:      pos,
+			ValueIn:  in,
+			ValueOut: out,
+		},
+	)
+}
+
 func (t *Tracer) AddMMU(pos uint16, values ...byte) {
-	t.CurrentMMU = &MMUEvent{
+	t.currentMessage.MMU = &MMUEvent{
 		Pos:         pos,
 		ValuesAfter: values,
 	}
 }
 
-func (t *Tracer) Reset() {
-	t.CurrentCPU = nil
-	t.CurrentMMU = nil
-	t.CurrentRegister = nil
+func (t *Tracer) Logf(message string, args ...interface{}) {
+	t.currentMessage.Log = append(
+		t.currentMessage.Log,
+		LogMessage{
+			Text:  fmt.Sprintf(message, args...),
+			Stack: debug.Stack(),
+		},
+	)
 }
 
-func (t *Tracer) Log() {
+func (t *Tracer) Reset() {
+	t.currentMessage = TraceMessage{}
+}
+
+// Flush passes the trace data for this cycle to the relevant handler
+func (t *Tracer) Flush() {
 	if t.Logger == nil {
 		return
 	}
 
-	t.Logger(TraceMessage{
-		Count:     t.Count,
-		CPU:       t.CurrentCPU,
-		MMU:       t.CurrentMMU,
-		Registers: t.CurrentRegister,
-	})
+	msg := t.currentMessage
+	msg.Count = t.Count
+	t.Logger(msg)
 	t.Count++
 	t.Reset()
 }

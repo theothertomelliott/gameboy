@@ -162,6 +162,24 @@ func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 	)
 
 	var col = 3
+	for _, log := range ev.Log {
+		t.traceView.SetCell(
+			row,
+			col,
+			tview.NewTableCell(log.Text).
+				SetTextColor(tcell.ColorWhite),
+		)
+		col++
+	}
+	for _, stack := range ev.Stack {
+		t.traceView.SetCell(
+			row,
+			col,
+			tview.NewTableCell(fmt.Sprint(stack)).
+				SetTextColor(tcell.ColorWhite),
+		)
+		col++
+	}
 	if ev.MMU != nil {
 		t.traceView.SetCell(
 			row,

@@ -51,8 +51,10 @@ type CPU struct {
 }
 
 type CPUTracer interface {
+	LogTracer
 	RegisterTracer
 	AddCPU(pc uint16, description string)
+	AddStack(pos, in, out uint16)
 }
 
 // NewCPU creates a CPU in a zeroed initial state.
@@ -118,6 +120,13 @@ func (a *Address) Inc(amount int8) {
 		v := int32(a.value) + int32(amount)
 		a.value = uint16(v)
 	}
+}
+
+func (c *CPU) Logf(message string, args ...interface{}) {
+	if c.tracer == nil {
+		return
+	}
+	c.tracer.Logf(message, args...)
 }
 
 // Init initializes the device to an appropriate state for loading without a boot ROM

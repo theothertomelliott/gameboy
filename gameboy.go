@@ -127,7 +127,7 @@ func (c *DMG) Step() error {
 	if err != nil {
 		return err
 	}
-	c.tracer.Log()
+	c.tracer.Flush()
 	err = c.ppu.Step(t)
 	if err != nil {
 		return err

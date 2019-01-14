@@ -177,6 +177,10 @@ func (c *CPU) PUSH(params ...Param) {
 	c.SP.Inc(-2)
 	m := c.MemoryAt(c.SP)
 	m.Write16(v)
+
+	if c.tracer != nil {
+		c.tracer.AddStack(c.SP.Read16(), v, 0)
+	}
 }
 
 // POP pops from the stack into nn
@@ -188,11 +192,16 @@ func (c *CPU) POP(params ...Param) {
 	m := c.MemoryAt(c.SP)
 	low := m.Read8()
 	m = c.MemoryAt(c.SP)
+	initialPos := c.SP.Read16()
 	c.SP.Inc(1)
 	high := m.Read8()
 	v := uint16(low) + (uint16(high) << 8)
 	nn.Write16(v)
 	c.SP.Inc(1)
+
+	if c.tracer != nil {
+		c.tracer.AddStack(initialPos, 0, v)
+	}
 }
 
 // ADD adds n to A
