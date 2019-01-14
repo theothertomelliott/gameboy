@@ -70,18 +70,14 @@ func NewTerminalUI(gb *gameboy.DMG) *TerminalUI {
 
 func (t *TerminalUI) setupRoot() {
 
-	diagnostic := tview.NewFlex().
-		AddItem(t.debuggerView, 0, 1, true).
-		AddItem(t.memoryView, 0, 3, true)
-
-	center := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(diagnostic, 0, 4, true).
-		AddItem(t.testOutputView, 5, 1, false)
+	output := tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(t.registerView, 0, 1, true).
+		AddItem(t.testOutputView, 0, 1, false)
 
 	t.rootView = tview.NewFlex().
-		AddItem(t.traceView, 0, 1, true).
-		AddItem(center, 0, 4, true).
-		AddItem(t.registerView, 20, 1, false)
+		AddItem(t.traceView, 0, 3, true).
+		AddItem(t.debuggerView, 0, 1, true).
+		AddItem(output, 0, 1, true)
 
 	t.GoToRoot()
 }
