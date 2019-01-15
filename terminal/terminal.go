@@ -23,6 +23,7 @@ type TerminalUI struct {
 	memoryView     *tview.Table
 	testOutputView *tview.TextView
 	debuggerView   *tview.Table
+	stackView      *StackTable
 
 	rootView tview.Primitive
 
@@ -54,6 +55,7 @@ func NewTerminalUI(gb *gameboy.DMG) *TerminalUI {
 		decompilation: make(map[uint16]string),
 	}
 
+	t.stackView = NewStackTable(gb)
 	t.setupTraceView()
 	t.setupDecompileView()
 	t.setupTestOutputView()
@@ -72,6 +74,7 @@ func (t *TerminalUI) setupRoot() {
 
 	output := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(t.registerView, 0, 1, true).
+		AddItem(t.stackView, 0, 2, true).
 		AddItem(t.testOutputView, 0, 1, false)
 
 	t.rootView = tview.NewFlex().
@@ -109,6 +112,7 @@ func (t *TerminalUI) update() {
 	t.updateRegisters()
 	t.updateMemory()
 	t.updateDecompilation()
+	t.stackView.Update()
 }
 
 func (t *TerminalUI) updateTestOutput() {
@@ -130,6 +134,8 @@ func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 	if ev.CPU == nil {
 		return
 	}
+
+	t.stackView.Trace(ev)
 
 	if ev.MMU != nil && ev.MMU.Pos == 0xFF02 && ev.MMU.ValuesAfter[0] == 0x81 {
 		t.gb.SetPaused(true)
