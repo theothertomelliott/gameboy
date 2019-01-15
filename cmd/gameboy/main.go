@@ -42,9 +42,6 @@ func main() {
 
 	gb.Breakpoints = breakpoints
 
-	gb.Start()
-	defer gb.Stop()
-
 	if *trace {
 		term := terminal.NewTerminalUI(gb)
 		defer term.Stop()
@@ -56,6 +53,9 @@ func main() {
 			}
 		}()
 	}
+
+	gb.Start()
+	defer gb.Stop()
 
 	pixelgl.Run(func() {
 		run(gb, *memview)
