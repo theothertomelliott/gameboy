@@ -357,7 +357,7 @@ func TestPrograms(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				tracer.Log()
+				tracer.Flush()
 			}
 			test.expected.compare(t, cpu)
 		})
