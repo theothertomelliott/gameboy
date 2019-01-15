@@ -132,9 +132,7 @@ func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 	}
 
 	if ev.MMU != nil && ev.MMU.Pos == 0xFF02 && ev.MMU.ValuesAfter[0] == 0x81 {
-		if !t.gb.IsPaused() {
-			t.gb.TogglePaused()
-		}
+		t.gb.SetPaused(true)
 	}
 
 	row := int(ev.Count)
@@ -215,9 +213,7 @@ func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
 	if t.stepOut {
 		if strings.HasPrefix(ev.CPU.Description, "RET") ||
 			strings.HasPrefix(ev.CPU.Description, "RST") {
-			if !t.gb.IsPaused() {
-				t.gb.TogglePaused()
-			}
+			t.gb.SetPaused(true)
 			t.stepOut = false
 		}
 	}

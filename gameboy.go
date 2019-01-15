@@ -110,11 +110,13 @@ func (c *DMG) Err() error {
 	return c.err
 }
 
-// TogglePaused with toggle the paused state of the control.
-func (c *DMG) TogglePaused() {
-	c.paused = !c.paused
+// SetPaused sets the paused state of the control
+func (c *DMG) SetPaused(paused bool) {
+	c.paused = paused
 }
 
+// IsPaused returns the paused state of the control
+// If the control has errored out, true is returned
 func (c *DMG) IsPaused() bool {
 	return c.paused || c.err != nil
 }
