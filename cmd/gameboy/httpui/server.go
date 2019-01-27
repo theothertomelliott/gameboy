@@ -4,20 +4,35 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"sync"
 
 	"github.com/theothertomelliott/gameboy"
 )
 
 type Server struct {
 	gb *gameboy.DMG
+
+	decompilation map[uint16]string
+	decompileMtx  sync.Mutex
+}
+
+func NewServer(gb *gameboy.DMG) *Server {
+	return &Server{
+		gb:            gb,
+		decompilation: make(map[uint16]string),
+	}
+}
+
+func (s *Server) Trace(ev gameboy.TraceMessage) {
+	s.decompileMtx.Lock()
+	s.decompilation[ev.CPU.PC] = ev.CPU.Description
+	s.decompileMtx.Unlock()
 }
 
 // ListenAndServe starts a UI server on the specified port
-func ListenAndServe(gb *gameboy.DMG, port int) error {
-	s := &Server{
-		gb: gb,
-	}
+func (s *Server) ListenAndServe(port int) error {
 	http.HandleFunc("/memory", s.HandleMemory)
+	http.HandleFunc("/decompile", s.HandleDecompile)
 	http.HandleFunc("/", s.HandleIndex)
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
@@ -33,7 +48,7 @@ func (s *Server) HandleIndex(w http.ResponseWriter, r *http.Request) {
 		</head>
 		<body>
 			{{range .Items}}
-				<a href="{{ . }}">{{ . }}</a>
+				<a href="{{ . }}">{{ . }}</a><br/>
 			{{end}}
 		</body>
 	</html>`
@@ -49,6 +64,7 @@ func (s *Server) HandleIndex(w http.ResponseWriter, r *http.Request) {
 	}{
 		Items: []string{
 			"/memory",
+			"/decompile",
 		},
 	}
 

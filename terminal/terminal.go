@@ -65,8 +65,6 @@ func NewTerminalUI(gb *gameboy.DMG) *TerminalUI {
 
 	t.setupInput()
 
-	gb.Tracer().Logger = t.trace
-
 	return t
 }
 
@@ -130,7 +128,7 @@ func (t *TerminalUI) Stop() {
 	t.app.Stop()
 }
 
-func (t *TerminalUI) trace(ev gameboy.TraceMessage) {
+func (t *TerminalUI) Trace(ev gameboy.TraceMessage) {
 	if ev.CPU == nil {
 		return
 	}

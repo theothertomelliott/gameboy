@@ -43,8 +43,9 @@ func main() {
 
 	gb.Breakpoints = breakpoints
 
+	var term *terminal.TerminalUI
 	if *trace {
-		term := terminal.NewTerminalUI(gb)
+		term = terminal.NewTerminalUI(gb)
 		defer term.Stop()
 
 		go func() {
@@ -55,7 +56,16 @@ func main() {
 		}()
 	}
 
-	go httpui.ListenAndServe(gb, 8080)
+	uiserver := httpui.NewServer(gb)
+
+	gb.Tracer().Logger = func(ev gameboy.TraceMessage) {
+		if term != nil {
+			term.Trace(ev)
+		}
+		uiserver.Trace(ev)
+	}
+
+	go uiserver.ListenAndServe(8080)
 
 	gb.Start()
 	defer gb.Stop()
