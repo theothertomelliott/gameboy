@@ -623,7 +623,6 @@ func (c *CPU) HALT(...Param) {
 
 // STOP halts the CPU and LCD until a button is pressed
 func (c *CPU) STOP(...Param) {
-	panic("STOP")
 	c.isStopped = true
 }
 
