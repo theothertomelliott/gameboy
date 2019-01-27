@@ -156,8 +156,15 @@ func (c *CPU) LDHL(params ...Param) {
 
 	total := int32(vSP) + int32(vN)
 
-	halfCarry := int32(vSP&0xFFF)+int32(vN&0xFFF) > 0xFFF
-	carry := total > 0xFFFF
+	var halfCarry, carry bool
+
+	if vSP >= 0 {
+		halfCarry = int32(vSP&0xFFF)+int32(vN&0xFFF) > 0xFFF
+		carry = total > 0xFFFF
+	} else {
+		carry = total&0xFF <= int32(vSP&0xFF)
+		halfCarry = total&0xF <= int32(vSP&0xF)
+	}
 
 	c.F.SetH(halfCarry)
 	c.F.SetC(carry)
@@ -191,9 +198,9 @@ func (c *CPU) POP(params ...Param) {
 	nn := params[0].(Value16)
 	m := c.MemoryAt(c.SP)
 	low := m.Read8()
-	m = c.MemoryAt(c.SP)
 	initialPos := c.SP.Read16()
 	c.SP.Inc(1)
+	m = c.MemoryAt(c.SP)
 	high := m.Read8()
 	v := uint16(low) + (uint16(high) << 8)
 	nn.Write16(v)
@@ -616,6 +623,7 @@ func (c *CPU) HALT(...Param) {
 
 // STOP halts the CPU and LCD until a button is pressed
 func (c *CPU) STOP(...Param) {
+	panic("STOP")
 	c.isStopped = true
 }
 
