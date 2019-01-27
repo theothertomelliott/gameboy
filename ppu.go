@@ -179,7 +179,11 @@ func (p *PPU) renderBackground() [][]byte {
 
 	for r := 0; r < 32; r++ {
 		for c := 0; c < 32; c++ {
-			tileRef := tileMap[r*32+c]
+			index := r*32 + c
+			if index >= len(tileMap) {
+				continue
+			}
+			tileRef := tileMap[index]
 			renderedTile := tiles[tileRef]
 
 			var total byte

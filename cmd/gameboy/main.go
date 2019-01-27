@@ -10,6 +10,7 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/pkg/errors"
 	"github.com/theothertomelliott/gameboy"
+	"github.com/theothertomelliott/gameboy/cmd/gameboy/httpui"
 	"github.com/theothertomelliott/gameboy/terminal"
 )
 
@@ -53,6 +54,8 @@ func main() {
 			}
 		}()
 	}
+
+	go httpui.ListenAndServe(gb, 8080)
 
 	gb.Start()
 	defer gb.Stop()

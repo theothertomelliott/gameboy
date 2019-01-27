@@ -73,7 +73,7 @@ func (m *MMU) switchBank(bank byte) {
 
 // ReadRange will return a range in RAM
 func (m *MMU) ReadRange(r Range) []byte {
-	return m.RAM[r.Start : r.End+1]
+	return m.RAM[r.Start:r.End]
 }
 
 func (m *MMU) Read8(pos uint16) byte {
