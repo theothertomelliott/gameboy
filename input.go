@@ -20,32 +20,40 @@ func NewInput() *Input {
 }
 
 type Input struct {
-	states [8]bool // false == pressed
+	states [8]bool
 }
 
+const (
+	keyPressed  = false
+	keyReleased = true
+)
+
 func (i *Input) Press(key Key) {
-	i.states[key] = false
+	i.states[key] = keyPressed
 }
 
 func (i *Input) Release(key Key) {
-	i.states[key] = true
+	i.states[key] = keyReleased
 }
 
 func (i *Input) Reset() {
 	for index := range i.states {
-		i.states[index] = true
+		i.states[index] = keyReleased
 	}
 }
 
 func (i *Input) Write(mmu *MMU) {
 	joy := mmu.Read8(JOYPAD)
-	if bitValue(4, joy) == 1 {
+	p14 := bitValue(4, joy)
+	p15 := bitValue(5, joy)
+
+	if p14 == 0 {
 		joy = setBitValue(0, joy, i.states[KeyA])
 		joy = setBitValue(1, joy, i.states[KeyB])
 		joy = setBitValue(2, joy, i.states[KeySelect])
 		joy = setBitValue(3, joy, i.states[KeyStart])
 	}
-	if bitValue(5, joy) == 1 {
+	if p15 == 0 {
 		joy = setBitValue(0, joy, i.states[KeyRight])
 		joy = setBitValue(1, joy, i.states[KeyLeft])
 		joy = setBitValue(2, joy, i.states[KeyUp])

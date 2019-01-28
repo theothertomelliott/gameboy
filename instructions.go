@@ -584,7 +584,11 @@ func (c *CPU) DAA(...Param) {
 //  H - Set.
 //  C - Not affected.
 func (c *CPU) CPL(...Param) {
-	c.A.Write8(c.A.Read8() ^ 0xFF)
+	c.F.SetN(true)
+	c.F.SetH(true)
+	in := c.A.Read8()
+	out := in ^ 0xFF
+	c.A.Write8(out)
 }
 
 // CCF complements the carry flag
