@@ -85,6 +85,16 @@ func (m *MMU) Read8(pos uint16) byte {
 }
 
 func (m *MMU) Write8(pos uint16, values ...byte) {
+	if pos == DMACONT {
+		start := uint16(values[0]) * 0x100
+		end := start + 0x100
+		m.Write8(0xFE00, m.ReadRange(Range{
+			Start: start,
+			End:   end,
+		})...)
+		return
+	}
+
 	if m.tracer != nil {
 		m.tracer.AddMMU(pos, values...)
 	}

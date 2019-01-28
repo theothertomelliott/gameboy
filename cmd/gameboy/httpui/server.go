@@ -24,9 +24,11 @@ func NewServer(gb *gameboy.DMG) *Server {
 }
 
 func (s *Server) Trace(ev gameboy.TraceMessage) {
-	s.decompileMtx.Lock()
-	s.decompilation[ev.CPU.PC] = ev.CPU.Description
-	s.decompileMtx.Unlock()
+	if ev.CPU != nil {
+		s.decompileMtx.Lock()
+		s.decompilation[ev.CPU.PC] = ev.CPU.Description
+		s.decompileMtx.Unlock()
+	}
 }
 
 // ListenAndServe starts a UI server on the specified port

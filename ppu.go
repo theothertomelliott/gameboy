@@ -113,10 +113,10 @@ func (p *PPU) RenderSprites(screen [][]byte) [][]byte {
 	tiles := p.GetTilesByIndex(1)
 
 	for pos := uint16(0xFE00); pos < 0xFE9F; pos += 4 {
-		yPos := p.MMU.Read8(pos)
-		y := int(yPos) - 16
-		xPos := p.MMU.Read8(pos + 1)
-		x := int(xPos) - 8
+		xPos := p.MMU.Read8(pos)
+		x := int(xPos) - 16
+		yPos := p.MMU.Read8(pos + 1)
+		y := int(yPos) - 8
 		tileNumber := p.MMU.Read8(pos + 2)
 		//flags := p.MMU.Read8(pos + 3)
 
@@ -130,7 +130,7 @@ func (p *PPU) RenderSprites(screen [][]byte) [][]byte {
 		// Write the sprite to the screen
 		for tr, rowValues := range renderedTile {
 			for tc, value := range rowValues {
-				screen[8*y+tr][8*x+tc] = value
+				screen[x+tr][y+tc] = value
 			}
 		}
 
