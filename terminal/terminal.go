@@ -20,7 +20,6 @@ type TerminalUI struct {
 
 	traceView      *tview.Table
 	registerView   *tview.Table
-	memoryView     *tview.Table
 	testOutputView *tview.TextView
 	debuggerView   *tview.Table
 	stackView      *StackTable
@@ -59,7 +58,6 @@ func NewTerminalUI(gb *gameboy.DMG) *TerminalUI {
 	t.setupTraceView()
 	t.setupDecompileView()
 	t.setupTestOutputView()
-	t.setupMemoryView()
 	t.setupRegisterView()
 	t.setupRoot()
 
@@ -108,7 +106,6 @@ func (t *TerminalUI) Run() error {
 func (t *TerminalUI) update() {
 	t.updateTestOutput()
 	t.updateRegisters()
-	t.updateMemory()
 	t.updateDecompilation()
 	t.stackView.Update()
 }
