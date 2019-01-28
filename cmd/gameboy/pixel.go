@@ -9,14 +9,10 @@ import (
 
 func run(
 	gb *gameboy.DMG,
-	showMemView bool,
 ) {
 	ppu := gb.PPU()
 
 	setupGraphics()
-	if showMemView {
-		setupMemView()
-	}
 
 	for !win.Closed() {
 		if ppu.LCDEnabled() {
@@ -28,13 +24,6 @@ func run(
 			)
 		}
 
-		if showMemView && !memWin.Closed() {
-			drawMemory(
-				gb.MMU(),
-				gb.PPU(),
-			)
-			memWin.UpdateInput()
-		}
 		win.UpdateInput()
 
 		handleKeys(gb)

@@ -17,7 +17,6 @@ import (
 func main() {
 	var (
 		trace       = flag.Bool("trace", false, "If set, a trace UI will be shown in the terminal.")
-		memview     = flag.Bool("memview", false, "If set, a rendering of all memory will be shown as a window.")
 		breakpoints breakPoints
 	)
 	flag.Var(&breakpoints, "breakpoint", "A comma-separated list of breakpoints, as 16-bit hex values.")
@@ -71,7 +70,7 @@ func main() {
 	defer gb.Stop()
 
 	pixelgl.Run(func() {
-		run(gb, *memview)
+		run(gb)
 	})
 }
 
