@@ -34,7 +34,7 @@ func (s *Server) HandleDecompile(w http.ResponseWriter, r *http.Request) {
 		</body>
 	</html>`
 
-	t, err := template.New("index").Parse(tpl)
+	t, err := template.New("decompile").Parse(tpl)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

@@ -110,7 +110,7 @@ func (p *PPU) RenderScreen() [][]byte {
 
 func (p *PPU) renderSprites(screen [][]byte) [][]byte {
 	// Get tiles from sprite pattern table
-	tiles := p.getTilesByIndex(1)
+	tiles := p.GetTilesByIndex(1)
 
 	for pos := uint16(0xFE00); pos < 0xFE9F; pos += 4 {
 		yPos := p.MMU.Read8(pos)
@@ -138,7 +138,7 @@ func (p *PPU) renderSprites(screen [][]byte) [][]byte {
 	return screen
 }
 
-func (p *PPU) getTilesByIndex(tileDataSelect byte) [][][]byte {
+func (p *PPU) GetTilesByIndex(tileDataSelect byte) [][][]byte {
 	tileData := p.MMU.ReadRange(PatternTables[tileDataSelect])
 
 	var tilesByIndex [][][]byte
@@ -157,7 +157,7 @@ func (p *PPU) GetBackgroundTiles() [][][]byte {
 
 	// Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
 	tileDataSelect := bitValue(4, lcdControl)
-	return p.getTilesByIndex(tileDataSelect)
+	return p.GetTilesByIndex(tileDataSelect)
 }
 
 func (p *PPU) renderBackground() [][]byte {

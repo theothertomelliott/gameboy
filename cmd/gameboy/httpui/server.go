@@ -33,6 +33,7 @@ func (s *Server) Trace(ev gameboy.TraceMessage) {
 func (s *Server) ListenAndServe(port int) error {
 	http.HandleFunc("/memory", s.HandleMemory)
 	http.HandleFunc("/decompile", s.HandleDecompile)
+	http.HandleFunc("/tiles", s.HandleTiles)
 	http.HandleFunc("/", s.HandleIndex)
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
