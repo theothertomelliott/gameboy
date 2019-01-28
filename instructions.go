@@ -536,10 +536,16 @@ func (c *CPU) DEC(params ...Param) {
 //  C - Reset.
 func (c *CPU) SWAP(params ...Param) {
 	n := params[0].(Value8)
-	high := (n.Read8() & 0xF0) >> 4
-	low := (n.Read8() & 0xF)
+	in := n.Read8()
+	high := (in & 0xF0) >> 4
+	low := (in & 0xF)
+	out := low<<4 | high
+	n.Write8(out)
 
-	n.Write8(low<<4 | high)
+	c.F.SetZ(out == 0)
+	c.F.SetN(false)
+	c.F.SetH(false)
+	c.F.SetC(false)
 }
 
 // DAA decimal adjusts A.
