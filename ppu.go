@@ -103,12 +103,12 @@ func (p *PPU) ScrollY() byte {
 }
 
 func (p *PPU) RenderScreen() [][]byte {
-	screen := p.renderBackground()
-	screen = p.renderSprites(screen)
+	screen := p.RenderBackground()
+	screen = p.RenderSprites(screen)
 	return screen
 }
 
-func (p *PPU) renderSprites(screen [][]byte) [][]byte {
+func (p *PPU) RenderSprites(screen [][]byte) [][]byte {
 	// Get tiles from sprite pattern table
 	tiles := p.GetTilesByIndex(1)
 
@@ -160,7 +160,7 @@ func (p *PPU) GetBackgroundTiles() [][][]byte {
 	return p.GetTilesByIndex(tileDataSelect)
 }
 
-func (p *PPU) renderBackground() [][]byte {
+func (p *PPU) RenderBackground() [][]byte {
 	lcdControl := p.MMU.Read8(LCDCONT)
 
 	// Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
