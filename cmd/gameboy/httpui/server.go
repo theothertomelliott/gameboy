@@ -34,7 +34,9 @@ func (s *Server) Trace(ev gameboy.TraceMessage) {
 // ListenAndServe starts a UI server on the specified port
 func (s *Server) ListenAndServe(port int) error {
 	http.HandleFunc("/memory", s.HandleMemory)
-	http.HandleFunc("/decompile", s.HandleDecompile)
+	http.HandleFunc("/debug", s.HandleDebug)
+	http.HandleFunc("/debug/togglepaused", s.HandleTogglePaused)
+	http.HandleFunc("/debug/step", s.HandleStep)
 	http.HandleFunc("/tiles", s.HandleTiles)
 	http.HandleFunc("/", s.HandleIndex)
 
@@ -67,7 +69,7 @@ func (s *Server) HandleIndex(w http.ResponseWriter, r *http.Request) {
 	}{
 		Items: []string{
 			"/memory",
-			"/decompile",
+			"/debug",
 		},
 	}
 
