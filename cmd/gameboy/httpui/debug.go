@@ -62,7 +62,7 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 			<div class="debugmenu">
 				<!--<h3>Debug</h3>-->
 				<ul>
-					<li><a href="/debug/togglepaused">Resume</a></li>
+					<li><a href="/debug/togglepaused">{{if .Paused}}Resume{{else}}Pause{{end}}</a></li>
 					<li><a href="/debug/step">Step</a></li>
 				</ul>
 			</div>
@@ -99,7 +99,8 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 			Id          string
 		}
 		table struct {
-			Op []row
+			Op     []row
+			Paused bool
 		}
 	)
 
@@ -111,7 +112,9 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 		return indices[i] < indices[j]
 	})
 
-	data := table{}
+	data := table{
+		Paused: s.gb.IsPaused(),
+	}
 	for _, index := range indices {
 		r := row{}
 		r.Index = fmt.Sprintf("%04X", index)
