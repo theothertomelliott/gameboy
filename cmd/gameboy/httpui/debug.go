@@ -43,6 +43,14 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 					height: 50px;
 				}
 
+				.registers {
+					display: block;
+					position: fixed; /* Set the navbar to fixed position */
+					top: 50px; /* Position the navbar at the top of the page */
+					right: 0;
+					margin-right: 10px;
+				}
+
 				#PC {
 					background-color: #fff2a8;
 				}
@@ -68,6 +76,15 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 			</div>
 			<div class="debugspacer">
 			</div>
+			<div class="registers">
+				<h2>Registers</h2>
+				<table border="0">
+					<tr><td>A</td><td>{{.Registers.A}}</td><td>F</td><td>{{.Registers.F}}</td></tr>
+					<tr><td>B</td><td>{{.Registers.B}}</td><td>C</td><td>{{.Registers.C}}</td></tr>
+					<tr><td>D</td><td>{{.Registers.D}}</td><td>E</td><td>{{.Registers.E}}</td></tr>
+					<tr><td>H</td><td>{{.Registers.H}}</td><td>F</td><td>{{.Registers.L}}</td></tr>
+				</table>
+			</div>
 			<table border="0" cellpadding="0" cellspacing="0">
 			{{range .Op}}
 				<tr id="{{.Id}}">
@@ -91,19 +108,6 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type (
-		row struct {
-			Index       string
-			Description string
-			Flags       []string
-			Id          string
-		}
-		table struct {
-			Op     []row
-			Paused bool
-		}
-	)
-
 	var indices []uint16
 	for index := range s.decompilation {
 		indices = append(indices, index)
@@ -113,7 +117,8 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 	})
 
 	data := table{
-		Paused: s.gb.IsPaused(),
+		Registers: s.getRegisters(),
+		Paused:    s.gb.IsPaused(),
 	}
 	for _, index := range indices {
 		r := row{}
@@ -150,3 +155,37 @@ func (s *Server) HandleStep(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, "/debug", 302)
 }
+
+func (s *Server) getRegisters() registers {
+	cpu := s.gb.CPU()
+	return registers{
+		A: fmt.Sprintf("0x%02X", cpu.A.Read8()),
+		F: fmt.Sprintf("0x%02X", cpu.F.Read8()),
+		B: fmt.Sprintf("0x%02X", cpu.B.Read8()),
+		C: fmt.Sprintf("0x%02X", cpu.C.Read8()),
+		D: fmt.Sprintf("0x%02X", cpu.D.Read8()),
+		E: fmt.Sprintf("0x%02X", cpu.E.Read8()),
+		H: fmt.Sprintf("0x%02X", cpu.H.Read8()),
+		L: fmt.Sprintf("0x%02X", cpu.L.Read8()),
+	}
+}
+
+type (
+	registers struct {
+		A, F string
+		B, C string
+		D, E string
+		H, L string
+	}
+	row struct {
+		Index       string
+		Description string
+		Flags       []string
+		Id          string
+	}
+	table struct {
+		Registers registers
+		Op        []row
+		Paused    bool
+	}
+)
