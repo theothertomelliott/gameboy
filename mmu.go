@@ -81,6 +81,11 @@ func (m *MMU) Read8(pos uint16) byte {
 		return m.ROM[pos]
 	}
 
+	// Unused area
+	if pos >= 0xFEA0 && pos <= 0xFEFF {
+		return 0xFF
+	}
+
 	return m.RAM[pos]
 }
 
@@ -92,6 +97,11 @@ func (m *MMU) Write8(pos uint16, values ...byte) {
 			Start: start,
 			End:   end,
 		})...)
+		return
+	}
+
+	// Unused area
+	if pos >= 0xFEA0 && pos <= 0xFEFF {
 		return
 	}
 
@@ -120,6 +130,11 @@ func (m *MMU) Write8(pos uint16, values ...byte) {
 }
 
 func (m *MMU) Read16(pos uint16) uint16 {
+	// Unused area
+	if pos >= 0xFEA0 && pos <= 0xFEFF {
+		return 0xFFFF
+	}
+
 	if pos+1 <= 0xFF && m.inROM {
 		low := uint16(m.ROM[pos])
 		high := uint16(m.ROM[pos+1])
@@ -131,6 +146,11 @@ func (m *MMU) Read16(pos uint16) uint16 {
 }
 
 func (m *MMU) Write16(pos uint16, value uint16) {
+	// Unused area
+	if pos >= 0xFEA0 && pos <= 0xFEFF {
+		return
+	}
+
 	low := byte(value & 0xFF)
 	high := byte(value >> 8)
 	m.RAM[pos] = low
