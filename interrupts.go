@@ -70,7 +70,7 @@ func (s *InterruptScheduler) HandleInterrupts() {
 	i := s.scheduledInterrupt
 	ieValue := s.mmu.Read8(IE)
 	ifValue := s.mmu.Read8(IF)
-	if bitValue(i.Bit, ieValue) != 1 || bitValue(i.Bit, ifValue) != 1 {
+	if bitValue(i.Bit, ieValue&ifValue) != 1 {
 		return
 	}
 
