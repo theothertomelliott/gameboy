@@ -1,9 +1,8 @@
 package gameboy
 
-import "errors"
-
-// TODO: Implement all interrupts:
-// http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Interrupts
+import (
+	"errors"
+)
 
 type Interrupt struct {
 	Bit byte
@@ -67,6 +66,11 @@ func (s *InterruptScheduler) HandleInterrupts() {
 		return
 	}
 
+	// Clear interrupt
+	defer func() {
+		s.scheduledInterrupt = nil
+	}()
+
 	i := s.scheduledInterrupt
 	ieValue := s.mmu.Read8(IE)
 	ifValue := s.mmu.Read8(IF)
@@ -82,7 +86,4 @@ func (s *InterruptScheduler) HandleInterrupts() {
 
 	// Disable interrupts
 	s.cpu.DI()
-
-	// Clear interrupt
-	s.scheduledInterrupt = nil
 }
