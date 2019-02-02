@@ -203,13 +203,9 @@ func (c *CPU) Step() (int, error) {
 		// instruction
 		if !c.IME {
 			c.PC.Inc(1)
+			c.isHalted = false
 		}
 		return 0, nil
-	}
-
-	// Handle interrupts
-	if c.IME {
-		c.vblankInterrupt()
 	}
 
 	pcBefore := c.PC.Read16()

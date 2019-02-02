@@ -1,5 +1,7 @@
 package gameboy
 
+import "fmt"
+
 type Key int
 
 const (
@@ -13,14 +15,17 @@ const (
 	KeyStart
 )
 
-func NewInput() *Input {
-	i := &Input{}
+func NewInput(interrupts *InterruptScheduler) *Input {
+	i := &Input{
+		interrupts: interrupts,
+	}
 	i.Reset()
 	return i
 }
 
 type Input struct {
-	states [8]bool
+	states     [8]bool
+	interrupts *InterruptScheduler
 }
 
 const (
@@ -29,6 +34,12 @@ const (
 )
 
 func (i *Input) Press(key Key) {
+	if i.states[key] == keyReleased {
+		err := i.interrupts.ScheduleInterrupt(InterruptJoypadPress)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 	i.states[key] = keyPressed
 }
 

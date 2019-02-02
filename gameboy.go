@@ -1,6 +1,7 @@
 package gameboy
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -12,6 +13,8 @@ type DMG struct {
 	ppu    *PPU
 	tracer *Tracer
 	input  *Input
+
+	interrupts *InterruptScheduler
 
 	paused bool
 
@@ -27,14 +30,16 @@ func NewDMG() *DMG {
 	tracer := NewTracer()
 	mmu := NewMMU(tracer)
 	cpu := NewCPU(mmu, tracer)
-	ppu := NewPPU(mmu)
+	interrupts := NewInterruptScheduler(cpu, mmu)
+	ppu := NewPPU(mmu, interrupts)
 
 	return &DMG{
-		cpu:    cpu,
-		ppu:    ppu,
-		tracer: tracer,
-		input:  NewInput(),
-		done:   make(chan struct{}),
+		cpu:        cpu,
+		ppu:        ppu,
+		tracer:     tracer,
+		interrupts: interrupts,
+		input:      NewInput(interrupts),
+		done:       make(chan struct{}),
 	}
 }
 
@@ -81,6 +86,7 @@ func (c *DMG) Start() {
 			}
 			err := c.Step()
 			if err != nil {
+				fmt.Println(err)
 				c.err = err
 			}
 
@@ -141,6 +147,8 @@ func (c *DMG) Step() error {
 			return nil
 		}
 	}
+
+	c.interrupts.HandleInterrupts()
 
 	// Write input to memory
 	c.input.Write(c.MMU())

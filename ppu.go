@@ -1,17 +1,21 @@
 package gameboy
 
+import "github.com/pkg/errors"
+
 type PPU struct {
-	MMU       *MMU
-	modeclock int
-	mode      byte
-	line      byte
-	drawChan  chan struct{}
+	MMU        *MMU
+	interrupts *InterruptScheduler
+	modeclock  int
+	mode       byte
+	line       byte
+	drawChan   chan struct{}
 }
 
-func NewPPU(mmu *MMU) *PPU {
+func NewPPU(mmu *MMU, interrupts *InterruptScheduler) *PPU {
 	return &PPU{
-		MMU:      mmu,
-		drawChan: make(chan struct{}),
+		MMU:        mmu,
+		interrupts: interrupts,
+		drawChan:   make(chan struct{}),
 	}
 }
 
@@ -44,9 +48,10 @@ func (p *PPU) Step(t int) error {
 			if p.line == 143 {
 				// Enter vblank
 				p.mode = 1
-
-				// Set the VBlank bit in IF to request an interrupt
-				p.MMU.Write8(IF, p.MMU.Read8(IF)|0x1)
+				err := p.interrupts.ScheduleInterrupt(InterruptVBlank)
+				if err != nil {
+					return errors.WithStack(err)
+				}
 			} else {
 				p.mode = 2
 			}
