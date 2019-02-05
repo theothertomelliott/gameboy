@@ -5,37 +5,19 @@ import (
 	"html/template"
 	"net/http"
 
+	packr "github.com/gobuffalo/packr/v2"
 	"github.com/theothertomelliott/gameboy"
 )
 
 // HandleMemory displays a Hex Editor like view of the emulator's memory
 func (s *Server) HandleMemory(w http.ResponseWriter, r *http.Request) {
-	const tpl = `
-	<!DOCTYPE html>
-	<html>
-		<head>
-			<meta charset="UTF-8">
-			<title>Gameboy - Memory</title>
-			<style>
-				body {font-family: "Courier New", Courier, serif;}
-			</style>
-		</head>
-		<body>
-			<table border="0">
-			{{range .Mem}}
-				<tr>
-				<td>{{ .Offset }}</td>
-				<td>&nbsp;</td>
-				{{range .Hex}}<td>{{ . }}</td>{{end}}
-				<td>&nbsp;</td>
-				<td>{{range .Text}}{{ . }}{{end}}</td>
-				</tr>
-			{{end}}
-			</table>
-		</body>
-	</html>`
-
-	t, err := template.New("index").Parse(tpl)
+	box := packr.New("views", "./views")
+	tpl, err := box.FindString("memory.html")
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	t, err := template.New("memory.html").Parse(tpl)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

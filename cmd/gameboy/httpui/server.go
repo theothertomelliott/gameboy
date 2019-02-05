@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sync"
 
+	packr "github.com/gobuffalo/packr/v2"
 	"github.com/theothertomelliott/gameboy"
 )
 
@@ -33,11 +34,17 @@ func (s *Server) Trace(ev gameboy.TraceMessage) {
 
 // ListenAndServe starts a UI server on the specified port
 func (s *Server) ListenAndServe(port int) error {
+
 	http.HandleFunc("/memory", s.HandleMemory)
 	http.HandleFunc("/debug", s.HandleDebug)
 	http.HandleFunc("/debug/togglepaused", s.HandleTogglePaused)
 	http.HandleFunc("/debug/step", s.HandleStep)
 	http.HandleFunc("/tiles", s.HandleTiles)
+
+	box := packr.New("public", "./public")
+	fs := http.FileServer(box)
+	http.Handle("/public/", http.StripPrefix("/public", fs))
+
 	http.HandleFunc("/", s.HandleIndex)
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)

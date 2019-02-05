@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Gameboy - Debug</title>
+        <link rel="stylesheet" href="/public/css/styles.css"/>
+        <script language="javascript" src="/public/js/debug.js"></script>
+    </head>
+    <body onload="scrollToPC();">
+        <div class="debugmenu">
+            <!--<h3>Debug</h3>-->
+            <ul>
+                <li><a href="/debug/togglepaused">{{if .Paused}}Resume{{else}}Pause{{end}}</a></li>
+                <li><a href="/debug/step">Step</a></li>
+            </ul>
+        </div>
+        <div class="debugspacer">
+        </div>
+        <div class="registers">
+            <h2>Registers</h2>
+            <table border="0">
+                <tr><td>A</td><td>{{.Registers.A}}</td><td>F</td><td>{{.Registers.F}}</td></tr>
+                <tr><td>B</td><td>{{.Registers.B}}</td><td>C</td><td>{{.Registers.C}}</td></tr>
+                <tr><td>D</td><td>{{.Registers.D}}</td><td>E</td><td>{{.Registers.E}}</td></tr>
+                <tr><td>H</td><td>{{.Registers.H}}</td><td>F</td><td>{{.Registers.L}}</td></tr>
+            </table>
+        </div>
+        <table border="0" cellpadding="0" cellspacing="0">
+        {{range .Op}}
+            <tr id="{{.Id}}" onclick="location.href='/breakpoints/toggle/{{ .Index }}';" class="oprow">
+            {{if .Breakpoint}}
+                <td>•</td>
+            {{else}}
+                <td>&nbsp;</td>
+            {{end}}
+            <td>
+                {{range .Flags}}
+                    <a id="{{.}}"></a>
+                {{end}}
+                {{ .Index }}
+            </td>
+            <td>&nbsp;</td>
+            <td>{{ .Description }}</td>
+            </tr>
+        {{end}}
+        </table>
+    </body>
+</html>

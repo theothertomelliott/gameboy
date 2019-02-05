@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Gameboy - Memory</title>
+        <link rel="stylesheet" href="/public/css/styles.css"/>
+    </head>
+    <body>
+        <table border="0">
+        {{range .Mem}}
+            <tr>
+            <td>{{ .Offset }}</td>
+            <td>&nbsp;</td>
+            {{range .Hex}}<td>{{ . }}</td>{{end}}
+            <td>&nbsp;</td>
+            <td>{{range .Text}}{{ . }}{{end}}</td>
+            </tr>
+        {{end}}
+        </table>
+    </body>
+</html>

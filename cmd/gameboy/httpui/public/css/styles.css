@@ -1,0 +1,39 @@
+body {font-family: "Courier New", Courier, serif;}
+
+.debugmenu {
+    overflow: hidden;
+    width: 100%;
+    height: 50px;
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    border-bottom: 1px solid #000;
+    left: 0;
+    background-color: #c0c0c0;
+}
+
+.debugmenu ul li {
+    float: left;
+    margin-left: 20px;
+    list-style: none;
+}
+
+.debugspacer {
+    width: 100%;
+    height: 50px;
+}
+
+.registers {
+    display: block;
+    position: fixed; /* Set the navbar to fixed position */
+    top: 50px; /* Position the navbar at the top of the page */
+    right: 0;
+    margin-right: 10px;
+}
+
+#PC {
+    background-color: #fff2a8;
+}
+
+.oprow {
+    cursor: pointer;
+}

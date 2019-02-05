@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"net/http"
 	"sort"
+
+	packr "github.com/gobuffalo/packr/v2"
 )
 
 // HandleDebug renders the debugger view
@@ -12,106 +14,14 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 	s.decompileMtx.Lock()
 	defer s.decompileMtx.Unlock()
 
-	const tpl = `
-	<!DOCTYPE html>
-	<html>
-		<head>
-			<meta charset="UTF-8">
-			<title>Gameboy - Debug</title>
-			<style>
-				body {font-family: "Courier New", Courier, serif;}
+	box := packr.New("views", "./views")
+	tpl, err := box.FindString("debug.html")
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 
-				.debugmenu {
-					overflow: hidden;
-					width: 100%;
-					height: 50px;
-					position: fixed; /* Set the navbar to fixed position */
-					top: 0; /* Position the navbar at the top of the page */
-					border-bottom: 1px solid #000;
-					left: 0;
-					background-color: #c0c0c0;
-				}
-
-				.debugmenu ul li {
-					float: left;
-					margin-left: 20px;
-					list-style: none;
-				}
-
-				.debugspacer {
-					width: 100%;
-					height: 50px;
-				}
-
-				.registers {
-					display: block;
-					position: fixed; /* Set the navbar to fixed position */
-					top: 50px; /* Position the navbar at the top of the page */
-					right: 0;
-					margin-right: 10px;
-				}
-
-				#PC {
-					background-color: #fff2a8;
-				}
-
-				.oprow {
-					cursor: pointer;
-				}
-			</style>
-			<script language="javascript">
-			function scrollToPC() {
-				var pc = document.getElementById("PC");
-				var targetPos = pc.offsetTop - document.getElementsByClassName('debugspacer')[0].offsetHeight;
-				if ('scrollRestoration' in window.history) {
-					window.history.scrollRestoration = 'manual'
-				}
-				window.scrollTo(0, targetPos);
-			}
-			</script>
-		</head>
-		<body onload="scrollToPC();">
-			<div class="debugmenu">
-				<!--<h3>Debug</h3>-->
-				<ul>
-					<li><a href="/debug/togglepaused">{{if .Paused}}Resume{{else}}Pause{{end}}</a></li>
-					<li><a href="/debug/step">Step</a></li>
-				</ul>
-			</div>
-			<div class="debugspacer">
-			</div>
-			<div class="registers">
-				<h2>Registers</h2>
-				<table border="0">
-					<tr><td>A</td><td>{{.Registers.A}}</td><td>F</td><td>{{.Registers.F}}</td></tr>
-					<tr><td>B</td><td>{{.Registers.B}}</td><td>C</td><td>{{.Registers.C}}</td></tr>
-					<tr><td>D</td><td>{{.Registers.D}}</td><td>E</td><td>{{.Registers.E}}</td></tr>
-					<tr><td>H</td><td>{{.Registers.H}}</td><td>F</td><td>{{.Registers.L}}</td></tr>
-				</table>
-			</div>
-			<table border="0" cellpadding="0" cellspacing="0">
-			{{range .Op}}
-				<tr id="{{.Id}}" onclick="location.href='/breakpoints/toggle/{{ .Index }}';" class="oprow">
-				{{if .Breakpoint}}
-					<td>•</td>
-				{{else}}
-					<td>&nbsp;</td>
-				{{end}}
-				<td>
-					{{range .Flags}}
-						<a id="{{.}}"></a>
-					{{end}}
-					{{ .Index }}
-				</td>
-				<td>&nbsp;</td>
-				<td>{{ .Description }}</td>
-				</tr>
-			{{end}}
-			</table>
-		</body>
-	</html>`
-
-	t, err := template.New("decompile").Parse(tpl)
+	t, err := template.New("debug.html").Parse(tpl)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
