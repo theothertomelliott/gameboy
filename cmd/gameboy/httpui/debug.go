@@ -54,6 +54,10 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 				#PC {
 					background-color: #fff2a8;
 				}
+
+				.oprow {
+					cursor: pointer;
+				}
 			</style>
 			<script language="javascript">
 			function scrollToPC() {
@@ -87,7 +91,12 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 			</div>
 			<table border="0" cellpadding="0" cellspacing="0">
 			{{range .Op}}
-				<tr id="{{.Id}}">
+				<tr id="{{.Id}}" onclick="location.href='/breakpoints/toggle/{{ .Index }}';" class="oprow">
+				{{if .Breakpoint}}
+					<td>•</td>
+				{{else}}
+					<td>&nbsp;</td>
+				{{end}}
 				<td>
 					{{range .Flags}}
 						<a id="{{.}}"></a>
@@ -182,6 +191,7 @@ type (
 		Description string
 		Flags       []string
 		Id          string
+		Breakpoint  bool
 	}
 	table struct {
 		Registers registers
