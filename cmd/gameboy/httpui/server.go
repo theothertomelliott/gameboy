@@ -51,19 +51,12 @@ func (s *Server) ListenAndServe(port int) error {
 }
 
 func (s *Server) HandleIndex(w http.ResponseWriter, r *http.Request) {
-	const tpl = `
-	<!DOCTYPE html>
-	<html>
-		<head>
-			<meta charset="UTF-8">
-			<title>Gameboy</title>
-		</head>
-		<body>
-			{{range .Items}}
-				<a href="{{ . }}">{{ . }}</a><br/>
-			{{end}}
-		</body>
-	</html>`
+	box := packr.New("views", "./views")
+	tpl, err := box.FindString("index.html")
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 
 	t, err := template.New("index").Parse(tpl)
 	if err != nil {
