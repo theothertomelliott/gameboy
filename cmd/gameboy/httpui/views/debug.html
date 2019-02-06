@@ -27,7 +27,7 @@
         </div>
         <table border="0" cellpadding="0" cellspacing="0">
         {{range .Op}}
-            <tr id="{{.Id}}" onclick="location.href='/breakpoints/toggle/{{ .Index }}';" class="oprow">
+            <tr id="{{.Id}}" onclick="location.href='/debug/togglebreakpoint/{{ .Index }}';" class="oprow">
             {{if .Breakpoint}}
                 <td>•</td>
             {{else}}

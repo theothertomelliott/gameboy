@@ -20,7 +20,7 @@ type DMG struct {
 
 	done chan struct{}
 
-	Breakpoints []uint16
+	Breakpoints map[uint16]struct{}
 
 	err error
 }
@@ -34,12 +34,13 @@ func NewDMG() *DMG {
 	ppu := NewPPU(mmu, interrupts)
 
 	return &DMG{
-		cpu:        cpu,
-		ppu:        ppu,
-		tracer:     tracer,
-		interrupts: interrupts,
-		input:      NewInput(interrupts),
-		done:       make(chan struct{}),
+		cpu:         cpu,
+		ppu:         ppu,
+		tracer:      tracer,
+		interrupts:  interrupts,
+		input:       NewInput(interrupts),
+		done:        make(chan struct{}),
+		Breakpoints: make(map[uint16]struct{}),
 	}
 }
 
@@ -141,7 +142,7 @@ func (c *DMG) Step() error {
 		return err
 	}
 
-	for _, bp := range c.Breakpoints {
+	for bp := range c.Breakpoints {
 		if c.cpu.PC.Read16() == bp {
 			c.paused = true
 			return nil

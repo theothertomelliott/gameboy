@@ -40,7 +40,9 @@ func main() {
 		gb.CPU().Init()
 	}
 
-	gb.Breakpoints = breakpoints
+	for _, bp := range breakpoints {
+		gb.Breakpoints[bp] = struct{}{}
+	}
 
 	var term *terminal.TerminalUI
 	if *trace {

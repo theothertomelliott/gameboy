@@ -49,6 +49,9 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 			r.Id = "PC"
 			r.Flags = append(r.Flags, "PC")
 		}
+
+		_, r.Breakpoint = s.gb.Breakpoints[index]
+
 		data.Op = append(data.Op, r)
 	}
 
