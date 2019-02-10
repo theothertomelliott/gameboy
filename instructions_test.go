@@ -700,8 +700,8 @@ func TestCP(t *testing.T) {
 			flags: expectedFlags{
 				z: true,
 				n: true,
-				h: true,
-				c: true,
+				h: false,
+				c: false,
 			},
 		},
 		{
@@ -710,8 +710,8 @@ func TestCP(t *testing.T) {
 			a:    2,
 			flags: expectedFlags{
 				n: true,
-				h: true,
-				c: true,
+				h: false,
+				c: false,
 			},
 		},
 		{
@@ -720,8 +720,8 @@ func TestCP(t *testing.T) {
 			a:    0xF0,
 			flags: expectedFlags{
 				n: true,
-				h: false,
-				c: true,
+				h: true,
+				c: false,
 			},
 		},
 		{
@@ -731,8 +731,8 @@ func TestCP(t *testing.T) {
 			flags: expectedFlags{
 				z: false,
 				n: true,
-				h: false,
-				c: false,
+				h: true,
+				c: true,
 			},
 		},
 		{
@@ -742,8 +742,8 @@ func TestCP(t *testing.T) {
 			flags: expectedFlags{
 				z: false,
 				n: true,
-				h: false,
-				c: false,
+				h: true,
+				c: true,
 			},
 		},
 		{
@@ -752,8 +752,8 @@ func TestCP(t *testing.T) {
 			a:    0x00,
 			flags: expectedFlags{
 				n: true,
-				h: true,
-				c: false,
+				h: false,
+				c: true,
 			},
 		},
 	}
@@ -1565,6 +1565,7 @@ type expectedFlags struct {
 }
 
 func (e expectedFlags) compare(t *testing.T, cpu *gameboy.CPU) {
+	t.Helper()
 	if got := cpu.F.Z(); got != e.z {
 		t.Errorf("Z Flag: expected %v, got %v", e.z, got)
 	}

@@ -168,7 +168,7 @@ func TestPrograms(t *testing.T) {
 				0x76, // HALT
 			},
 			expected: expectation{
-				F: 0xF0,
+				F: 0xC0,
 				RAM: map[uint16][]byte{
 					0x8: []byte{0x1, 0x2, 0x3, 0x4, 0x5},
 				},
@@ -228,7 +228,7 @@ func TestPrograms(t *testing.T) {
 				0x76, // HALT
 			},
 			expected: expectation{
-				F: 0xF0,
+				F: 0xC0,
 				RAM: map[uint16][]byte{
 					0x8: []byte{0x1, 0x2, 0x3, 0x4, 0x5},
 					0xD: []byte{0x1, 0x2, 0x3, 0x4, 0x5},
@@ -289,7 +289,7 @@ func TestPrograms(t *testing.T) {
 				0x76, // HALT
 			},
 			expected: expectation{
-				F: 0xF0,
+				F: 0xC0,
 				RAM: map[uint16][]byte{
 					0x8: []byte{0x5, 0x4, 0x3, 0x2, 0x1},
 					0xD: []byte{0x5, 0x4, 0x3, 0x2, 0x1},
@@ -347,9 +347,6 @@ func TestPrograms(t *testing.T) {
 				if tm.CPU == nil {
 					return
 				}
-				t.Logf("0x%04X: %v", tm.CPU.PC, tm.CPU.Description)
-				t.Logf("BC=%04X, AF=%04X, DE=%04X", cpu.BC.Read16(), cpu.AF.Read16(), cpu.DE.Read16())
-				t.Logf("A=0x%02X F=%02X", cpu.A.Read8(), cpu.F.Read8())
 			}
 
 			for count := 0; count < test.cycles; count++ {

@@ -20,6 +20,8 @@ type DMG struct {
 
 	done chan struct{}
 
+	// TODO: This is not thread safe
+	// Need to unexport and create an appropriate interface
 	Breakpoints map[uint16]struct{}
 
 	err error
