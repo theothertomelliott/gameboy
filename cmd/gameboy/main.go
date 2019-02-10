@@ -11,12 +11,10 @@ import (
 	"github.com/pkg/errors"
 	"github.com/theothertomelliott/gameboy"
 	"github.com/theothertomelliott/gameboy/cmd/gameboy/httpui"
-	"github.com/theothertomelliott/gameboy/terminal"
 )
 
 func main() {
 	var (
-		trace       = flag.Bool("trace", false, "If set, a trace UI will be shown in the terminal.")
 		breakpoints breakPoints
 	)
 	flag.Var(&breakpoints, "breakpoint", "A comma-separated list of breakpoints, as 16-bit hex values.")
@@ -44,25 +42,9 @@ func main() {
 		gb.Breakpoints[bp] = struct{}{}
 	}
 
-	var term *terminal.TerminalUI
-	if *trace {
-		term = terminal.NewTerminalUI(gb)
-		defer term.Stop()
-
-		go func() {
-			err := term.Run()
-			if err != nil {
-				panic(err)
-			}
-		}()
-	}
-
 	uiserver := httpui.NewServer(gb)
 
 	gb.Tracer().Logger = func(ev gameboy.TraceMessage) {
-		if term != nil {
-			term.Trace(ev)
-		}
 		uiserver.Trace(ev)
 	}
 
