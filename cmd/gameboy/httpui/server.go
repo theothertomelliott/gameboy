@@ -72,6 +72,7 @@ func (s *Server) HandleIndex(w http.ResponseWriter, r *http.Request) {
 		Items: []string{
 			"/memory",
 			"/debug",
+			"/tiles",
 		},
 	}
 
