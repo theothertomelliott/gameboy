@@ -96,6 +96,9 @@ func (s *Server) getRegisters() registers {
 		E: fmt.Sprintf("0x%02X", cpu.E.Read8()),
 		H: fmt.Sprintf("0x%02X", cpu.H.Read8()),
 		L: fmt.Sprintf("0x%02X", cpu.L.Read8()),
+
+		SP: fmt.Sprintf("0x%04X", cpu.SP.Read16()),
+		PC: fmt.Sprintf("0x%04X", cpu.PC.Read16()),
 	}
 }
 
@@ -105,6 +108,9 @@ type (
 		B, C string
 		D, E string
 		H, L string
+
+		SP string
+		PC string
 	}
 	row struct {
 		Index       string
