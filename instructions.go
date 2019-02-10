@@ -433,8 +433,8 @@ func (c *CPU) XOR(params ...Param) {
 // Flags affected:
 //  Z - Set if result is zero. (Set if A = n.)
 //  N - Set.
-//  H - Set if no borrow from bit 4.
-//  C - Set for no borrow. (Set if A < n.)
+//  H - Set if borrow from bit 4.
+//  C - Set for borrow. (Set if A < n.)
 func (c *CPU) CP(params ...Param) {
 	n := params[0].(Value8)
 	a := c.A.Read8()
@@ -444,8 +444,8 @@ func (c *CPU) CP(params ...Param) {
 
 	halfCarry := (a & 0xF) < (in & 0xF)
 	carry := uint16(a) < uint16(in)
-	c.F.SetH(!halfCarry)
-	c.F.SetC(!carry)
+	c.F.SetH(halfCarry)
+	c.F.SetC(carry)
 }
 
 // INC increments n
