@@ -56,6 +56,15 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 		data.Op = append(data.Op, r)
 	}
 
+	s.stackMtx.Lock()
+	for _, sp := range s.stack {
+		data.Stack = append(data.Stack, sp)
+	}
+	sort.Slice(data.Stack, func(i, j int) bool {
+		return data.Stack[i].Pos < data.Stack[j].Pos
+	})
+	s.stackMtx.Unlock()
+
 	err = t.Execute(w, data)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -120,6 +129,7 @@ type (
 		Breakpoint  bool
 	}
 	table struct {
+		Stack      []stackEntry
 		TestOutput string
 		Registers  registers
 		Op         []row

@@ -13,14 +13,30 @@ import (
 type Server struct {
 	gb *gameboy.DMG
 
+	stack    map[uint16]stackEntry
+	stackMtx sync.Mutex
+
 	decompilation map[uint16]string
 	decompileMtx  sync.Mutex
+}
+
+type Uint16 uint16
+
+func (u Uint16) String() string {
+	return fmt.Sprintf("%04X", uint16(u))
+}
+
+type stackEntry struct {
+	Pos     Uint16
+	Value   Uint16
+	WriteBy Uint16
 }
 
 func NewServer(gb *gameboy.DMG) *Server {
 	return &Server{
 		gb:            gb,
 		decompilation: make(map[uint16]string),
+		stack:         make(map[uint16]stackEntry),
 	}
 }
 
@@ -30,11 +46,23 @@ func (s *Server) Trace(ev gameboy.TraceMessage) {
 		s.decompilation[ev.CPU.PC] = ev.CPU.Description
 		s.decompileMtx.Unlock()
 	}
+
+	s.stackMtx.Lock()
+	for _, st := range ev.Stack {
+		if st.ValueIn == 0 || ev.CPU == nil {
+			continue
+		}
+		s.stack[st.Pos] = stackEntry{
+			Pos:     Uint16(st.Pos),
+			Value:   Uint16(st.ValueIn),
+			WriteBy: Uint16(ev.CPU.PC),
+		}
+	}
+	s.stackMtx.Unlock()
 }
 
 // ListenAndServe starts a UI server on the specified port
 func (s *Server) ListenAndServe(port int) error {
-
 	http.HandleFunc("/memory", s.HandleMemory)
 	http.HandleFunc("/debug", s.HandleDebug)
 	http.HandleFunc("/reset", s.HandleReset)

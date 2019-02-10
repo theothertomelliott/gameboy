@@ -32,6 +32,23 @@
                 <h2>Serial Output</h2>
                 <pre>{{.TestOutput}}</pre>
             </div>
+            <div class="stack">
+                <h2>Stack</h2>
+                <table border="1">
+                    <tr>
+                        <th>Pos</th>
+                        <th>Value</th>
+                        <th>Written By</th>                                                
+                    </tr>
+                    {{range .Stack}}
+                    <tr>
+                        <td>{{.Pos}}</td>
+                        <td>{{.Value}}</td>
+                        <td>{{.WriteBy}}</td>
+                    </tr>
+                    {{end}}
+                </table>
+            </div>
         </div>
         <table border="0" cellpadding="0" cellspacing="0">
         {{range .Op}}

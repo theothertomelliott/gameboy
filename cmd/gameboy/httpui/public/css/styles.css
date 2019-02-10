@@ -23,11 +23,19 @@ body {font-family: "Courier New", Courier, serif;}
 }
 
 .rightbar {
+    border: 1px solid #000;
+    padding: 10px;
     display: block;
+    overflow: scroll;
     position: fixed; /* Set the navbar to fixed position */
     top: 50px; /* Position the navbar at the top of the page */
     right: 0;
     margin-right: 10px;
+    height: 90%;
+}
+
+.rightbar div {
+    display: block;
 }
 
 #PC {
