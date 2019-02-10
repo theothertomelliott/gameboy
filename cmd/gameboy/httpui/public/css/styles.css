@@ -22,7 +22,7 @@ body {font-family: "Courier New", Courier, serif;}
     height: 50px;
 }
 
-.registers {
+.rightbar {
     display: block;
     position: fixed; /* Set the navbar to fixed position */
     top: 50px; /* Position the navbar at the top of the page */

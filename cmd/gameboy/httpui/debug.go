@@ -36,8 +36,9 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 	})
 
 	data := table{
-		Registers: s.getRegisters(),
-		Paused:    s.gb.IsPaused(),
+		TestOutput: s.gb.CPU().MMU.TestOutput(),
+		Registers:  s.getRegisters(),
+		Paused:     s.gb.IsPaused(),
 	}
 	for _, index := range indices {
 		r := row{}
@@ -113,8 +114,9 @@ type (
 		Breakpoint  bool
 	}
 	table struct {
-		Registers registers
-		Op        []row
-		Paused    bool
+		TestOutput string
+		Registers  registers
+		Op         []row
+		Paused     bool
 	}
 )

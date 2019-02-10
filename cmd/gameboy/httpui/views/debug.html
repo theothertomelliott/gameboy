@@ -16,14 +16,20 @@
         </div>
         <div class="debugspacer">
         </div>
-        <div class="registers">
-            <h2>Registers</h2>
-            <table border="0">
-                <tr><td>A</td><td>{{.Registers.A}}</td><td>F</td><td>{{.Registers.F}}</td></tr>
-                <tr><td>B</td><td>{{.Registers.B}}</td><td>C</td><td>{{.Registers.C}}</td></tr>
-                <tr><td>D</td><td>{{.Registers.D}}</td><td>E</td><td>{{.Registers.E}}</td></tr>
-                <tr><td>H</td><td>{{.Registers.H}}</td><td>F</td><td>{{.Registers.L}}</td></tr>
-            </table>
+        <div class="rightbar">
+            <div class="registers">
+                <h2>Registers</h2>
+                <table border="0">
+                    <tr><td>A</td><td>{{.Registers.A}}</td><td>F</td><td>{{.Registers.F}}</td></tr>
+                    <tr><td>B</td><td>{{.Registers.B}}</td><td>C</td><td>{{.Registers.C}}</td></tr>
+                    <tr><td>D</td><td>{{.Registers.D}}</td><td>E</td><td>{{.Registers.E}}</td></tr>
+                    <tr><td>H</td><td>{{.Registers.H}}</td><td>F</td><td>{{.Registers.L}}</td></tr>
+                </table>
+            </div>
+            <div class="serial">
+                <h2>Serial Output</h2>
+                <pre>{{.TestOutput}}</pre>
+            </div>
         </div>
         <table border="0" cellpadding="0" cellspacing="0">
         {{range .Op}}
