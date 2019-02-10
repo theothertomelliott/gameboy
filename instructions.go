@@ -948,7 +948,6 @@ func (c *CPU) JRC(params ...Param) {
 func (c *CPU) CALL(params ...Param) {
 	n := params[0].(Value16)
 	dst := n.Read16()
-	c.PC.Inc(1)
 	c.PUSH(c.PC)
 	c.PC.Write16(dst)
 }
@@ -981,7 +980,6 @@ func (c *CPU) RST(params ...Param) {
 // RET pops two bytes from stack & jumps to that address.
 func (c *CPU) RET(...Param) {
 	c.POP(c.PC)
-	c.PC.Inc(-1)
 }
 
 // RETC returns if following condition is true:
