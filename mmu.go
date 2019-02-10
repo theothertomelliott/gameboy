@@ -2,6 +2,7 @@ package gameboy
 
 type MMU struct {
 	RAM            []byte
+	CartridgeData  []byte
 	CartridgeBanks [][]byte
 	ROM            []byte
 
@@ -38,6 +39,8 @@ func (m *MMU) LoadROM(data []byte) {
 
 // LoadCartridge loads a Cartridge ROM into memory
 func (m *MMU) LoadCartridge(data []byte) {
+	m.CartridgeData = data
+	m.RAM = make([]byte, 0x10000)
 	for index := 0x000; index < len(data); index++ {
 		m.RAM[index] = data[index]
 	}
@@ -61,6 +64,11 @@ func (m *MMU) LoadCartridge(data []byte) {
 
 	// // Add the first bank to RAM
 	// m.switchBank(0)
+}
+
+// ResetCartridge resets the content of memory to the cartridge
+func (m *MMU) ResetCartridge() {
+	m.LoadCartridge(m.CartridgeData)
 }
 
 func (m *MMU) switchBank(bank byte) {

@@ -44,6 +44,12 @@ func NewDMG() *DMG {
 	}
 }
 
+// Reset resets the emulator, retaining the current loaded cartridge
+func (c *DMG) Reset() {
+	c.cpu.MMU.ResetCartridge()
+	c.cpu.Init()
+}
+
 func (c *DMG) CPU() *CPU {
 	return c.cpu
 }

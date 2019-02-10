@@ -62,6 +62,12 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// HandleReset resets the gameboy
+func (s *Server) HandleReset(w http.ResponseWriter, r *http.Request) {
+	s.gb.Reset()
+	http.Redirect(w, r, "/debug", 302)
+}
+
 // HandleTogglePaused toggles the paused state of the DMB emulator and redirects to the debugger
 func (s *Server) HandleTogglePaused(w http.ResponseWriter, r *http.Request) {
 	s.gb.SetPaused(!s.gb.IsPaused())

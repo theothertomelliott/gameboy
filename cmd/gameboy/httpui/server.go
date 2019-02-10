@@ -37,6 +37,7 @@ func (s *Server) ListenAndServe(port int) error {
 
 	http.HandleFunc("/memory", s.HandleMemory)
 	http.HandleFunc("/debug", s.HandleDebug)
+	http.HandleFunc("/reset", s.HandleReset)
 	http.HandleFunc("/debug/togglepaused", s.HandleTogglePaused)
 	http.HandleFunc("/debug/togglebreakpoint/", s.HandleToggleBreakpoint)
 	http.HandleFunc("/debug/step", s.HandleStep)
