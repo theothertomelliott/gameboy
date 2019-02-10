@@ -22,3 +22,8 @@ http://www.z80.info/z80syntx.htm#DAA
 
 A great resource:
 http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Input
+
+# CP
+
+The carry and half carry behavior are reversed:
+https://forums.nesdev.com/viewtopic.php?f=20&t=12861&p=234005#p234005
