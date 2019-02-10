@@ -6,7 +6,6 @@ Loads the value of hl, not the value at the memory location of HL.
 
 TODO: Confirm in commit history
 
-
 # POP AF
 
 Only write the top 4 bits.
