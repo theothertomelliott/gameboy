@@ -40,6 +40,7 @@ func (m *MMU) LoadROM(data []byte) {
 // LoadCartridge loads a Cartridge ROM into memory
 func (m *MMU) LoadCartridge(data []byte) {
 	m.CartridgeData = data
+	m.testOutput = nil
 	m.RAM = make([]byte, 0x10000)
 	for index := 0x000; index < len(data); index++ {
 		m.RAM[index] = data[index]
