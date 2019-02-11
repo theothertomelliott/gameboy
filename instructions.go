@@ -169,7 +169,7 @@ func (c *CPU) LDHL(params ...Param) {
 	c.F.SetH(halfCarry)
 	c.F.SetC(carry)
 
-	valueOut := c.MMU.Read16(uint16(total))
+	valueOut := uint16(total)
 	c.HL.Write16(valueOut)
 }
 
