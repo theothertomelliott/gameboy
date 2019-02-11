@@ -20,12 +20,12 @@
             <div class="registers">
                 <h2>Registers</h2>
                 <table border="0">
-                    <tr><td>A</td><td>{{.Registers.A}}</td><td>F</td><td>{{.Registers.F}}</td></tr>
-                    <tr><td>B</td><td>{{.Registers.B}}</td><td>C</td><td>{{.Registers.C}}</td></tr>
-                    <tr><td>D</td><td>{{.Registers.D}}</td><td>E</td><td>{{.Registers.E}}</td></tr>
-                    <tr><td>H</td><td>{{.Registers.H}}</td><td>L</td><td>{{.Registers.L}}</td></tr>
-                    <tr><td colspan="2">PC</td><td colspan="2">{{.Registers.PC}}</td></tr>
-                    <tr><td colspan="2">SP</td><td colspan="2">{{.Registers.SP}}</td></tr>
+                    <tr><td>A</td><td>0x{{.Registers.A}}</td><td>F</td><td>0x{{.Registers.F}}</td></tr>
+                    <tr><td>B</td><td>0x{{.Registers.B}}</td><td>C</td><td>0x{{.Registers.C}}</td></tr>
+                    <tr><td>D</td><td>0x{{.Registers.D}}</td><td>E</td><td>0x{{.Registers.E}}</td></tr>
+                    <tr><td>H</td><td>0x{{.Registers.H}}</td><td>L</td><td>0x{{.Registers.L}}</td></tr>
+                    <tr><td colspan="2">PC</td><td colspan="2">0x{{.Registers.PC}}</td></tr>
+                    <tr><td colspan="2">SP</td><td colspan="2">0x{{.Registers.SP}}</td></tr>
                 </table>
             </div>
             <div class="serial">

@@ -1,7 +1,6 @@
 package httpui
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"sort"
@@ -42,10 +41,10 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, index := range indices {
 		r := row{}
-		r.Index = fmt.Sprintf("%04X", index)
+		r.Index = Uint16(index)
 		r.Description = s.decompilation[index]
-		r.Flags = []string{r.Index}
-		r.Id = r.Index
+		r.Flags = []string{r.Index.String()}
+		r.Id = r.Index.String()
 		if index == s.gb.CPU().PC.Read16() {
 			r.Id = "PC"
 			r.Flags = append(r.Flags, "PC")
@@ -97,32 +96,32 @@ func (s *Server) HandleStep(w http.ResponseWriter, r *http.Request) {
 func (s *Server) getRegisters() registers {
 	cpu := s.gb.CPU()
 	return registers{
-		A: fmt.Sprintf("0x%02X", cpu.A.Read8()),
-		F: fmt.Sprintf("0x%02X", cpu.F.Read8()),
-		B: fmt.Sprintf("0x%02X", cpu.B.Read8()),
-		C: fmt.Sprintf("0x%02X", cpu.C.Read8()),
-		D: fmt.Sprintf("0x%02X", cpu.D.Read8()),
-		E: fmt.Sprintf("0x%02X", cpu.E.Read8()),
-		H: fmt.Sprintf("0x%02X", cpu.H.Read8()),
-		L: fmt.Sprintf("0x%02X", cpu.L.Read8()),
+		A: Uint8(cpu.A.Read8()),
+		F: Uint8(cpu.F.Read8()),
+		B: Uint8(cpu.B.Read8()),
+		C: Uint8(cpu.C.Read8()),
+		D: Uint8(cpu.D.Read8()),
+		E: Uint8(cpu.E.Read8()),
+		H: Uint8(cpu.H.Read8()),
+		L: Uint8(cpu.L.Read8()),
 
-		SP: fmt.Sprintf("0x%04X", cpu.SP.Read16()),
-		PC: fmt.Sprintf("0x%04X", cpu.PC.Read16()),
+		SP: Uint16(cpu.SP.Read16()),
+		PC: Uint16(cpu.PC.Read16()),
 	}
 }
 
 type (
 	registers struct {
-		A, F string
-		B, C string
-		D, E string
-		H, L string
+		A, F Uint8
+		B, C Uint8
+		D, E Uint8
+		H, L Uint8
 
-		SP string
-		PC string
+		SP Uint16
+		PC Uint16
 	}
 	row struct {
-		Index       string
+		Index       Uint16
 		Description string
 		Flags       []string
 		Id          string

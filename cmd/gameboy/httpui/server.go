@@ -26,6 +26,12 @@ func (u Uint16) String() string {
 	return fmt.Sprintf("%04X", uint16(u))
 }
 
+type Uint8 uint8
+
+func (u Uint8) String() string {
+	return fmt.Sprintf("%02X", uint8(u))
+}
+
 type stackEntry struct {
 	Pos     Uint16
 	Value   Uint16
