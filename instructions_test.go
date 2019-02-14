@@ -1521,8 +1521,8 @@ func TestLDHL(t *testing.T) {
 
 			cpu.LDHL(a, b)
 
-			if got := cpu.HL.Read16(); got != 0xAEBF {
-				t.Errorf("HL: expected %d, got %d", 0xAEBF, got)
+			if got := cpu.HL.Read16(); got != test.expected {
+				t.Errorf("HL: expected 0x%04X, got 0x%04X", test.expected, got)
 			}
 			test.flags.compare(t, cpu)
 		})
