@@ -157,10 +157,10 @@ func (c *DMG) Step() error {
 		}
 	}
 
-	c.interrupts.HandleInterrupts()
-
 	// Write input to memory
 	c.input.Write(c.MMU())
+
+	c.interrupts.HandleInterrupts()
 
 	return nil
 }
