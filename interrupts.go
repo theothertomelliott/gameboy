@@ -1,7 +1,7 @@
 package gameboy
 
 import (
-	"errors"
+	"fmt"
 )
 
 type Interrupt struct {
@@ -45,20 +45,19 @@ type InterruptScheduler struct {
 	mmu                *MMU
 }
 
-func (s *InterruptScheduler) ScheduleInterrupt(i Interrupt) error {
+func (s *InterruptScheduler) ScheduleInterrupt(i Interrupt) {
 	if !s.cpu.IME {
-		return nil
+		return
 	}
 
 	if s.scheduledInterrupt != nil {
-		return errors.New("interrupt scheduled before previous interrupt was processed")
+		fmt.Println("interrupt scheduled before previous interrupt was processed")
 	}
 
 	// Set the VBlank bit in IF to request an interrupt
 	ifValue := s.mmu.Read8(IF)
 	s.mmu.Write8(IF, setBitValue(i.Bit, ifValue, true))
 	s.scheduledInterrupt = &i
-	return nil
 }
 
 func (s *InterruptScheduler) HandleInterrupts() {
@@ -83,6 +82,10 @@ func (s *InterruptScheduler) HandleInterrupts() {
 
 	// CALL interrupt vector
 	s.cpu.CALL(Direct16(i.ISR))
+
+	if s.cpu.isHalted {
+		s.cpu.isHalted = false
+	}
 
 	// Disable interrupts
 	s.cpu.DI()

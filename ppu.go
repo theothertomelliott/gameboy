@@ -1,7 +1,5 @@
 package gameboy
 
-import "github.com/pkg/errors"
-
 type PPU struct {
 	MMU        *MMU
 	interrupts *InterruptScheduler
@@ -20,6 +18,7 @@ func NewPPU(mmu *MMU, interrupts *InterruptScheduler) *PPU {
 }
 
 func (p *PPU) Step(t int) error {
+	defer p.setStatus()
 	p.modeclock += t
 
 	switch p.mode {
@@ -28,7 +27,7 @@ func (p *PPU) Step(t int) error {
 		if p.modeclock >= 80 {
 			// Enter scanline mode 3
 			p.modeclock = 0
-			p.mode = 3
+			p.setMode(3)
 		}
 	// VRAM read mode, scanline active
 	// Treat end of mode 3 as end of scanline
@@ -36,24 +35,20 @@ func (p *PPU) Step(t int) error {
 		if p.modeclock >= 172 {
 			// Enter hblank
 			p.modeclock = 0
-			p.mode = 0
+			p.setMode(0)
 		}
 	// Hblank
 	// After the last hblank, push the screen data to canvas
 	case 0:
 		if p.modeclock >= 204 {
 			p.modeclock = 0
-			p.line++
+			p.incLine()
 
 			if p.line == 143 {
 				// Enter vblank
-				p.mode = 1
-				err := p.interrupts.ScheduleInterrupt(InterruptVBlank)
-				if err != nil {
-					return errors.WithStack(err)
-				}
+				p.setMode(1)
 			} else {
-				p.mode = 2
+				p.setMode(2)
 			}
 		}
 
@@ -61,22 +56,81 @@ func (p *PPU) Step(t int) error {
 	case 1:
 		if p.modeclock >= 456 {
 			p.modeclock = 0
-			p.line++
+			p.incLine()
 
 			if p.line > 153 {
 				// Restart scanning modes
-				p.mode = 2
-				p.line = 0
+				p.setMode(2)
+				p.setLine(0)
 			}
 		}
 	}
 
+	return nil
+}
+
+func (p *PPU) resetLine() {
+	p.line = 0
+}
+
+func (p *PPU) incLine() {
+	p.setLine(p.line + 1)
+}
+
+func (p *PPU) setLine(line byte) {
+	p.line = line
 	if p.MMU.Read8(CURLINE) != p.line {
 		// Write the current line to memory
 		p.MMU.Write8(CURLINE, p.line)
 	}
 
-	return nil
+	// Handle line coincidence
+	if p.line == p.MMU.Read8(CMPLINE) {
+		curStat := p.MMU.Read8(LCDSTAT)
+		if bitValue(6, curStat) != 0 {
+			p.interrupts.ScheduleInterrupt(InterruptLCDStatus)
+		}
+	}
+}
+
+func (p *PPU) setMode(newMode byte) {
+	if p.mode == newMode {
+		return
+	}
+
+	curStat := p.MMU.Read8(LCDSTAT)
+	if newMode == 0 {
+		if bitValue(3, curStat) != 0 {
+			p.interrupts.ScheduleInterrupt(InterruptLCDStatus)
+		}
+	}
+	if newMode == 1 {
+		if bitValue(4, curStat) != 0 {
+			p.interrupts.ScheduleInterrupt(InterruptLCDStatus)
+		}
+		p.interrupts.ScheduleInterrupt(InterruptVBlank)
+	}
+	if newMode == 2 {
+		if bitValue(5, curStat) != 0 {
+			p.interrupts.ScheduleInterrupt(InterruptLCDStatus)
+		}
+		p.interrupts.ScheduleInterrupt(InterruptVBlank)
+	}
+
+	p.mode = newMode
+}
+
+func (p *PPU) setStatus() {
+	curStat := p.MMU.Read8(LCDSTAT)
+	// Set mode stat
+	curStat = curStat & 0x3
+	p.MMU.Write8(LCDSTAT, curStat|p.mode)
+
+	// Handle line coincidence
+	if p.line == p.MMU.Read8(CMPLINE) {
+		curStat := p.MMU.Read8(LCDSTAT)
+		p.MMU.Write8(LCDSTAT, curStat|0x4)
+	}
 }
 
 func (p *PPU) Render() []byte {

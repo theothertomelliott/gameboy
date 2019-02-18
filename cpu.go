@@ -205,7 +205,7 @@ func (c *CPU) Step() (int, error) {
 			c.PC.Inc(1)
 			c.isHalted = false
 		}
-		return 0, nil
+		return 4, nil
 	}
 
 	pcBefore := c.PC.Read16()

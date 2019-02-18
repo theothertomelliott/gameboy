@@ -1,7 +1,5 @@
 package gameboy
 
-import "fmt"
-
 type Key int
 
 const (
@@ -35,10 +33,7 @@ const (
 
 func (i *Input) Press(key Key) {
 	if i.states[key] == keyReleased {
-		err := i.interrupts.ScheduleInterrupt(InterruptJoypadPress)
-		if err != nil {
-			fmt.Println(err)
-		}
+		i.interrupts.ScheduleInterrupt(InterruptJoypadPress)
 	}
 	i.states[key] = keyPressed
 }
