@@ -156,16 +156,8 @@ func (c *CPU) LDHL(params ...Param) {
 
 	total := int32(vSP) + int32(vN)
 
-	var halfCarry, carry bool
-
-	if vSP >= 0 {
-		halfCarry = int32(vSP&0xFFF)+int32(vN&0xFFF) > 0xFFF
-		carry = total > 0xFFFF
-	} else {
-		carry = total&0xFF <= int32(vSP&0xFF)
-		halfCarry = total&0xF <= int32(vSP&0xF)
-	}
-
+	carry := (int32(vSP)^int32(vN)^int32(total))&0x100 == 0x100
+	halfCarry := (int32(vSP)^int32(vN)^int32(total))&0x10 == 0x10
 	c.F.SetH(halfCarry)
 	c.F.SetC(carry)
 
@@ -245,19 +237,31 @@ func (c *CPU) ADD(params ...Param) {
 	// 16 bit
 	if dst, is16Bit := params[0].(Value16); is16Bit {
 		x := dst.Read16()
-		var y uint16
+		var (
+			result           uint16
+			halfCarry, carry bool
+		)
 		if src, is16Bit := params[1].(Value16); is16Bit {
-			y = src.Read16()
+			y := src.Read16()
+			result = x + y
+			halfCarry = ((x & 0xFFF) + (y & 0xFFF)) > 0xFFF
+			carry = (uint32(x) + uint32(y)) > 0xFFFF
 		}
 		if src, is8Bit := params[1].(Value8); is8Bit {
-			y = uint16(src.Read8())
+			y := src.Read8()
+			result = x + uint16(y)
+			halfCarry = ((x & 0xF) + (uint16(y) & 0xF)) > 0xF
+			carry = (uint32(x&0xFF) + uint32(uint16(y)&0xFF)) > 0xFF
+			c.F.SetZ(result == 0)
 		}
-		result := x + y
-		c.F.SetZ(result == 0)
+		if src, isSigned8Bit := params[1].(ValueSigned8); isSigned8Bit {
+			y := src.ReadSigned8()
+			result = uint16(int16(x) + int16(y))
+			carry = (int32(x)^int32(y)^int32(result))&0x100 == 0x100
+			halfCarry = (int32(x)^int32(y)^int32(result))&0x10 == 0x10
+			c.F.SetZ(false)
+		}
 		c.F.SetN(false)
-
-		halfCarry := ((x & 0xFFF) + (y & 0xFFF)) > 0xFFF
-		carry := (uint32(x) + uint32(y)) > 0xFFFF
 		c.F.SetH(halfCarry)
 		c.F.SetC(carry)
 

@@ -282,10 +282,8 @@ func TestADD16(t *testing.T) {
 		flags    expectedFlags
 	}{
 		{
-			name: "zero",
-			flags: expectedFlags{
-				z: true,
-			},
+			name:  "zero",
+			flags: expectedFlags{},
 		},
 		{
 			name:     "1 plus 1",
@@ -296,7 +294,7 @@ func TestADD16(t *testing.T) {
 		{
 			name:     "half carry",
 			dst:      0xFFF,
-			src:      1,
+			src:      0x1,
 			expected: 0x1000,
 			flags: expectedFlags{
 				h: true,
@@ -308,7 +306,6 @@ func TestADD16(t *testing.T) {
 			src:      0x1,
 			expected: 0x0000,
 			flags: expectedFlags{
-				z: true,
 				h: true,
 				c: true,
 			},
@@ -319,7 +316,6 @@ func TestADD16(t *testing.T) {
 			src:      0x1000,
 			expected: 0x0000,
 			flags: expectedFlags{
-				z: true,
 				c: true,
 			},
 		},
@@ -338,67 +334,6 @@ func TestADD16(t *testing.T) {
 			if got := dst.Read16(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
-		})
-	}
-}
-
-func TestADDSP(t *testing.T) {
-	var tests = []struct {
-		name     string
-		dst      uint16
-		src      byte
-		expected uint16
-		flags    expectedFlags
-	}{
-		{
-			name: "zero",
-			flags: expectedFlags{
-				z: true,
-			},
-		},
-		{
-			name:     "1 plus 1",
-			dst:      1,
-			src:      1,
-			expected: 2,
-		},
-		{
-			name:     "half carry",
-			dst:      0xFFF,
-			src:      1,
-			expected: 0x1000,
-			flags: expectedFlags{
-				h: true,
-			},
-		},
-		{
-			name:     "carry + half carruy",
-			dst:      0xFFFF,
-			src:      0x1,
-			expected: 0x0000,
-			flags: expectedFlags{
-				z: true,
-				h: true,
-				c: true,
-			},
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-
-			dst := &gameboy.RegisterPair{}
-			dst.Write16(test.dst)
-			src := &gameboy.Register{}
-			src.Write8(test.src)
-
-			cpu.ADD(dst, src)
-
-			if got := dst.Read16(); got != test.expected {
-				t.Errorf("A: expected %d, got %d", test.expected, got)
-			}
-
 			test.flags.compare(t, cpu)
 		})
 	}
@@ -1478,15 +1413,6 @@ func TestLDHL(t *testing.T) {
 			a:        1,
 			b:        1,
 			expected: 2,
-		},
-		{
-			name:     "half carry",
-			a:        0xFFF,
-			b:        1,
-			expected: 0x1000,
-			flags: expectedFlags{
-				h: true,
-			},
 		},
 		{
 			name:     "carry and half carry",
