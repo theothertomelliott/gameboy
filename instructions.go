@@ -298,7 +298,7 @@ func (c *CPU) ADD(params ...Param) {
 //   H - Set if carry from bit 3.
 //   C - Set if carry from bit 7.
 func (c *CPU) ADC(params ...Param) {
-	n := params[0].(Value8)
+	n := params[1].(Value8)
 	a := c.A.Read8()
 	in := n.Read8()
 
@@ -352,7 +352,7 @@ func (c *CPU) SUB(params ...Param) {
 //   H - Set if no borrow from bit 4.
 //   C - Set if no borrow.
 func (c *CPU) SBC(params ...Param) {
-	n := params[0].(Value8)
+	n := params[1].(Value8)
 	a := c.A.Read8()
 	in := n.Read8()
 
