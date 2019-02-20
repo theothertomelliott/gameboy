@@ -518,7 +518,7 @@ func (c *CPU) DEC(params ...Param) {
 		c.F.SetN(true)
 
 		halfCarry := (in & 0xF) < 1
-		c.F.SetH(!halfCarry)
+		c.F.SetH(halfCarry)
 
 		n.Write8(result)
 		return
