@@ -413,7 +413,7 @@ func TestADC(t *testing.T) {
 				cpu.F.SetC(test.cIn)
 			}
 
-			cpu.ADC(src)
+			cpu.ADC(cpu.A, src)
 
 			if got := cpu.A.Read8(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
@@ -437,8 +437,8 @@ func TestSUB(t *testing.T) {
 			flags: expectedFlags{
 				z: true,
 				n: true,
-				h: true,
-				c: true,
+				h: false,
+				c: false,
 			},
 		},
 		{
@@ -448,8 +448,8 @@ func TestSUB(t *testing.T) {
 			expected: 1,
 			flags: expectedFlags{
 				n: true,
-				h: true,
-				c: true,
+				h: false,
+				c: false,
 			},
 		},
 		{
@@ -459,8 +459,8 @@ func TestSUB(t *testing.T) {
 			expected: 0xEF,
 			flags: expectedFlags{
 				n: true,
-				h: false,
-				c: true,
+				h: true,
+				c: false,
 			},
 		},
 		{
@@ -471,8 +471,8 @@ func TestSUB(t *testing.T) {
 			flags: expectedFlags{
 				z: false,
 				n: true,
-				h: false,
-				c: false,
+				h: true,
+				c: true,
 			},
 		},
 		{
@@ -483,8 +483,8 @@ func TestSUB(t *testing.T) {
 			flags: expectedFlags{
 				z: false,
 				n: true,
-				h: false,
-				c: false,
+				h: true,
+				c: true,
 			},
 		},
 		{
@@ -494,8 +494,8 @@ func TestSUB(t *testing.T) {
 			expected: 0xF0,
 			flags: expectedFlags{
 				n: true,
-				h: true,
-				c: false,
+				h: false,
+				c: true,
 			},
 		},
 	}
@@ -530,8 +530,8 @@ func TestSBC(t *testing.T) {
 			flags: expectedFlags{
 				z: true,
 				n: true,
-				h: true,
-				c: true,
+				h: false,
+				c: false,
 			},
 		},
 		{
@@ -541,8 +541,8 @@ func TestSBC(t *testing.T) {
 			expected: 1,
 			flags: expectedFlags{
 				n: true,
-				h: true,
-				c: true,
+				h: false,
+				c: false,
 			},
 		},
 		{
@@ -552,8 +552,8 @@ func TestSBC(t *testing.T) {
 			expected: 0xEF,
 			flags: expectedFlags{
 				n: true,
-				h: false,
-				c: true,
+				h: true,
+				c: false,
 			},
 		},
 		{
@@ -564,8 +564,8 @@ func TestSBC(t *testing.T) {
 			flags: expectedFlags{
 				z: false,
 				n: true,
-				h: false,
-				c: false,
+				h: true,
+				c: true,
 			},
 		},
 		{
@@ -576,8 +576,8 @@ func TestSBC(t *testing.T) {
 			flags: expectedFlags{
 				z: false,
 				n: true,
-				h: false,
-				c: false,
+				h: true,
+				c: true,
 			},
 		},
 		{
@@ -587,8 +587,8 @@ func TestSBC(t *testing.T) {
 			expected: 0xF0,
 			flags: expectedFlags{
 				n: true,
-				h: true,
-				c: false,
+				h: false,
+				c: true,
 			},
 		},
 		{
@@ -600,8 +600,8 @@ func TestSBC(t *testing.T) {
 			flags: expectedFlags{
 				z: false,
 				n: true,
-				h: false,
-				c: false,
+				h: true,
+				c: true,
 			},
 		},
 	}
@@ -613,7 +613,7 @@ func TestSBC(t *testing.T) {
 			src.Write8(test.in)
 
 			cpu.F.SetC(test.cIn)
-			cpu.SBC(src)
+			cpu.SBC(cpu.A, src)
 
 			if got := cpu.A.Read8(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)

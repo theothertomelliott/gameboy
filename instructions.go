@@ -331,14 +331,15 @@ func (c *CPU) SUB(params ...Param) {
 	n := params[0].(Value8)
 	a := c.A.Read8()
 	in := n.Read8()
-	carry := a < in
+
 	result := a - in
 	c.F.SetZ(result == 0)
 	c.F.SetN(true)
 
+	carry := a < in
 	halfCarry := (a & 0xF) < (in & 0xF)
-	c.F.SetH(!halfCarry)
-	c.F.SetC(!carry)
+	c.F.SetH(halfCarry)
+	c.F.SetC(carry)
 
 	c.A.Write8(result)
 }
@@ -352,25 +353,26 @@ func (c *CPU) SUB(params ...Param) {
 //   H - Set if no borrow from bit 4.
 //   C - Set if no borrow.
 func (c *CPU) SBC(params ...Param) {
+	a := params[0].(Value8)
 	n := params[1].(Value8)
-	a := c.A.Read8()
+	av := a.Read8()
 	in := n.Read8()
 
 	var carryValue byte
 	if c.F.C() {
 		carryValue = 1
 	}
-	sub := (in + carryValue)
-	result := a - sub
+
+	result := av - in - carryValue
 	c.F.SetZ(result == 0)
 	c.F.SetN(true)
 
-	halfCarry := (a & 0xF) < (sub & 0xF)
-	carry := uint16(a) < uint16(sub)
-	c.F.SetH(!halfCarry)
-	c.F.SetC(!carry)
+	halfCarry := int32(av&0xF) < int32(in&0xF)+int32(carryValue)
+	carry := uint16(av) < uint16(in+carryValue)
+	c.F.SetH(halfCarry)
+	c.F.SetC(carry)
 
-	c.A.Write8(result)
+	a.Write8(result)
 }
 
 // AND locally ANDs n with A and stores the result in A
