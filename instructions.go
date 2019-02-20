@@ -480,14 +480,11 @@ func (c *CPU) INC(params ...Param) {
 
 		halfCarry := (1 + (in & 0xF)) > 0xF
 		c.F.SetH(halfCarry)
-
 		n.Write8(result)
 	}
 
 	if n, is16Bit := params[0].(Value16); is16Bit {
-		in := n.Read16()
-		result := in + 1
-		n.Write16(result)
+		n.Write16(n.Read16() + 1)
 	}
 }
 
