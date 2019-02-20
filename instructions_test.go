@@ -807,7 +807,7 @@ func TestDEC(t *testing.T) {
 			flags: expectedFlags{
 				z: true,
 				n: true,
-				h: true,
+				h: false,
 			},
 		},
 		{
@@ -815,8 +815,8 @@ func TestDEC(t *testing.T) {
 			in:       0xF0,
 			expected: 0xEF,
 			flags: expectedFlags{
-				h: false,
 				n: true,
+				h: true,
 			},
 		},
 		{
@@ -825,6 +825,7 @@ func TestDEC(t *testing.T) {
 			expected: 0xFF,
 			flags: expectedFlags{
 				n: true,
+				h: true,
 			},
 		},
 	}
