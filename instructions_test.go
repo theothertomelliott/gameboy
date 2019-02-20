@@ -906,11 +906,11 @@ func TestBit(t *testing.T) {
 	cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
 	cpu.A.Write8(0x04)
 	cpu.BIT(5, cpu.A)
-	if cpu.F.Z() {
+	if !cpu.F.Z() {
 		t.Errorf("expected zero on bit 5")
 	}
 	cpu.BIT(2, cpu.A)
-	if !cpu.F.Z() {
+	if cpu.F.Z() {
 		t.Errorf("expected one on bit 3")
 	}
 }
@@ -1183,7 +1183,7 @@ func TestRRC(t *testing.T) {
 		{
 			name:     "full rotation and carry bit",
 			in:       0xFF,
-			expected: 0x7F,
+			expected: 0xFF,
 			flags: expectedFlags{
 				c: true,
 			},
