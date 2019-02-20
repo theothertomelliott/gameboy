@@ -890,7 +890,9 @@ func (c *CPU) SRL(params ...Param) {
 func (c *CPU) BIT(params ...Param) {
 	pos := byte(params[0].(int))
 	value := params[1].(Value8).Read8()
-	result := bitValue(pos, value) > 0
+	result := bitValue(pos, value) == 0
+	c.F.SetH(true)
+	c.F.SetN(false)
 	c.F.SetZ(result)
 }
 
