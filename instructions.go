@@ -782,16 +782,12 @@ func (c *CPU) RL(params ...Param) {
 //  H - Reset.
 //  C - Contains old bit 0 data.
 func (c *CPU) RRC(params ...Param) {
-	carryValue := byte(0)
-	if c.F.C() {
-		carryValue = 0x80
-	}
 	n := params[0].(Value8)
 	value := n.Read8()
-	result := value>>1 + carryValue
-	c.F.SetZ(result == 0)
-	// c.F.SetN(false)
-	// c.F.SetH(false)
+	result := value>>1 | value<<7
+	c.F.SetZ(value == 0)
+	c.F.SetN(false)
+	c.F.SetH(false)
 	c.F.SetC(value&0x1 == 0x1)
 	n.Write8(result)
 }
