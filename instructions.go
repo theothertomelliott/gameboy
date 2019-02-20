@@ -679,8 +679,19 @@ func (c *CPU) RLCA(...Param) {
 //  H - Reset.
 //  C - Contains old bit 7 data.
 func (c *CPU) RLA(...Param) {
-	c.RL(c.A)
+	va := c.A.Read8()
+	carryValue := byte(0)
+	if c.F.C() {
+		carryValue = 1
+	}
+	carry := ((va & 0x80) == 0x80)
+	out := ((va << 1) & 0xFF) | carryValue
+
+	c.A.Write8(out)
+	c.F.SetC(carry)
 	c.F.SetZ(false)
+	c.F.SetN(false)
+	c.F.SetH(false)
 }
 
 // RRCA rotates A right.
@@ -692,8 +703,15 @@ func (c *CPU) RLA(...Param) {
 //  H - Reset.
 //  C - Contains old bit 0 data.
 func (c *CPU) RRCA(...Param) {
-	c.RRC(c.A)
+	va := c.A.Read8()
+	carry := ((va & 1) == 1)
+	out := ((va >> 1) & 0xFF) + ((va & 1) << 7)
+
+	c.A.Write8(out)
+	c.F.SetC(carry)
 	c.F.SetZ(false)
+	c.F.SetN(false)
+	c.F.SetH(false)
 }
 
 // RRA rotates A right through carry flag.
@@ -811,11 +829,12 @@ func (c *CPU) RR(params ...Param) {
 //  C - Contains old bit 7 data.
 func (c *CPU) SLA(params ...Param) {
 	n := params[0].(Value8)
-	shifted := uint16(n.Read8()) << 1
+	v := n.Read8()
+	shifted := v << 1
 	c.F.SetZ(shifted == 0)
 	c.F.SetN(false)
 	c.F.SetH(false)
-	c.F.SetC(shifted > 0xFF)
+	c.F.SetC(v>>7 == 0x1)
 	n.Write8(byte(shifted & 0xFF))
 }
 

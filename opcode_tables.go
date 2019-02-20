@@ -3511,7 +3511,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			8}, nil
 	case 0x17:
 		o1 := c.A
-		c.RL(
+		c.RLA(
 			o1,
 		)
 		description := fmt.Sprint(
