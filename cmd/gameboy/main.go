@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"os"
 	"strconv"
 	"strings"
 
@@ -20,18 +22,32 @@ func main() {
 	flag.Var(&breakpoints, "breakpoint", "A comma-separated list of breakpoints, as 16-bit hex values.")
 	flag.Parse()
 
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s cartridge [bootROM]:\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Flags:\n")
+		flag.PrintDefaults()
+	}
+
 	gb := gameboy.NewDMG()
 
-	data, err := ioutil.ReadFile(flag.Arg(0))
+	cartridgeFile := flag.Arg(0)
+	if cartridgeFile == "" {
+		fmt.Fprintf(os.Stderr, "A cartridge ROM file is required\n\n")
+		flag.Usage()
+		return
+	}
+	bootROMFile := flag.Arg(1)
+
+	data, err := ioutil.ReadFile(cartridgeFile)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	gb.MMU().LoadCartridge(data)
 
-	if len(flag.Args()) > 1 {
-		data, err = ioutil.ReadFile(flag.Arg(1))
+	if bootROMFile != "" {
+		data, err = ioutil.ReadFile(bootROMFile)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 		gb.MMU().LoadROM(data)
 	} else {
