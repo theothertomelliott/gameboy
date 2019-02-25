@@ -43,3 +43,7 @@ Assuming $GOPATH/bin is on your PATH, once installed, you can run the `gameboy` 
     $ gameboy path/to/rom.gb
 
 You may also optionally provide a path to the Gameboy boot ROM.
+
+## Debugging
+
+By default, the emulator serves a debugger web app on port 8080. Visit http://localhost:8080 once the emulator is running to debug.
