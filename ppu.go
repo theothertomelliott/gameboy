@@ -123,14 +123,15 @@ func (p *PPU) setMode(newMode byte) {
 func (p *PPU) setStatus() {
 	curStat := p.MMU.Read8(LCDSTAT)
 	// Set mode stat
-	curStat = curStat & 0x3
-	p.MMU.Write8(LCDSTAT, curStat|p.mode)
+	curStat = curStat & 0xF8
+	curStat = curStat | p.mode
 
 	// Handle line coincidence
 	if p.line == p.MMU.Read8(CMPLINE) {
-		curStat := p.MMU.Read8(LCDSTAT)
-		p.MMU.Write8(LCDSTAT, curStat|0x4)
+		curStat = curStat | 0x4
 	}
+
+	p.MMU.Write8(LCDSTAT, curStat|0x4)
 }
 
 func (p *PPU) Render() []byte {
