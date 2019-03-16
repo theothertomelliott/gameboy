@@ -13,6 +13,7 @@ type DMG struct {
 	ppu    *PPU
 	tracer *Tracer
 	input  *Input
+	timer  *Timer
 
 	interrupts *InterruptScheduler
 
@@ -34,6 +35,7 @@ func NewDMG() *DMG {
 	cpu := NewCPU(mmu, tracer)
 	interrupts := NewInterruptScheduler(cpu, mmu)
 	ppu := NewPPU(mmu, interrupts)
+	timer := NewTimer(mmu, interrupts)
 
 	return &DMG{
 		cpu:         cpu,
@@ -43,6 +45,7 @@ func NewDMG() *DMG {
 		input:       NewInput(interrupts),
 		done:        make(chan struct{}),
 		Breakpoints: make(map[uint16]struct{}),
+		timer:       timer,
 	}
 }
 
@@ -149,6 +152,8 @@ func (c *DMG) Step() error {
 	if err != nil {
 		return err
 	}
+
+	c.timer.Increment(t)
 
 	for bp := range c.Breakpoints {
 		if c.cpu.PC.Read16() == bp {

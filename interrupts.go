@@ -1,8 +1,6 @@
 package gameboy
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type Interrupt struct {
 	Bit byte
