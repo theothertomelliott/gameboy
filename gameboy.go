@@ -5,15 +5,14 @@ import (
 	"time"
 )
 
-const clockSpeedMHz = 0.8
-
 // DMG provides a means of managing running emulation
 type DMG struct {
-	cpu    *CPU
-	ppu    *PPU
-	tracer *Tracer
-	input  *Input
-	timer  *Timer
+	cpu         *CPU
+	ppu         *PPU
+	tracer      *Tracer
+	input       *Input
+	timer       *Timer
+	rateLimiter *RateLimiter
 
 	interrupts *InterruptScheduler
 
@@ -36,6 +35,7 @@ func NewDMG() *DMG {
 	interrupts := NewInterruptScheduler(cpu, mmu)
 	ppu := NewPPU(mmu, interrupts)
 	timer := NewTimer(mmu, interrupts)
+	rateLimiter := NewDefaultRateLimiter()
 
 	return &DMG{
 		cpu:         cpu,
@@ -46,6 +46,7 @@ func NewDMG() *DMG {
 		done:        make(chan struct{}),
 		Breakpoints: make(map[uint16]struct{}),
 		timer:       timer,
+		rateLimiter: rateLimiter,
 	}
 }
 
@@ -79,12 +80,6 @@ func (c *DMG) Input() *Input {
 // Emulation will step repeatedly until paused or stopped.
 func (c *DMG) Start() {
 	go func() {
-		var (
-			ticks               int
-			lastSync            = time.Now()
-			cyclesPerSecond     = clockSpeedMHz * 1000 * 1000
-			clockSyncsPerSecond = float64(1000)
-		)
 		for true {
 			// Don't continue after error
 			if c.err != nil {
@@ -100,17 +95,6 @@ func (c *DMG) Start() {
 			if err != nil {
 				fmt.Println(err)
 				c.err = err
-			}
-
-			// Correct timing
-			ticks++
-			if float64(ticks) >= cyclesPerSecond/clockSyncsPerSecond {
-				elapsed := time.Since(lastSync)
-				if elapsed < time.Second/time.Duration(clockSyncsPerSecond) {
-					time.Sleep(time.Second/time.Duration(clockSyncsPerSecond) - elapsed)
-				}
-				ticks = 0
-				lastSync = time.Now()
 			}
 
 			select {
@@ -154,6 +138,9 @@ func (c *DMG) Step() error {
 	}
 
 	c.timer.Increment(t)
+	if c.rateLimiter != nil {
+		c.rateLimiter.Increment(t)
+	}
 
 	for bp := range c.Breakpoints {
 		if c.cpu.PC.Read16() == bp {

@@ -6,8 +6,6 @@ type Timer struct {
 	clock      int
 }
 
-const CyclesPerSecond = 4194304
-
 func NewTimer(mmu *MMU, interrupts *InterruptScheduler) *Timer {
 	return &Timer{
 		mmu:        mmu,
