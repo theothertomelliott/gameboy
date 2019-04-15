@@ -1,8 +1,9 @@
 package main
 
 import (
+	"image"
+
 	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
 )
@@ -32,28 +33,10 @@ func setupGraphics() {
 	win.SetPos(win.GetPos().Add(pixel.V(0, 1)))
 }
 
-func drawGraphics(graphics [][]byte, scrollX, scrollY byte) {
+func drawGraphics(graphics image.Image) {
 	win.Clear(colornames.White)
-	imd := imdraw.New(nil)
-	imd.Color = pixel.RGB(0, 0, 0)
-	screenWidth := win.Bounds().W()
-	width, height := screenWidth/sizeX, screenHeight/sizeY
-	for x := 0; x < 160; x++ {
-		for y := 0; y < 144; y++ {
-			windowX := byte(x) - scrollX
-			windowY := byte(y) - scrollY
-			value := graphics[144-windowY][windowX]
-			if value == 0 {
-				continue
-			}
-			imd.Push(pixel.V(width*float64(x), height*float64(y)))
-			imd.Push(pixel.V(width*float64(x)+width, height*float64(y)+height))
-			colorVal := 1.0 - (float64(value) / 4)
-			imd.Color = pixel.RGB(colorVal, colorVal, colorVal)
-			imd.Rectangle(0)
-		}
-	}
-
-	imd.Draw(win)
+	pg := pixel.PictureDataFromImage(graphics)
+	sprite := pixel.NewSprite(pg, pg.Bounds())
+	sprite.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 	win.Update()
 }

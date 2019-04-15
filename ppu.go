@@ -1,5 +1,11 @@
 package gameboy
 
+import (
+	"image"
+	"image/color"
+	"image/draw"
+)
+
 type PPU struct {
 	MMU        *MMU
 	interrupts *InterruptScheduler
@@ -162,13 +168,15 @@ func (p *PPU) ScrollY() byte {
 	return p.MMU.Read8(SCROLLY)
 }
 
-func (p *PPU) RenderScreen() [][]byte {
+func (p *PPU) RenderScreen() *image.RGBA {
 	screen := p.RenderBackground()
 	screen = p.RenderSprites(screen)
-	return screen
+	scrolled := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{160, 144}})
+	draw.Draw(scrolled, screen.Bounds(), screen, image.Point{int(p.ScrollX()), int(p.ScrollY())}, draw.Src)
+	return scrolled
 }
 
-func (p *PPU) RenderSprites(screen [][]byte) [][]byte {
+func (p *PPU) RenderSprites(screen *image.RGBA) *image.RGBA {
 	// Get tiles from sprite pattern table
 	tiles := p.GetTilesByIndex(1)
 
@@ -187,21 +195,27 @@ func (p *PPU) RenderSprites(screen [][]byte) [][]byte {
 			continue
 		}
 
-		// Write the sprite to the screen
-		for tr, rowValues := range renderedTile {
-			for tc, value := range rowValues {
-				screen[x+tr][y+tc] = value
-			}
+		bounds := image.Rectangle{
+			Min: image.Point{
+				y,
+				x,
+			},
+			Max: image.Point{
+				y + 8,
+				x + 8,
+			},
 		}
 
+		// Write the sprite tile into the background
+		draw.FloydSteinberg.Draw(screen, bounds, renderedTile, image.ZP)
 	}
 	return screen
 }
 
-func (p *PPU) GetTilesByIndex(tileDataSelect byte) [][][]byte {
+func (p *PPU) GetTilesByIndex(tileDataSelect byte) []*image.RGBA {
 	tileData := p.MMU.ReadRange(PatternTables[tileDataSelect])
 
-	var tilesByIndex [][][]byte
+	var tilesByIndex []*image.RGBA
 
 	for offset := 0; offset < len(tileData); offset += 16 {
 		tile := tileData[offset : offset+16]
@@ -212,7 +226,7 @@ func (p *PPU) GetTilesByIndex(tileDataSelect byte) [][][]byte {
 	return tilesByIndex
 }
 
-func (p *PPU) GetBackgroundTiles() [][][]byte {
+func (p *PPU) GetBackgroundTiles() []*image.RGBA {
 	lcdControl := p.MMU.Read8(LCDCONT)
 
 	// Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
@@ -220,7 +234,7 @@ func (p *PPU) GetBackgroundTiles() [][][]byte {
 	return p.GetTilesByIndex(tileDataSelect)
 }
 
-func (p *PPU) RenderBackground() [][]byte {
+func (p *PPU) RenderBackground() *image.RGBA {
 	lcdControl := p.MMU.Read8(LCDCONT)
 
 	// Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
@@ -229,10 +243,7 @@ func (p *PPU) RenderBackground() [][]byte {
 	tiles := p.GetBackgroundTiles()
 
 	// Init 256x256 background
-	var out = make([][]byte, 256)
-	for i := range out {
-		out[i] = make([]byte, 256)
-	}
+	var out = image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{256, 256}})
 	if !p.BackgroundEnabled() {
 		return out
 	}
@@ -246,48 +257,42 @@ func (p *PPU) RenderBackground() [][]byte {
 			tileRef := tileMap[index]
 			renderedTile := tiles[tileRef]
 
-			var total byte
-			for _, rowValues := range renderedTile {
-				for _, value := range rowValues {
-					total += value
-				}
-			}
-
-			if total == 0 {
-				continue
+			bounds := image.Rectangle{
+				Min: image.Point{
+					8 * c,
+					8 * r,
+				},
+				Max: image.Point{
+					8*c + 8,
+					8*r + 8,
+				},
 			}
 
 			// Write the tile into the background
-			for tr, rowValues := range renderedTile {
-				for tc, value := range rowValues {
-					out[8*r+tr][8*c+tc] = value
-				}
-			}
+			draw.Draw(out, bounds, renderedTile, image.ZP, draw.Src)
 		}
 	}
 
 	return out
 }
 
-func renderTile(tile []byte, palette byte) [][]byte {
-	var out [][]byte = make([][]byte, 8)
+func renderTile(tile []byte, palette byte) *image.RGBA {
+	var out = image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{8, 8}})
 	for line := 0; line < 8; line++ {
-		var lineData = make([]byte, 8)
 		high := tile[line*2+1]
 		low := tile[line*2]
 		for bit := byte(0); bit < 8; bit++ {
 			h := bitValue(7-bit, high)
 			l := bitValue(7-bit, low)
 			colorValue := l + (h << 1)
-			paletteValue := color(palette, colorValue)
-			lineData[bit] = paletteValue
+			paletteValue := newColor(palette, colorValue)
+			out.Set(int(bit), line, paletteValue)
 		}
-		out[line] = lineData
 	}
 	return out
 }
 
-func color(palette byte, color byte) byte {
+func newColor(palette byte, color byte) color.RGBA {
 	// FF47 - BGP - BG Palette Data (R/W) - Non CGB Mode Only
 	// This register assigns gray shades to the color numbers of the BG and Window tiles.
 	//   Bit 7-6 - Shade for Color Number 3
@@ -296,15 +301,22 @@ func color(palette byte, color byte) byte {
 	//   Bit 1-0 - Shade for Color Number 0
 	switch color {
 	case 3:
-		return (palette & 0xC0) >> 6
+		return colorForValue((palette & 0xC0) >> 6)
 	case 2:
-		return (palette & 0x30) >> 4
+		return colorForValue((palette & 0x30) >> 4)
 	case 1:
-		return (palette & 0xC) >> 2
+		return colorForValue((palette & 0xC) >> 2)
 	case 0:
-		return palette & 0x3
+		return colorForValue(palette & 0x3)
 	}
-	return color
+	return colorForValue(color)
+}
+
+func colorForValue(value uint8) color.RGBA {
+	adjustedValue := 255 - ((256 / 4) * value)
+	return color.RGBA{
+		R: adjustedValue, G: adjustedValue, B: adjustedValue, A: 255,
+	}
 }
 
 func getTile(number byte, tileMap []byte) []byte {

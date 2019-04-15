@@ -29,9 +29,9 @@ func TestRenderTile(t *testing.T) {
 		{0, 0, 0, 0, 0, 0, 0, 0},
 	}
 
-	for line, lineValues := range result {
+	for row, lineValues := range expected {
 		for col, value := range lineValues {
-			if value != expected[line][col] {
+			if colorForValue(value) != result.At(row, col) {
 				t.Errorf("expected %v, got %v", expected, result)
 				return
 			}

@@ -16,12 +16,7 @@ func run(
 
 	for !win.Closed() {
 		if ppu.LCDEnabled() {
-			bg := ppu.RenderScreen()
-			drawGraphics(
-				bg,
-				ppu.ScrollX(),
-				ppu.ScrollY(),
-			)
+			drawGraphics(ppu.RenderScreen())
 		}
 
 		win.UpdateInput()

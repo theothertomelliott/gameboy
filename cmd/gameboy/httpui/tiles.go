@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"html/template"
 	"image"
-	"image/color"
 	"image/gif"
 	"net/http"
 )
@@ -44,6 +43,8 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 			<img src="data:image/gif;base64,{{.Background}}" />
 			<h1>Sprites</h1>
 			<img src="data:image/gif;base64,{{.Sprites}}" />
+			<h1>Screen</h1>
+			<img src="data:image/gif;base64,{{.Screen}}" />
 		</body>
 	</html>`
 
@@ -59,6 +60,7 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 		page struct {
 			Background string
 			Sprites    string
+			Screen     string
 			Tilesets   []tileset
 		}
 	)
@@ -98,11 +100,14 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Init 256x256 background
-	var sprites = make([][]byte, 256)
-	for i := range sprites {
-		sprites[i] = make([]byte, 256)
+	data.Screen, err = renderImageToBase64(s.gb.PPU().RenderScreen())
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
 	}
+
+	// Init 256x256 background
+	sprites := image.NewRGBA(image.Rect(0, 0, 256, 256))
 	data.Sprites, err = renderImageToBase64(s.gb.PPU().RenderSprites(sprites))
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -122,16 +127,9 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func renderImageToBase64(tile [][]byte) (string, error) {
-	dst := image.NewRGBA(image.Rect(0, 0, len(tile), len(tile[0])))
-	for y, row := range tile {
-		for x, value := range row {
-			colorVal := 255 - ((256 / 4) * uint8(value))
-			dst.Set(x, y, color.RGBA{colorVal, colorVal, colorVal, 255})
-		}
-	}
+func renderImageToBase64(tile image.Image) (string, error) {
 	var b bytes.Buffer
-	err := gif.Encode(&b, dst, &gif.Options{})
+	err := gif.Encode(&b, tile, &gif.Options{})
 	if err != nil {
 		return "", err
 	}
