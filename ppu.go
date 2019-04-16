@@ -4,6 +4,8 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+
+	"github.com/disintegration/imaging"
 )
 
 type PPU struct {
@@ -186,7 +188,25 @@ func (p *PPU) RenderSprites(screen *image.RGBA) *image.RGBA {
 		yPos := p.MMU.Read8(pos + 1)
 		y := int(yPos) - 8
 		tileNumber := p.MMU.Read8(pos + 2)
-		//flags := p.MMU.Read8(pos + 3)
+		flags := p.MMU.Read8(pos + 3)
+
+		//priority := bitValue(7, flags)
+		// 		Bit7 Priority
+		//  If this bit is set to 0, sprite is
+		//  displayed on top of background & window.
+		//  If this bit is set to 1, then sprite
+		//  will be hidden behind colors 1, 2, and 3
+		//  of the background & window. (Sprite only
+		//  prevails over color 0 of BG & win.)
+
+		yFlip := bitValue(6, flags)
+		xFlip := bitValue(5, flags)
+
+		//paletteNum := bitValue(4, flags)
+		// Bit4 Palette number
+		// Sprite colors are taken from OBJ1PAL if
+		// this bit is set to 1 and from OBJ0PAL
+		// otherwise.
 
 		renderedTile := tiles[tileNumber]
 
@@ -206,8 +226,16 @@ func (p *PPU) RenderSprites(screen *image.RGBA) *image.RGBA {
 			},
 		}
 
+		var imgOut image.Image = renderedTile
+		if yFlip == 1 {
+			imgOut = imaging.FlipV(imgOut)
+		}
+		if xFlip == 1 {
+			imgOut = imaging.FlipH(imgOut)
+		}
+
 		// Write the sprite tile into the background
-		draw.FloydSteinberg.Draw(screen, bounds, renderedTile, image.ZP)
+		draw.FloydSteinberg.Draw(screen, bounds, imgOut, image.ZP)
 	}
 	return screen
 }
