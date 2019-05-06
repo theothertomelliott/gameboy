@@ -1,11 +1,8 @@
 package httpui
 
 import (
-	"html/template"
 	"net/http"
 	"sort"
-
-	packr "github.com/gobuffalo/packr/v2"
 )
 
 // HandleDebug renders the debugger view
@@ -13,14 +10,7 @@ func (s *Server) HandleDebug(w http.ResponseWriter, r *http.Request) {
 	s.decompileMtx.Lock()
 	defer s.decompileMtx.Unlock()
 
-	box := packr.New("views", "./views")
-	tpl, err := box.FindString("debug.html")
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	t, err := template.New("debug.html").Parse(tpl)
+	t, err := loadTemplate("debug.html")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

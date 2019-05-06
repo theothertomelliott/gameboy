@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset="UTF-8">
+			<title>Gameboy - Tiles</title>
+			<style>
+				body {font-family: "Courier New", Courier, serif;}
+				.tiles {
+					font-size: 0;
+				}
+				.tileimg {
+					display: inline-block;
+					width: 32px;
+					height: 32px;
+				}
+			</style>
+		</head>
+		<body>
+			<h1>Tiles</h1>
+			{{range .Tilesets}}
+			<h2>Tile set {{ .Index }}</h2>
+			<div class="tiles">
+				{{range .Tiles}}
+					<img class="tileimg" src="data:image/gif;base64,{{.Gif}}" />
+				{{end}}
+			</div>
+			{{end}}
+			<h1>Background</h1>
+			<img src="data:image/gif;base64,{{.Background}}" />
+			<h1>Sprites</h1>
+			<img src="data:image/gif;base64,{{.Sprites}}" />
+			<h1>Screen</h1>
+			<img src="data:image/gif;base64,{{.Screen}}" />
+		</body>
+	</html>

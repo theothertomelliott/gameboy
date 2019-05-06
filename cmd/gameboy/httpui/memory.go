@@ -2,22 +2,14 @@ package httpui
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 
-	packr "github.com/gobuffalo/packr/v2"
 	"github.com/theothertomelliott/gameboy"
 )
 
 // HandleMemory displays a Hex Editor like view of the emulator's memory
 func (s *Server) HandleMemory(w http.ResponseWriter, r *http.Request) {
-	box := packr.New("views", "./views")
-	tpl, err := box.FindString("memory.html")
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	t, err := template.New("memory.html").Parse(tpl)
+	t, err := loadTemplate("memory.html")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

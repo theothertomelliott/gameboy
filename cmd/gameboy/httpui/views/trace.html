@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Gameboy - Debug</title>
+        <link rel="stylesheet" href="/public/css/styles.css"/>
+    </head>
+    <body>
+        <div class="rightbar">
+            <div class="serial">
+                <h2>Serial Output</h2>
+                <pre>{{.TestOutput}}</pre>
+            </div>
+        </div>
+        <a href="/trace?offset=0">&lt;&lt; First</a>
+        <a href="/trace?offset={{.Previous}}">&lt; Previous</a>
+        {{.Start}}-{{.End}} of {{.Total}} operations
+        <a href="/trace?offset={{.Next}}">Next &gt;</a>
+        <a href="/trace?offset=last">Last &gt;&gt;</a>
+        <hr/>
+        <table border="0" cellpadding="0" cellspacing="0">
+        {{range .Trace}}
+            <tr>
+            <td>
+                {{.Index}}
+            </td>
+            <td>&nbsp;</td>
+            <td>
+                {{.Description}}
+            </td>
+            </tr>
+        {{end}}
+        </table>
+    </body>
+</html>

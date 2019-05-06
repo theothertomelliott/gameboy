@@ -3,7 +3,6 @@ package httpui
 import (
 	"bytes"
 	"encoding/base64"
-	"html/template"
 	"image"
 	"image/gif"
 	"net/http"
@@ -11,43 +10,6 @@ import (
 
 // HandleTiles renders a page displaying the current tile sets
 func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
-	const tpl = `
-	<!DOCTYPE html>
-	<html>
-		<head>
-			<meta charset="UTF-8">
-			<title>Gameboy - Tiles</title>
-			<style>
-				body {font-family: "Courier New", Courier, serif;}
-				.tiles {
-					font-size: 0;
-				}
-				.tileimg {
-					display: inline-block;
-					width: 32px;
-					height: 32px;
-				}
-			</style>
-		</head>
-		<body>
-			<h1>Tiles</h1>
-			{{range .Tilesets}}
-			<h2>Tile set {{ .Index }}</h2>
-			<div class="tiles">
-				{{range .Tiles}}
-					<img class="tileimg" src="data:image/gif;base64,{{.Gif}}" />
-				{{end}}
-			</div>
-			{{end}}
-			<h1>Background</h1>
-			<img src="data:image/gif;base64,{{.Background}}" />
-			<h1>Sprites</h1>
-			<img src="data:image/gif;base64,{{.Sprites}}" />
-			<h1>Screen</h1>
-			<img src="data:image/gif;base64,{{.Screen}}" />
-		</body>
-	</html>`
-
 	type (
 		tileData struct {
 			Index int
@@ -114,7 +76,7 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t, err := template.New("tiles").Parse(tpl)
+	t, err := loadTemplate("tiles.html")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
