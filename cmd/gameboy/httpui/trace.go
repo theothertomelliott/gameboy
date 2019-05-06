@@ -6,6 +6,23 @@ import (
 	"strings"
 )
 
+type (
+	traceData struct {
+		Index int64
+		Trace traceEntry
+	}
+	searchData struct {
+		Trace      []traceData
+		Start      int64
+		End        int64
+		Previous   int64
+		Next       int64
+		Total      int
+		TestOutput string
+		Query      string
+	}
+)
+
 func (s *Server) HandleTrace(w http.ResponseWriter, r *http.Request) {
 	const pageSize = 1000
 
@@ -47,19 +64,7 @@ func (s *Server) HandleTrace(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	data := struct {
-		Trace []struct {
-			Index int64
-			Trace traceEntry
-		}
-		Start      int64
-		End        int64
-		Previous   int64
-		Next       int64
-		Total      int
-		TestOutput string
-		Query      string
-	}{
+	data := searchData{
 		TestOutput: s.gb.CPU().MMU.TestOutput(),
 		Start:      offset,
 		End:        offset + int64(len(trace)),
@@ -69,10 +74,7 @@ func (s *Server) HandleTrace(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for index, t := range trace {
-		data.Trace = append(data.Trace, struct {
-			Index int64
-			Trace traceEntry
-		}{
+		data.Trace = append(data.Trace, traceData{
 			Index: offset + int64(index),
 			Trace: t,
 		})
@@ -105,23 +107,13 @@ func (s *Server) HandleSearchTrace(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	data := struct {
-		Trace []struct {
-			Index int64
-			Trace traceEntry
-		}
-		Total int
-		Query string
-	}{
+	data := searchData{
 		Total: len(found),
 		Query: searchTerm,
 	}
 
 	for _, index := range indices {
-		data.Trace = append(data.Trace, struct {
-			Index int64
-			Trace traceEntry
-		}{
+		data.Trace = append(data.Trace, traceData{
 			Index: index,
 			Trace: found[index],
 		})
