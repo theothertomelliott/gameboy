@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
 	"sync"
 
 	packr "github.com/gobuffalo/packr/v2"
@@ -23,8 +24,9 @@ type Server struct {
 }
 
 type traceEntry struct {
-	Pos         Uint16
-	Description string
+	Pos          Uint16
+	Description  string
+	MemoryValues Bytes
 }
 
 type Uint32 uint16
@@ -43,6 +45,16 @@ type Uint8 uint8
 
 func (u Uint8) String() string {
 	return fmt.Sprintf("%02X", uint8(u))
+}
+
+type Bytes []byte
+
+func (b Bytes) String() string {
+	var formatted = make([]string, 0, len(b))
+	for _, v := range b {
+		formatted = append(formatted, fmt.Sprintf("%02X '%s'", v, []byte{v}))
+	}
+	return strings.Join(formatted, ", ")
 }
 
 type stackEntry struct {
@@ -64,10 +76,14 @@ func (s *Server) Trace(ev gameboy.TraceMessage) {
 	if ev.CPU != nil {
 		s.decompileMtx.Lock()
 		s.decompilation[ev.CPU.PC] = ev.CPU.Description
-		s.trace = append(s.trace, traceEntry{
+		t := traceEntry{
 			Pos:         Uint16(ev.CPU.PC),
 			Description: ev.CPU.Description,
-		})
+		}
+		if ev.MMU != nil {
+			t.MemoryValues = Bytes(ev.MMU.ValuesAfter)
+		}
+		s.trace = append(s.trace, t)
 		s.decompileMtx.Unlock()
 	}
 

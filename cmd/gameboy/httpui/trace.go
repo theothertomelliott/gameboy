@@ -58,6 +58,7 @@ func (s *Server) HandleTrace(w http.ResponseWriter, r *http.Request) {
 		Next       int64
 		Total      int
 		TestOutput string
+		Query      string
 	}{
 		TestOutput: s.gb.CPU().MMU.TestOutput(),
 		Start:      offset,
@@ -77,7 +78,7 @@ func (s *Server) HandleTrace(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	err = t.Execute(w, data)
+	err = t.ExecuteTemplate(w, "trace", data)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -87,7 +88,7 @@ func (s *Server) HandleTrace(w http.ResponseWriter, r *http.Request) {
 func (s *Server) HandleSearchTrace(w http.ResponseWriter, r *http.Request) {
 	searchTerm := r.FormValue("q")
 
-	t, err := loadTemplate("searchtrace.html")
+	t, err := loadTemplate("trace.html")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -126,7 +127,7 @@ func (s *Server) HandleSearchTrace(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	err = t.Execute(w, data)
+	err = t.ExecuteTemplate(w, "searchtrace", data)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

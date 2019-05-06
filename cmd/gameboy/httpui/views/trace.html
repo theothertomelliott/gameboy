@@ -1,3 +1,4 @@
+{{define "trace"}}
 <!DOCTYPE html>
 <html>
     <head>
@@ -18,27 +19,59 @@
         <a href="/trace?offset={{.Next}}">Next &gt;</a>
         <a href="/trace?offset=last">Last &gt;&gt;</a>
         <hr/>
-        <form method="GET" action="/trace/search">
-            <input type="text" name="q"/>
-            <input type="submit" value="Search"/>
-        </form>
+        {{template "searchform" .}}
         <hr/>
-        <table border="0" cellpadding="0" cellspacing="0">
-        {{range .Trace}}
-            <tr>
-            <td>
-                {{.Index}}
-            </td>
-            <td>&nbsp;</td>
-            <td>
-                {{.Trace.Pos}}
-            </td>
-            <td>&nbsp;</td>
-            <td>
-                {{.Trace.Description}}
-            </td>
-            </tr>
-        {{end}}
-        </table>
+        {{template "tracetable" .}}
     </body>
 </html>
+{{end}}
+
+{{define "searchtrace"}}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Gameboy - Trace</title>
+        <link rel="stylesheet" href="/public/css/styles.css"/>
+    </head>
+    <body>
+        {{template "searchform" .}}
+        <hr/>
+        {{template "tracetable" .}}
+    </body>
+</html>
+{{end}}
+
+{{define "searchform"}}
+<form method="GET" action="/trace/search">
+    <input type="text" name="q" {{if .Query}}value="{{.Query}}"{{end}}/>
+    <input type="submit" value="Search"/>
+</form>
+{{end}}
+
+{{define "tracetable"}}
+    <table border="1" cellpadding=5 cellspacing="5">
+            <tr>
+                    <th>Cycle</th>
+                    <td>PC</td>
+                    <th>Op</th>
+                    <th>New Memory Values</th>
+            </tr>
+    {{range .Trace}}
+        <tr>
+        <td>
+            <a href="/trace?offset={{.Index}}">{{.Index}}</a>
+        </td>
+        <td>
+            {{.Trace.Pos}}
+        </td>
+        <td>
+            {{.Trace.Description}}
+        </td>
+        <td>
+            {{.Trace.MemoryValues}}
+        </td>
+        </tr>
+    {{end}}
+    </table>
+{{end}}
