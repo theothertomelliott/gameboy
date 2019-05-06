@@ -3,6 +3,7 @@ package httpui
 import (
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func (s *Server) HandleTrace(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +38,7 @@ func (s *Server) HandleTrace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var trace []string
+	var trace []traceEntry
 	if int(offset) < len(s.trace) {
 		if (len(s.trace) - int(offset)) < pageSize {
 			trace = s.trace[offset:]
@@ -48,8 +49,8 @@ func (s *Server) HandleTrace(w http.ResponseWriter, r *http.Request) {
 
 	data := struct {
 		Trace []struct {
-			Index       int64
-			Description string
+			Index int64
+			Trace traceEntry
 		}
 		Start      int64
 		End        int64
@@ -66,13 +67,62 @@ func (s *Server) HandleTrace(w http.ResponseWriter, r *http.Request) {
 		Total:      len(s.trace),
 	}
 
-	for index, description := range trace {
+	for index, t := range trace {
 		data.Trace = append(data.Trace, struct {
-			Index       int64
-			Description string
+			Index int64
+			Trace traceEntry
 		}{
-			Index:       offset + int64(index),
-			Description: description,
+			Index: offset + int64(index),
+			Trace: t,
+		})
+	}
+
+	err = t.Execute(w, data)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+}
+
+func (s *Server) HandleSearchTrace(w http.ResponseWriter, r *http.Request) {
+	searchTerm := r.FormValue("q")
+
+	t, err := loadTemplate("searchtrace.html")
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	var (
+		found   = make(map[int64]traceEntry)
+		indices []int64
+	)
+	for index, t := range s.trace {
+		if strings.Contains(t.Description, searchTerm) {
+			found[int64(index)] = t
+			indices = append(indices, int64(index))
+		}
+	}
+
+	data := struct {
+		Trace []struct {
+			Index int64
+			Trace traceEntry
+		}
+		Total int
+		Query string
+	}{
+		Total: len(found),
+		Query: searchTerm,
+	}
+
+	for _, index := range indices {
+		data.Trace = append(data.Trace, struct {
+			Index int64
+			Trace traceEntry
+		}{
+			Index: index,
+			Trace: found[index],
 		})
 	}
 

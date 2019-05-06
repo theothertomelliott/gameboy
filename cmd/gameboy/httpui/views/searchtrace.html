@@ -6,20 +6,8 @@
         <link rel="stylesheet" href="/public/css/styles.css"/>
     </head>
     <body>
-        <div class="rightbar">
-            <div class="serial">
-                <h2>Serial Output</h2>
-                <pre>{{.TestOutput}}</pre>
-            </div>
-        </div>
-        <a href="/trace?offset=0">&lt;&lt; First</a>
-        <a href="/trace?offset={{.Previous}}">&lt; Previous</a>
-        {{.Start}}-{{.End}} of {{.Total}} operations
-        <a href="/trace?offset={{.Next}}">Next &gt;</a>
-        <a href="/trace?offset=last">Last &gt;&gt;</a>
-        <hr/>
-        <form method="GET" action="/trace/search">
-            <input type="text" name="q"/>
+        <form method="GET">
+            <input type="text" name="q" value="{{.Query}}"/>
             <input type="submit" value="Search"/>
         </form>
         <hr/>
@@ -27,7 +15,7 @@
         {{range .Trace}}
             <tr>
             <td>
-                {{.Index}}
+                <a href="/trace?offset={{.Index}}">{{.Index}}</a>
             </td>
             <td>&nbsp;</td>
             <td>

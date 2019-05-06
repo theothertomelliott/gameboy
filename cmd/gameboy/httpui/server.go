@@ -19,7 +19,12 @@ type Server struct {
 	decompilation map[uint16]string
 	decompileMtx  sync.Mutex
 
-	trace []string
+	trace []traceEntry
+}
+
+type traceEntry struct {
+	Pos         Uint16
+	Description string
 }
 
 type Uint32 uint16
@@ -51,6 +56,7 @@ func NewServer(gb *gameboy.DMG) *Server {
 		gb:            gb,
 		decompilation: make(map[uint16]string),
 		stack:         make(map[uint16]stackEntry),
+		trace:         make([]traceEntry, 0, 100000000),
 	}
 }
 
@@ -58,7 +64,10 @@ func (s *Server) Trace(ev gameboy.TraceMessage) {
 	if ev.CPU != nil {
 		s.decompileMtx.Lock()
 		s.decompilation[ev.CPU.PC] = ev.CPU.Description
-		s.trace = append(s.trace, ev.CPU.Description)
+		s.trace = append(s.trace, traceEntry{
+			Pos:         Uint16(ev.CPU.PC),
+			Description: ev.CPU.Description,
+		})
 		s.decompileMtx.Unlock()
 	}
 
@@ -85,6 +94,7 @@ func (s *Server) ListenAndServe(port int) error {
 	http.HandleFunc("/debug/togglebreakpoint/", s.HandleToggleBreakpoint)
 	http.HandleFunc("/debug/step", s.HandleStep)
 	http.HandleFunc("/tiles", s.HandleTiles)
+	http.HandleFunc("/trace/search", s.HandleSearchTrace)
 	http.HandleFunc("/trace", s.HandleTrace)
 
 	box := packr.New("public", "./public")
