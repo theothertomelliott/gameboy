@@ -44,6 +44,8 @@ func (p *PPU) Step(t int) error {
 			// Enter hblank
 			p.modeclock = 0
 			p.setMode(0)
+
+			// render a scanline
 		}
 	// Hblank
 	// After the last hblank, push the screen data to canvas
@@ -255,11 +257,13 @@ func (p *PPU) GetTilesByIndex(tileDataSelect byte) []*image.RGBA {
 }
 
 func (p *PPU) GetBackgroundTiles() []*image.RGBA {
-	lcdControl := p.MMU.Read8(LCDCONT)
+	return p.GetTilesByIndex(p.TileDataSelect())
+}
 
+func (p *PPU) TileDataSelect() byte {
+	lcdControl := p.MMU.Read8(LCDCONT)
 	// Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
-	tileDataSelect := bitValue(4, lcdControl)
-	return p.GetTilesByIndex(tileDataSelect)
+	return bitValue(4, lcdControl)
 }
 
 func (p *PPU) RenderBackground() *image.RGBA {
