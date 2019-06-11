@@ -34,20 +34,9 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 		err  error
 	)
 
-	// Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
-	patternMaps := []gameboy.Range{
-		gameboy.Range{
-			Start: 0x8800,
-			End:   0x97FF,
-		},
-		gameboy.Range{
-			Start: 0x8000,
-			End:   0x8FFF,
-		},
-	}
-
-	for i, tileRange := range patternMaps {
-		tiles := s.gb.PPU().GetTilesForRange(tileRange)
+	for i := 0; i < 2; i++ {
+		lcdcont := gameboy.LCDControl(i * 0xFF)
+		tiles := s.gb.PPU().GetTilesForRange(lcdcont.TilePatternTableAddress())
 		ts := tileset{
 			Index: byte(i),
 		}
