@@ -152,16 +152,9 @@ func (p *PPU) RenderWindow() [][]byte {
 	return nil
 }
 
-func (p *PPU) LCDEnabled() bool {
+func (p *PPU) LCDControl() LCDControl {
 	lcdControl := p.MMU.Read8(LCDCONT)
-	enabled := bitValue(7, lcdControl)
-	return enabled > 0
-}
-
-func (p *PPU) BackgroundEnabled() bool {
-	lcdControl := p.MMU.Read8(LCDCONT)
-	enabled := bitValue(0, lcdControl)
-	return enabled > 0
+	return LCDControl(lcdControl)
 }
 
 func (p *PPU) ScrollX() byte {
@@ -182,7 +175,7 @@ func (p *PPU) RenderScreen() *image.RGBA {
 
 func (p *PPU) RenderSprites(screen *image.RGBA) *image.RGBA {
 	// Get tiles from sprite pattern table
-	tiles := p.GetTilesByIndex(1)
+	tiles := p.GetTilesForRange(p.LCDControl().TilePatternTableAddress())
 
 	for pos := uint16(0xFE00); pos < 0xFE9F; pos += 4 {
 		xPos := p.MMU.Read8(pos)
@@ -242,8 +235,8 @@ func (p *PPU) RenderSprites(screen *image.RGBA) *image.RGBA {
 	return screen
 }
 
-func (p *PPU) GetTilesByIndex(tileDataSelect byte) []*image.RGBA {
-	tileData := p.MMU.ReadRange(PatternTables[tileDataSelect])
+func (p *PPU) GetTilesForRange(r Range) []*image.RGBA {
+	tileData := p.MMU.ReadRange(r)
 
 	var tilesByIndex []*image.RGBA
 
@@ -257,26 +250,16 @@ func (p *PPU) GetTilesByIndex(tileDataSelect byte) []*image.RGBA {
 }
 
 func (p *PPU) GetBackgroundTiles() []*image.RGBA {
-	return p.GetTilesByIndex(p.TileDataSelect())
-}
-
-func (p *PPU) TileDataSelect() byte {
-	lcdControl := p.MMU.Read8(LCDCONT)
-	// Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
-	return bitValue(4, lcdControl)
+	return p.GetTilesForRange(p.LCDControl().TilePatternTableAddress())
 }
 
 func (p *PPU) RenderBackground() *image.RGBA {
-	lcdControl := p.MMU.Read8(LCDCONT)
-
-	// Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
-	tileMapSelect := bitValue(3, lcdControl)
-	tileMap := p.MMU.ReadRange(TileBackgroundMaps[tileMapSelect])
+	tileMap := p.MMU.ReadRange(p.LCDControl().BackgroundTileTableAddress())
 	tiles := p.GetBackgroundTiles()
 
 	// Init 256x256 background
 	var out = image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{256, 256}})
-	if !p.BackgroundEnabled() {
+	if !p.LCDControl().BackgroundDisplay() {
 		return out
 	}
 
@@ -372,38 +355,7 @@ func getTile(number byte, tileMap []byte) []byte {
 
 // Sprite attributes reside in the Sprite Attribute Table (OAM - Object Attribute Memory) at $FE00-FE9F
 
-// Bit 7 - LCD Display Enable             (0=Off, 1=On)
-// Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
-// Bit 5 - Window Display Enable          (0=Off, 1=On)
-// Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
-// Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
-// Bit 2 - OBJ (Sprite) Size              (0=8x8, 1=8x16)
-// Bit 1 - OBJ (Sprite) Display Enable    (0=Off, 1=On)
-// Bit 0 - BG Display (for CGB see below) (0=Off, 1=On)
-
 var (
-	// Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
-	PatternTables = []Range{
-		Range{
-			Start: 0x8800,
-			End:   0x97FF,
-		},
-		Range{
-			Start: 0x8000,
-			End:   0x8FFF,
-		},
-	}
-	// Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
-	TileBackgroundMaps = []Range{
-		Range{
-			Start: 0x9800,
-			End:   0x9BFF,
-		},
-		Range{
-			Start: 0x9C00,
-			End:   0x9FFF,
-		},
-	}
 	OAM = Range{
 		Start: 0xFE00,
 		End:   0xFE9F,

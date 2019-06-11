@@ -15,7 +15,7 @@ func run(
 	setupGraphics()
 
 	for !win.Closed() {
-		if ppu.LCDEnabled() {
+		if ppu.LCDControl().LCDOperation() {
 			drawGraphics(ppu.RenderScreen())
 		}
 
