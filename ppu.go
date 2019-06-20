@@ -14,14 +14,12 @@ type PPU struct {
 	modeclock  int
 	mode       byte
 	line       byte
-	drawChan   chan struct{}
 }
 
 func NewPPU(mmu *MMU, interrupts *InterruptScheduler) *PPU {
 	return &PPU{
 		MMU:        mmu,
 		interrupts: interrupts,
-		drawChan:   make(chan struct{}),
 	}
 }
 
