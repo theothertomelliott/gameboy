@@ -163,12 +163,8 @@ func (p *PPU) ScrollY() byte {
 	return p.MMU.Read8(SCROLLY)
 }
 
-func (p *PPU) RenderScreen() *image.RGBA {
-	screen := p.RenderBackground()
-	screen = p.RenderSprites(screen)
-	scrolled := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{160, 144}})
-	draw.Draw(scrolled, screen.Bounds(), screen, image.Point{int(p.ScrollX()), int(p.ScrollY())}, draw.Src)
-	return scrolled
+func (p *PPU) RenderScreen() image.Image {
+	return NewScreen(p)
 }
 
 func (p *PPU) RenderSprites(screen *image.RGBA) *image.RGBA {
@@ -335,4 +331,132 @@ func colorForValue(value uint8) color.RGBA {
 func getTile(number byte, tileMap []byte) []byte {
 	start := uint16(number) * 16
 	return tileMap[start : start+16]
+}
+
+var _ image.Image = &Screen{}
+
+func NewScreen(ppu *PPU) *Screen {
+	return &Screen{
+		BGTileMap:        ppu.MMU.ReadRange(ppu.LCDControl().BackgroundTileTableAddress()),
+		BGTiles:          ppu.GetBackgroundTiles(),
+		SpriteTiles:      ppu.GetTilesForRange(ppu.LCDControl().TilePatternTableAddress()),
+		SpriteData:       ppu.MMU.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
+		RenderBackground: ppu.LCDControl().BackgroundDisplay(),
+
+		Position: image.Point{
+			X: int(ppu.ScrollX()),
+			Y: int(ppu.ScrollY()),
+		},
+	}
+}
+
+type Screen struct {
+	BGTileMap        []byte
+	BGTiles          []*image.RGBA
+	SpriteTiles      []*image.RGBA
+	SpriteData       []byte
+	RenderBackground bool
+
+	Position image.Point
+}
+
+var _ color.Model = &ColorModel{}
+
+type ColorModel struct {
+}
+
+func (c *ColorModel) Convert(in color.Color) color.Color {
+	return in
+}
+
+func (s *Screen) ColorModel() color.Model {
+	return &ColorModel{}
+}
+
+func (s *Screen) Bounds() image.Rectangle {
+	return image.Rectangle{
+		Min: image.Point{0, 0},
+		Max: image.Point{160, 144},
+	}
+}
+
+func (s *Screen) atBg(x, y int) color.Color {
+	x = x % 255
+	y = y % 255
+
+	tileIndex := y/8*32 + x/8
+	tileRef := s.BGTileMap[tileIndex]
+	renderedTile := s.BGTiles[tileRef]
+	return renderedTile.At(x%8, y%8)
+}
+
+func (s *Screen) atSprite(pX, pY int) color.Color {
+	for pos := 0; pos < len(s.SpriteData); pos += 4 {
+		yPos := s.SpriteData[pos]
+		y := int(yPos) - 16
+		xPos := s.SpriteData[pos+1]
+		x := int(xPos) - 8
+
+		x += 8
+		y += 8
+
+		if !(x-pX >= 0 && x-pX < 8 && y-pY >= 0 && y-pY < 8) {
+			continue
+		}
+
+		tileNumber := s.SpriteData[pos+2]
+
+		flags := s.SpriteData[pos+3]
+
+		//priority := bitValue(7, flags)
+		// 		Bit7 Priority
+		//  If this bit is set to 0, sprite is
+		//  displayed on top of background & window.
+		//  If this bit is set to 1, then sprite
+		//  will be hidden behind colors 1, 2, and 3
+		//  of the background & window. (Sprite only
+		//  prevails over color 0 of BG & win.)
+
+		yFlip := bitValue(6, flags)
+		xFlip := bitValue(5, flags)
+
+		//paletteNum := bitValue(4, flags)
+		// Bit4 Palette number
+		// Sprite colors are taken from OBJ1PAL if
+		// this bit is set to 1 and from OBJ0PAL
+		// otherwise.
+
+		spX := pX % 8
+		spY := pY % 8
+
+		if xFlip != 0 {
+			spX = 8 - spX
+		}
+		if yFlip != 0 {
+			spY = 8 - spY
+		}
+
+		renderedTile := s.SpriteTiles[tileNumber]
+		return renderedTile.At(spX, spY)
+	}
+	return nil
+}
+
+func (s *Screen) At(x, y int) color.Color {
+	xS := x + s.Position.X
+	yS := y + s.Position.Y
+
+	bgPixel := s.atBg(xS, yS)
+	spritePixel := s.atSprite(xS, yS)
+	if notBlank(spritePixel) {
+		return spritePixel
+	}
+	return bgPixel
+}
+
+func notBlank(c color.Color) bool {
+	if c == nil {
+		return false
+	}
+	return true
 }
