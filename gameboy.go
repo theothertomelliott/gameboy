@@ -35,7 +35,7 @@ func NewDMG() *DMG {
 	interrupts := NewInterruptScheduler(cpu, mmu)
 	ppu := NewPPU(mmu, interrupts)
 	timer := NewTimer(mmu, interrupts)
-	rateLimiter := NewDefaultRateLimiter()
+	//rateLimiter := NewDefaultRateLimiter()
 
 	return &DMG{
 		cpu:         cpu,
@@ -46,7 +46,7 @@ func NewDMG() *DMG {
 		done:        make(chan struct{}),
 		Breakpoints: make(map[uint16]struct{}),
 		timer:       timer,
-		rateLimiter: rateLimiter,
+		rateLimiter: nil,
 	}
 }
 
