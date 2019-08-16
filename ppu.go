@@ -139,10 +139,6 @@ func (p *PPU) setStatus() {
 	p.MMU.Write8(LCDSTAT, curStat|0x4)
 }
 
-func (p *PPU) Render() []byte {
-	return nil
-}
-
 func (p *PPU) RenderWindow() [][]byte {
 	return nil
 }
@@ -164,10 +160,10 @@ func (p *PPU) RenderScreen() image.Image {
 	return NewScreen(p)
 }
 
-func (p *PPU) GetTilesForRange(r Range) []*image.RGBA {
+func (p *PPU) GetTilesForRange(r Range) []Tile {
 	tileData := p.MMU.ReadRange(r)
 
-	var tilesByIndex []*image.RGBA
+	var tilesByIndex []Tile
 
 	for offset := 0; offset < len(tileData); offset += 16 {
 		tile := tileData[offset : offset+16]
@@ -178,7 +174,7 @@ func (p *PPU) GetTilesForRange(r Range) []*image.RGBA {
 	return tilesByIndex
 }
 
-func (p *PPU) GetBackgroundTiles() []*image.RGBA {
+func (p *PPU) GetBackgroundTiles() []Tile {
 	return p.GetTilesForRange(p.LCDControl().TilePatternTableAddress())
 }
 
@@ -186,7 +182,39 @@ func (p *PPU) RenderBackground() image.Image {
 	return NewBackground(p)
 }
 
-func renderTile(tile []byte, palette byte) *image.RGBA {
+func NewTile() Tile {
+	return make(Tile, 8*8)
+}
+
+type Tile []byte
+
+func (t Tile) At(x, y int) byte {
+	if i := x*8 + y; i >= 0 && i < len(t) {
+		return t[x*8+y]
+	}
+	return 0
+}
+
+func (t Tile) Set(x, y int, value byte) {
+	t[x*8+y] = value
+}
+
+func renderTile(tile []byte, palette byte) Tile {
+	var out = NewTile()
+	for line := 0; line < 8; line++ {
+		high := tile[line*2+1]
+		low := tile[line*2]
+		for bit := byte(0); bit < 8; bit++ {
+			h := bitValue(7-bit, high)
+			l := bitValue(7-bit, low)
+			colorValue := l + (h << 1)
+			out.Set(int(bit), line, colorValue)
+		}
+	}
+	return out
+}
+
+func renderTileOld(tile []byte, palette byte) *image.RGBA {
 	var out = image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{8, 8}})
 	for line := 0; line < 8; line++ {
 		high := tile[line*2+1]
@@ -280,8 +308,8 @@ func NewScreen(ppu *PPU) *Screen {
 
 type Screen struct {
 	BGTileMap        []byte
-	BGTiles          []*image.RGBA
-	SpriteTiles      []*image.RGBA
+	BGTiles          []Tile
+	SpriteTiles      []Tile
 	SpriteData       []byte
 	RenderBackground bool
 	RenderSprites    bool
@@ -307,22 +335,22 @@ func (s *Screen) Bounds() image.Rectangle {
 	return s.bounds
 }
 
-func (s *Screen) atBg(x, y int) color.Color {
+func (s *Screen) atBg(x, y int) byte {
 	x = x % 255
 	y = y % 255
 
 	tileIndex := y/8*32 + x/8
 	if tileIndex < 0 || tileIndex >= len(s.BGTileMap) {
-		return color.Black
+		return 0
 	}
 	tileRef := s.BGTileMap[tileIndex]
 	renderedTile := s.BGTiles[tileRef]
 	return renderedTile.At(x%8, y%8)
 }
 
-func (s *Screen) atSprite(pX, pY int) color.Color {
+func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 	if !s.RenderSprites {
-		return nil
+		return bg
 	}
 	for pos := 0; pos < len(s.SpriteData); pos += 4 {
 		yPos := s.SpriteData[pos]
@@ -341,7 +369,7 @@ func (s *Screen) atSprite(pX, pY int) color.Color {
 
 		flags := s.SpriteData[pos+3]
 
-		//priority := bitValue(7, flags)
+		priority := bitValue(7, flags)
 		// 		Bit7 Priority
 		//  If this bit is set to 0, sprite is
 		//  displayed on top of background & window.
@@ -370,21 +398,27 @@ func (s *Screen) atSprite(pX, pY int) color.Color {
 		}
 
 		renderedTile := s.SpriteTiles[tileNumber]
-		return renderedTile.At(spX, spY)
+		val := renderedTile.At(spX, spY)
+
+		switch priority {
+		case 0:
+			return val
+		case 1:
+			if bg == 0 {
+				return val
+			}
+		}
 	}
-	return nil
+	return bg
 }
 
 func (s *Screen) At(x, y int) color.Color {
 	xS := x + s.Position.X
 	yS := y + s.Position.Y
 
-	bgPixel := s.atBg(xS, yS)
-	spritePixel := s.atSprite(xS, yS)
-	if notBlank(spritePixel) {
-		return spritePixel
-	}
-	return bgPixel
+	pixel := s.atBg(xS, yS)
+	pixel = s.atSprite(xS, yS, pixel)
+	return colorForValue(pixel)
 }
 
 func notBlank(c color.Color) bool {

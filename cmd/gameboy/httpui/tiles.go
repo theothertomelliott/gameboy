@@ -40,7 +40,7 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 			Index: byte(i),
 		}
 		for tileIndex, tile := range tiles {
-			i, err := renderImageToBase64(tile)
+			i, err := renderTileToBase64(tile)
 			if err != nil {
 				http.Error(w, err.Error(), 500)
 				return
@@ -82,6 +82,11 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+}
+
+func renderTileToBase64(tile gameboy.Tile) (string, error) {
+	// TODO: Encode the tiles
+	return "", nil
 }
 
 func renderImageToBase64(tile image.Image) (string, error) {
