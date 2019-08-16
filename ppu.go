@@ -3,9 +3,6 @@ package gameboy
 import (
 	"image"
 	"image/color"
-	"image/draw"
-
-	"github.com/disintegration/imaging"
 )
 
 type PPU struct {
@@ -167,68 +164,6 @@ func (p *PPU) RenderScreen() image.Image {
 	return NewScreen(p)
 }
 
-func (p *PPU) RenderSprites(screen *image.RGBA) *image.RGBA {
-	// Get tiles from sprite pattern table
-	tiles := p.GetTilesForRange(p.LCDControl().TilePatternTableAddress())
-
-	for pos := uint16(0xFE00); pos < 0xFE9F; pos += 4 {
-		xPos := p.MMU.Read8(pos)
-		x := int(xPos) - 16
-		yPos := p.MMU.Read8(pos + 1)
-		y := int(yPos) - 8
-		tileNumber := p.MMU.Read8(pos + 2)
-		flags := p.MMU.Read8(pos + 3)
-
-		//priority := bitValue(7, flags)
-		// 		Bit7 Priority
-		//  If this bit is set to 0, sprite is
-		//  displayed on top of background & window.
-		//  If this bit is set to 1, then sprite
-		//  will be hidden behind colors 1, 2, and 3
-		//  of the background & window. (Sprite only
-		//  prevails over color 0 of BG & win.)
-
-		yFlip := bitValue(6, flags)
-		xFlip := bitValue(5, flags)
-
-		//paletteNum := bitValue(4, flags)
-		// Bit4 Palette number
-		// Sprite colors are taken from OBJ1PAL if
-		// this bit is set to 1 and from OBJ0PAL
-		// otherwise.
-
-		renderedTile := tiles[tileNumber]
-
-		// Skip offscreen sprites
-		if x < 0 || y < 0 || x >= 168 || y >= 160 {
-			continue
-		}
-
-		bounds := image.Rectangle{
-			Min: image.Point{
-				y,
-				x,
-			},
-			Max: image.Point{
-				y + 8,
-				x + 8,
-			},
-		}
-
-		var imgOut image.Image = renderedTile
-		if yFlip == 1 {
-			imgOut = imaging.FlipV(imgOut)
-		}
-		if xFlip == 1 {
-			imgOut = imaging.FlipH(imgOut)
-		}
-
-		// Write the sprite tile into the background
-		draw.FloydSteinberg.Draw(screen, bounds, imgOut, image.ZP)
-	}
-	return screen
-}
-
 func (p *PPU) GetTilesForRange(r Range) []*image.RGBA {
 	tileData := p.MMU.ReadRange(r)
 
@@ -247,42 +182,8 @@ func (p *PPU) GetBackgroundTiles() []*image.RGBA {
 	return p.GetTilesForRange(p.LCDControl().TilePatternTableAddress())
 }
 
-func (p *PPU) RenderBackground() *image.RGBA {
-	tileMap := p.MMU.ReadRange(p.LCDControl().BackgroundTileTableAddress())
-	tiles := p.GetBackgroundTiles()
-
-	// Init 256x256 background
-	var out = image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{256, 256}})
-	if !p.LCDControl().BackgroundDisplay() {
-		return out
-	}
-
-	for r := 0; r < 32; r++ {
-		for c := 0; c < 32; c++ {
-			index := r*32 + c
-			if index >= len(tileMap) {
-				continue
-			}
-			tileRef := tileMap[index]
-			renderedTile := tiles[tileRef]
-
-			bounds := image.Rectangle{
-				Min: image.Point{
-					8 * c,
-					8 * r,
-				},
-				Max: image.Point{
-					8*c + 8,
-					8*r + 8,
-				},
-			}
-
-			// Write the tile into the background
-			draw.Draw(out, bounds, renderedTile, image.ZP, draw.Src)
-		}
-	}
-
-	return out
+func (p *PPU) RenderBackground() image.Image {
+	return NewBackground(p)
 }
 
 func renderTile(tile []byte, palette byte) *image.RGBA {
@@ -335,6 +236,26 @@ func getTile(number byte, tileMap []byte) []byte {
 
 var _ image.Image = &Screen{}
 
+func NewBackground(ppu *PPU) *Screen {
+	return &Screen{
+		BGTileMap:        ppu.MMU.ReadRange(ppu.LCDControl().BackgroundTileTableAddress()),
+		BGTiles:          ppu.GetBackgroundTiles(),
+		SpriteTiles:      ppu.GetTilesForRange(ppu.LCDControl().TilePatternTableAddress()),
+		SpriteData:       ppu.MMU.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
+		RenderBackground: ppu.LCDControl().BackgroundDisplay(),
+
+		Position: image.Point{
+			X: 0,
+			Y: 0,
+		},
+
+		bounds: image.Rectangle{
+			Min: image.Point{0, 0},
+			Max: image.Point{255, 255},
+		},
+	}
+}
+
 func NewScreen(ppu *PPU) *Screen {
 	return &Screen{
 		BGTileMap:        ppu.MMU.ReadRange(ppu.LCDControl().BackgroundTileTableAddress()),
@@ -347,6 +268,13 @@ func NewScreen(ppu *PPU) *Screen {
 			X: int(ppu.ScrollX()),
 			Y: int(ppu.ScrollY()),
 		},
+
+		bounds: image.Rectangle{
+			Min: image.Point{0, 0},
+			Max: image.Point{160, 144},
+		},
+
+		RenderSprites: true,
 	}
 }
 
@@ -356,8 +284,10 @@ type Screen struct {
 	SpriteTiles      []*image.RGBA
 	SpriteData       []byte
 	RenderBackground bool
+	RenderSprites    bool
 
 	Position image.Point
+	bounds   image.Rectangle
 }
 
 var _ color.Model = &ColorModel{}
@@ -374,10 +304,7 @@ func (s *Screen) ColorModel() color.Model {
 }
 
 func (s *Screen) Bounds() image.Rectangle {
-	return image.Rectangle{
-		Min: image.Point{0, 0},
-		Max: image.Point{160, 144},
-	}
+	return s.bounds
 }
 
 func (s *Screen) atBg(x, y int) color.Color {
@@ -385,12 +312,18 @@ func (s *Screen) atBg(x, y int) color.Color {
 	y = y % 255
 
 	tileIndex := y/8*32 + x/8
+	if tileIndex < 0 || tileIndex >= len(s.BGTileMap) {
+		return color.Black
+	}
 	tileRef := s.BGTileMap[tileIndex]
 	renderedTile := s.BGTiles[tileRef]
 	return renderedTile.At(x%8, y%8)
 }
 
 func (s *Screen) atSprite(pX, pY int) color.Color {
+	if !s.RenderSprites {
+		return nil
+	}
 	for pos := 0; pos < len(s.SpriteData); pos += 4 {
 		yPos := s.SpriteData[pos]
 		y := int(yPos) - 16

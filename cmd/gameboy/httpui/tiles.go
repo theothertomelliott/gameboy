@@ -23,7 +23,6 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 		}
 		page struct {
 			Background string
-			Sprites    string
 			Screen     string
 			Tilesets   []tileset
 		}
@@ -67,14 +66,6 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data.Screen, err = renderImageToBase64(s.gb.PPU().RenderScreen())
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	// Init 256x256 background
-	sprites := image.NewRGBA(image.Rect(0, 0, 256, 256))
-	data.Sprites, err = renderImageToBase64(s.gb.PPU().RenderSprites(sprites))
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
