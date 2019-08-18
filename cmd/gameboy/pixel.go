@@ -15,7 +15,7 @@ func run(
 	setupGraphics()
 
 	for !win.Closed() {
-		if ppu.LCDControl().LCDOperation() {
+		if gameboy.GetLCDControl(ppu.MMU).LCDOperation() {
 			drawGraphics(ppu.RenderScreen())
 		}
 

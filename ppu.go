@@ -139,25 +139,28 @@ func (p *PPU) setStatus() {
 	p.MMU.Write8(LCDSTAT, curStat|0x4)
 }
 
-func (p *PPU) LCDControl() LCDControl {
-	lcdControl := p.MMU.Read8(LCDCONT)
+func (p *PPU) RenderScreen() image.Image {
+	return NewScreen(p.MMU)
+}
+
+func (p *PPU) RenderBackground() image.Image {
+	return NewBackground(p.MMU)
+}
+
+func GetLCDControl(mmu *MMU) LCDControl {
+	lcdControl := mmu.Read8(LCDCONT)
 	return LCDControl(lcdControl)
 }
 
-func (p *PPU) ScrollX() byte {
-	return p.MMU.Read8(SCROLLX)
+func GetScroll(mmu *MMU) image.Point {
+	return image.Point{
+		X: int(mmu.Read8(SCROLLX)),
+		Y: int(mmu.Read8(SCROLLY)),
+	}
 }
 
-func (p *PPU) ScrollY() byte {
-	return p.MMU.Read8(SCROLLY)
-}
-
-func (p *PPU) RenderScreen() image.Image {
-	return NewScreen(p)
-}
-
-func (p *PPU) GetTilesForRange(r Range) []Tile {
-	tileData := p.MMU.ReadRange(r)
+func GetTilesForRange(mmu *MMU, r Range) []Tile {
+	tileData := mmu.ReadRange(r)
 
 	var tilesByIndex []Tile
 
@@ -169,12 +172,8 @@ func (p *PPU) GetTilesForRange(r Range) []Tile {
 	return tilesByIndex
 }
 
-func (p *PPU) GetBackgroundTiles() []Tile {
-	return p.GetTilesForRange(p.LCDControl().TilePatternTableAddress())
-}
-
-func (p *PPU) RenderBackground() image.Image {
-	return NewBackground(p)
+func GetBackgroundTiles(mmu *MMU) []Tile {
+	return GetTilesForRange(mmu, GetLCDControl(mmu).TilePatternTableAddress())
 }
 
 func newColor(palette byte, color byte) color.RGBA {

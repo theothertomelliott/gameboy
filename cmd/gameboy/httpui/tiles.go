@@ -35,7 +35,7 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 
 	for i := 0; i < 2; i++ {
 		lcdcont := gameboy.LCDControl(i * 0xFF)
-		tiles := s.gb.PPU().GetTilesForRange(lcdcont.TilePatternTableAddress())
+		tiles := gameboy.GetTilesForRange(s.gb.MMU(), lcdcont.TilePatternTableAddress())
 		ts := tileset{
 			Index: byte(i),
 		}

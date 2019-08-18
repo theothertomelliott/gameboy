@@ -7,13 +7,13 @@ import (
 
 var _ image.Image = &Screen{}
 
-func NewBackground(ppu *PPU) *Screen {
+func NewBackground(mmu *MMU) *Screen {
 	return &Screen{
-		BGTileMap:        ppu.MMU.ReadRange(ppu.LCDControl().BackgroundTileTableAddress()),
-		BGTiles:          ppu.GetBackgroundTiles(),
-		SpriteTiles:      ppu.GetTilesForRange(ppu.LCDControl().TilePatternTableAddress()),
-		SpriteData:       ppu.MMU.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
-		RenderBackground: ppu.LCDControl().BackgroundDisplay(),
+		BGTileMap:        mmu.ReadRange(GetLCDControl(mmu).BackgroundTileTableAddress()),
+		BGTiles:          GetBackgroundTiles(mmu),
+		SpriteTiles:      GetTilesForRange(mmu, GetLCDControl(mmu).TilePatternTableAddress()),
+		SpriteData:       mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
+		RenderBackground: GetLCDControl(mmu).BackgroundDisplay(),
 
 		Position: image.Point{
 			X: 0,
@@ -27,18 +27,15 @@ func NewBackground(ppu *PPU) *Screen {
 	}
 }
 
-func NewScreen(ppu *PPU) *Screen {
+func NewScreen(mmu *MMU) *Screen {
 	return &Screen{
-		BGTileMap:        ppu.MMU.ReadRange(ppu.LCDControl().BackgroundTileTableAddress()),
-		BGTiles:          ppu.GetBackgroundTiles(),
-		SpriteTiles:      ppu.GetTilesForRange(ppu.LCDControl().TilePatternTableAddress()),
-		SpriteData:       ppu.MMU.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
-		RenderBackground: ppu.LCDControl().BackgroundDisplay(),
+		BGTileMap:        mmu.ReadRange(GetLCDControl(mmu).BackgroundTileTableAddress()),
+		BGTiles:          GetBackgroundTiles(mmu),
+		SpriteTiles:      GetTilesForRange(mmu, GetLCDControl(mmu).TilePatternTableAddress()),
+		SpriteData:       mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
+		RenderBackground: GetLCDControl(mmu).BackgroundDisplay(),
 
-		Position: image.Point{
-			X: int(ppu.ScrollX()),
-			Y: int(ppu.ScrollY()),
-		},
+		Position: GetScroll(mmu),
 
 		bounds: image.Rectangle{
 			Min: image.Point{0, 0},
