@@ -1,5 +1,9 @@
 package gameboy
 
+import (
+	"image"
+)
+
 func NewTile(tile []byte) Tile {
 	var out = make(Tile, 8*8)
 	for line := 0; line < 8; line++ {
@@ -26,4 +30,19 @@ func (t Tile) At(x, y int) byte {
 
 func (t Tile) Set(x, y int, value byte) {
 	t[x*8+y] = value
+}
+
+// ToImage converts this tile into an image.Image using the
+// default pallete
+func (t Tile) ToImage() image.Image {
+	img := image.NewRGBA(image.Rectangle{
+		Min: image.Point{X: 0, Y: 0},
+		Max: image.Point{X: 8, Y: 8},
+	})
+	for i := 0; i < 8; i++ {
+		for j := 0; j < 8; j++ {
+			img.Set(i, j, colorForValue(t.At(i, j)))
+		}
+	}
+	return img
 }

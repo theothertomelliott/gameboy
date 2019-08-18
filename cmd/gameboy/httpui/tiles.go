@@ -85,8 +85,12 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 }
 
 func renderTileToBase64(tile gameboy.Tile) (string, error) {
-	// TODO: Encode the tiles
-	return "", nil
+	var b bytes.Buffer
+	err := gif.Encode(&b, tile.ToImage(), &gif.Options{})
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(b.Bytes()), nil
 }
 
 func renderImageToBase64(tile image.Image) (string, error) {
