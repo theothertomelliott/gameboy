@@ -6,6 +6,9 @@ import (
 
 func NewTile(tile []byte) Tile {
 	var out = make(Tile, 8*8)
+	if len(tile) < 16 {
+		return out
+	}
 	for line := 0; line < 8; line++ {
 		high := tile[line*2+1]
 		low := tile[line*2]
@@ -13,7 +16,7 @@ func NewTile(tile []byte) Tile {
 			h := bitValue(7-bit, high)
 			l := bitValue(7-bit, low)
 			colorValue := l + (h << 1)
-			out.Set(int(bit), line, colorValue)
+			out.set(int(bit), line, colorValue)
 		}
 	}
 	return out
@@ -28,7 +31,7 @@ func (t Tile) At(x, y int) byte {
 	return 0
 }
 
-func (t Tile) Set(x, y int, value byte) {
+func (t Tile) set(x, y int, value byte) {
 	t[x*8+y] = value
 }
 
