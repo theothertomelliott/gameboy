@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"strconv"
 )
 
 func (s *Server) RegisterAPI() error {
 	http.HandleFunc("/api/cpu", s.HandleAPICPU)
 	http.HandleFunc("/api/decompile", s.HandleAPIDecompile)
 	http.HandleFunc("/api/stack", s.HandleAPIStack)
+	http.HandleFunc("/api/trace", s.HandleAPITrace)
 	return nil
 }
 
@@ -20,17 +22,17 @@ func (s *Server) HandleAPICPU(w http.ResponseWriter, r *http.Request) {
 		Paused:    s.gb.IsPaused(),
 		IME:       s.gb.CPU().IME,
 	}
-	_ = jsonResponse(w, data)
+	jsonResponse(w, data)
 }
 
-func jsonResponse(w http.ResponseWriter, body interface{}) error {
+func jsonResponse(w http.ResponseWriter, body interface{}) {
 	out, err := json.Marshal(body)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
-		return err
+		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, string(out))
-	return nil
 }
 
 func (s *Server) HandleAPIDecompile(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +55,7 @@ func (s *Server) HandleAPIDecompile(w http.ResponseWriter, r *http.Request) {
 		ops = append(ops, r)
 	}
 
-	_ = jsonResponse(w, ops)
+	jsonResponse(w, ops)
 }
 
 func (s *Server) HandleAPIStack(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +70,60 @@ func (s *Server) HandleAPIStack(w http.ResponseWriter, r *http.Request) {
 		return stack[i].Pos < stack[j].Pos
 	})
 
-	_ = jsonResponse(w, stack)
+	jsonResponse(w, stack)
+}
+
+func (s *Server) HandleAPITrace(w http.ResponseWriter, r *http.Request) {
+	const pageSize = 1000
+
+	offsetStr := r.FormValue("offset")
+	var (
+		offset int64
+		err    error
+	)
+	switch offsetStr {
+	case "", "last":
+		lastPageLength := len(s.trace) % pageSize
+		if lastPageLength == 0 {
+			lastPageLength = pageSize
+		}
+		offset = int64(len(s.trace) - lastPageLength)
+	default:
+		offset, err = strconv.ParseInt(offsetStr, 10, 64)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		if offset < 0 {
+			offset = 0
+		}
+	}
+
+	var trace []traceEntry
+	if int(offset) < len(s.trace) {
+		if (len(s.trace) - int(offset)) < pageSize {
+			trace = s.trace[offset:]
+		} else {
+			trace = s.trace[offset : offset+pageSize]
+		}
+	}
+
+	data := searchData{
+		Start:    offset,
+		End:      offset + int64(len(trace)),
+		Previous: offset - 1000,
+		Next:     offset + 1000,
+		Total:    len(s.trace),
+	}
+
+	for index, t := range trace {
+		data.Trace = append(data.Trace, traceData{
+			Index: offset + int64(index),
+			Trace: t,
+		})
+	}
+
+	jsonResponse(w, data)
 }
 
 type (
