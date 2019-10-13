@@ -11,3 +11,5 @@ require (
 	github.com/pkg/errors v0.8.1
 	golang.org/x/image v0.0.0-20190118043309-183bebdce1b2
 )
+
+go 1.13
