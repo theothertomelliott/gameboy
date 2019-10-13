@@ -41,7 +41,12 @@ func (m *Memory) pos() uint16 {
 }
 
 func (m *Memory) Write8(value byte) {
-	m.cpu.MMU.Write8(m.pos(), value)
+	pos := m.pos()
+	switch pos {
+	case DIVIDER:
+		value = 0
+	}
+	m.cpu.MMU.Write8(pos, value)
 }
 
 func (m *Memory) Read8() byte {
