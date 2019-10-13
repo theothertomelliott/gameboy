@@ -27,6 +27,7 @@ type traceEntry struct {
 	Pos          Uint16
 	Description  string
 	MemoryValues Bytes
+	Repeated     int
 }
 
 type Uint32 uint16
@@ -68,14 +69,30 @@ func NewServer(gb *gameboy.DMG) *Server {
 		gb:            gb,
 		decompilation: make(map[uint16]string),
 		stack:         make(map[uint16]stackEntry),
-		trace:         make([]traceEntry, 0, 100000000),
+		trace:         make([]traceEntry, 0, 10),
 	}
+}
+
+func (s *Server) addTraceOrRecordRepeat(t traceEntry) {
+	if len(s.trace) != 0 {
+		lastT := s.trace[len(s.trace)-1]
+		lastTWithNoRepeat := lastT
+		lastTWithNoRepeat.Repeated = 0
+
+		if fmt.Sprint(lastTWithNoRepeat) == fmt.Sprint(t) {
+			lastT.Repeated++
+			s.trace[len(s.trace)-1] = lastT
+			return
+		}
+	}
+	s.trace = append(s.trace, t)
 }
 
 func (s *Server) Trace(ev gameboy.TraceMessage) {
 	if ev.CPU != nil {
 		s.decompileMtx.Lock()
 		s.decompilation[ev.CPU.PC] = ev.CPU.Description
+
 		t := traceEntry{
 			Pos:         Uint16(ev.CPU.PC),
 			Description: ev.CPU.Description,
@@ -83,7 +100,8 @@ func (s *Server) Trace(ev gameboy.TraceMessage) {
 		if ev.MMU != nil {
 			t.MemoryValues = Bytes(ev.MMU.ValuesAfter)
 		}
-		s.trace = append(s.trace, t)
+
+		s.addTraceOrRecordRepeat(t)
 		s.decompileMtx.Unlock()
 	}
 
@@ -112,11 +130,14 @@ func (s *Server) ListenAndServe(port int) error {
 	http.HandleFunc("/tiles", s.HandleTiles)
 	http.HandleFunc("/trace/search", s.HandleSearchTrace)
 	http.HandleFunc("/trace", s.HandleTrace)
-
 	box := packr.New("public", "./public")
 	fs := http.FileServer(box)
 	http.Handle("/public/", http.StripPrefix("/public", fs))
 
+	err := s.RegisterAPI()
+	if err != nil {
+		return err
+	}
 	http.HandleFunc("/", s.HandleIndex)
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)

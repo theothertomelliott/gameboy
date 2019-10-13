@@ -61,6 +61,9 @@
         <tr>
         <td>
             <a href="/trace?offset={{.Index}}">{{.Index}}</a>
+            {{if .Trace.Repeated}}
+                (x{{.Trace.Repeated}})
+            {{end}}
         </td>
         <td>
             {{.Trace.Pos}}

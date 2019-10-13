@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	_ "net/http/pprof"
 	"os"
 	"strconv"
 	"strings"
