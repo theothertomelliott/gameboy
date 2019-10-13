@@ -26,7 +26,7 @@ func (s *Server) HandleAPICPU(w http.ResponseWriter, r *http.Request) {
 }
 
 func jsonResponse(w http.ResponseWriter, body interface{}) {
-	out, err := json.Marshal(body)
+	out, err := json.MarshalIndent(body, "", "  ")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
