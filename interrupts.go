@@ -57,12 +57,19 @@ func (s *InterruptScheduler) HandleInterrupts() {
 	ieValue := s.mmu.Read8(IE)
 	ifValue := s.mmu.Read8(IF)
 
-	if !s.cpu.IME || ieValue&ifValue == 0 {
+	if ieValue&ifValue == 0 {
 		return
 	}
 
 	for _, i := range allInterrupts {
 		if bitValue(i.Bit, ieValue) != 0 && bitValue(i.Bit, ifValue) != 0 {
+			// When halt is enabled, don't service the interrupt
+			// Just un-halt the CPU
+			if !s.cpu.IME {
+				s.cpu.isHalted = false
+				return
+			}
+
 			// Reset the bit in IF (the request)
 			s.mmu.Write8(IF, setBitValue(i.Bit, ifValue, false))
 
@@ -71,10 +78,6 @@ func (s *InterruptScheduler) HandleInterrupts() {
 
 			// CALL interrupt vector
 			s.cpu.CALL(Direct16(i.ISR))
-
-			if s.cpu.isHalted {
-				s.cpu.isHalted = false
-			}
 			return
 		}
 	}

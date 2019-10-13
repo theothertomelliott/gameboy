@@ -197,14 +197,6 @@ func (c *CPU) CountSpeed() {
 func (c *CPU) Step() (int, error) {
 
 	if c.isHalted {
-		// If interrupts are disabled (DI) then
-		// halt doesn't suspend operation but it does cause
-		// the program counter to stop counting for one
-		// instruction
-		if !c.IME {
-			c.PC.Inc(1)
-			c.isHalted = false
-		}
 		return 4, nil
 	}
 
