@@ -11,6 +11,7 @@ import (
 func (s *Server) RegisterAPI() error {
 	http.HandleFunc("/api/cpu", s.HandleAPICPU)
 	http.HandleFunc("/api/decompile", s.HandleAPIDecompile)
+	http.HandleFunc("/api/breakpoints", s.HandleAPIBreakpoints)
 	http.HandleFunc("/api/stack", s.HandleAPIStack)
 	http.HandleFunc("/api/trace", s.HandleAPITrace)
 	return nil
@@ -23,6 +24,14 @@ func (s *Server) HandleAPICPU(w http.ResponseWriter, r *http.Request) {
 		IME:       s.gb.CPU().IME,
 	}
 	jsonResponse(w, data)
+}
+
+func (s *Server) HandleAPIBreakpoints(w http.ResponseWriter, r *http.Request) {
+	var breakpoints []uint16
+	for bp := range s.gb.Breakpoints {
+		breakpoints = append(breakpoints, bp)
+	}
+	jsonResponse(w, breakpoints)
 }
 
 func jsonResponse(w http.ResponseWriter, body interface{}) {
