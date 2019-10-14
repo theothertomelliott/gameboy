@@ -11,8 +11,21 @@ import (
 	"github.com/theothertomelliott/gameboy"
 )
 
+// NewServer creates a UI server for the provided DMG instance
+func NewServer(gb *gameboy.DMG, debug bool) *Server {
+	return &Server{
+		gb:            gb,
+		debugEnabled:  debug,
+		decompilation: make(map[uint16]string),
+		stack:         make(map[uint16]stackEntry),
+		trace:         make([]traceEntry, 0, 10),
+	}
+}
+
 type Server struct {
 	gb *gameboy.DMG
+
+	debugEnabled bool
 
 	stack    map[uint16]stackEntry
 	stackMtx sync.Mutex
@@ -64,15 +77,6 @@ type stackEntry struct {
 	WriteBy Uint16
 }
 
-func NewServer(gb *gameboy.DMG) *Server {
-	return &Server{
-		gb:            gb,
-		decompilation: make(map[uint16]string),
-		stack:         make(map[uint16]stackEntry),
-		trace:         make([]traceEntry, 0, 10),
-	}
-}
-
 func (s *Server) addTraceOrRecordRepeat(t traceEntry) {
 	if len(s.trace) != 0 {
 		lastT := s.trace[len(s.trace)-1]
@@ -89,6 +93,10 @@ func (s *Server) addTraceOrRecordRepeat(t traceEntry) {
 }
 
 func (s *Server) Trace(ev gameboy.TraceMessage) {
+	if !s.debugEnabled {
+		return
+	}
+
 	if ev.CPU != nil {
 		s.decompileMtx.Lock()
 		s.decompilation[ev.CPU.PC] = ev.CPU.Description

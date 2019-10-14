@@ -18,9 +18,11 @@ import (
 
 func main() {
 	var (
-		breakpoints breakPoints
+		breakpoints  breakPoints
+		debugEnabled bool
 	)
 	flag.Var(&breakpoints, "breakpoint", "A comma-separated list of breakpoints, as 16-bit hex values.")
+	flag.BoolVar(&debugEnabled, "debug", false, "Enable debugging")
 	flag.Parse()
 
 	flag.Usage = func() {
@@ -59,7 +61,7 @@ func main() {
 		gb.Breakpoints[bp] = struct{}{}
 	}
 
-	uiserver := httpui.NewServer(gb)
+	uiserver := httpui.NewServer(gb, debugEnabled)
 
 	gb.Tracer().Logger = func(ev gameboy.TraceMessage) {
 		uiserver.Trace(ev)
