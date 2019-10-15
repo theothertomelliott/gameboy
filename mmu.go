@@ -46,25 +46,25 @@ func (m *MMU) LoadCartridge(data []byte) {
 		m.RAM[index] = data[index]
 	}
 	// // Write cartridge header to RAM
-	// var index = 0
-	// for index = 0x100; index < 0x150; index++ {
-	// 	m.RAM[index] = data[index]
-	// }
-	// // Write remainder of bank 0
-	// for ; index < 0x4000; index++ {
-	// 	m.RAM[index] = data[index]
-	// }
-	// // Fill banks
-	// for ; index < len(data); index += 0x3FFF {
-	// 	end := index + 0x3FFF
-	// 	if end > len(data)-1 {
-	// 		end = len(data) - 1
-	// 	}
-	// 	m.CartridgeBanks = append(m.CartridgeBanks, data[index:end])
-	// }
+	var index = 0
+	for index = 0x100; index < 0x150; index++ {
+		m.RAM[index] = data[index]
+	}
+	// Write remainder of bank 0
+	for ; index < 0x4000; index++ {
+		m.RAM[index] = data[index]
+	}
+	// Fill banks
+	for ; index < len(data); index += 0x3FFF {
+		end := index + 0x3FFF
+		if end > len(data)-1 {
+			end = len(data) - 1
+		}
+		m.CartridgeBanks = append(m.CartridgeBanks, data[index:end])
+	}
 
-	// // Add the first bank to RAM
-	// m.switchBank(0)
+	// Add the first bank to RAM
+	m.switchBank(0)
 }
 
 // ResetCartridge resets the content of memory to the cartridge
