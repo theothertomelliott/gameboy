@@ -15,6 +15,10 @@ func NewBackground(mmu *MMU) *Screen {
 		SpriteData:       mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
 		RenderBackground: GetLCDControl(mmu).BackgroundDisplay(),
 
+		BGRDPAL: mmu.Read8(BGRDPAL),
+		OBJ0PAL: mmu.Read8(OBJ0PAL),
+		OBJ1PAL: mmu.Read8(OBJ1PAL),
+
 		Position: image.Point{
 			X: 0,
 			Y: 0,
@@ -35,6 +39,10 @@ func NewScreen(mmu *MMU) *Screen {
 		SpriteData:       mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
 		RenderBackground: GetLCDControl(mmu).BackgroundDisplay(),
 
+		BGRDPAL: mmu.Read8(BGRDPAL),
+		OBJ0PAL: mmu.Read8(OBJ0PAL),
+		OBJ1PAL: mmu.Read8(OBJ1PAL),
+
 		Position: GetScroll(mmu),
 
 		bounds: image.Rectangle{
@@ -53,6 +61,10 @@ type Screen struct {
 	SpriteData       []byte
 	RenderBackground bool
 	RenderSprites    bool
+
+	BGRDPAL byte
+	OBJ0PAL byte
+	OBJ1PAL byte
 
 	Position image.Point
 	bounds   image.Rectangle
@@ -85,7 +97,7 @@ func (s *Screen) atBg(x, y int) byte {
 	}
 	tileRef := s.BGTileMap[tileIndex]
 	renderedTile := s.BGTiles[tileRef]
-	return renderedTile.At(x%8, y%8)
+	return valueInPalette(s.BGRDPAL, renderedTile.At(x%8, y%8))
 }
 
 func (s *Screen) atSprite(pX, pY int, bg byte) byte {
@@ -107,7 +119,10 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 
 		tileNumber := s.SpriteData[pos+2]
 
-		flags := s.SpriteData[pos+3]
+		flags := byte(0)
+		if pos+3 < len(s.SpriteData) {
+			flags = s.SpriteData[pos+3]
+		}
 
 		priority := bitValue(7, flags)
 		// 		Bit7 Priority
@@ -121,11 +136,15 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 		yFlip := bitValue(6, flags)
 		xFlip := bitValue(5, flags)
 
-		//paletteNum := bitValue(4, flags)
 		// Bit4 Palette number
+		paletteNum := bitValue(4, flags)
 		// Sprite colors are taken from OBJ1PAL if
 		// this bit is set to 1 and from OBJ0PAL
 		// otherwise.
+		paletteValue := s.OBJ0PAL
+		if paletteNum == 1 {
+			paletteValue = s.OBJ1PAL
+		}
 
 		spX := pX % 8
 		spY := pY % 8
@@ -138,15 +157,10 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 		}
 
 		renderedTile := s.SpriteTiles[tileNumber]
-		val := renderedTile.At(spX, spY)
+		val := valueInPalette(paletteValue, renderedTile.At(spX, spY))
 
-		switch priority {
-		case 0:
+		if priority == 0 || bg == 0 {
 			return val
-		case 1:
-			if bg == 0 {
-				return val
-			}
 		}
 	}
 	return bg

@@ -175,7 +175,7 @@ func GetBackgroundTiles(mmu *MMU) []Tile {
 	return GetTilesForRange(mmu, GetLCDControl(mmu).TilePatternTableAddress())
 }
 
-func newColor(palette byte, color byte) color.RGBA {
+func valueInPalette(palette byte, color byte) byte {
 	// FF47 - BGP - BG Palette Data (R/W) - Non CGB Mode Only
 	// This register assigns gray shades to the color numbers of the BG and Window tiles.
 	//   Bit 7-6 - Shade for Color Number 3
@@ -184,15 +184,15 @@ func newColor(palette byte, color byte) color.RGBA {
 	//   Bit 1-0 - Shade for Color Number 0
 	switch color {
 	case 3:
-		return colorForValue((palette & 0xC0) >> 6)
+		return (palette & 0xC0) >> 6
 	case 2:
-		return colorForValue((palette & 0x30) >> 4)
+		return (palette & 0x30) >> 4
 	case 1:
-		return colorForValue((palette & 0xC) >> 2)
+		return (palette & 0xC) >> 2
 	case 0:
-		return colorForValue(palette & 0x3)
+		return palette & 0x3
 	}
-	return colorForValue(color)
+	return color
 }
 
 func colorForValue(value uint8) color.RGBA {
