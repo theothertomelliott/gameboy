@@ -48,7 +48,7 @@ type InterruptScheduler struct {
 }
 
 func (s *InterruptScheduler) ScheduleInterrupt(i Interrupt) {
-	// Set the VBlank bit in IF to request an interrupt
+	// Set the appropriate bit in IF to request an interrupt
 	ifValue := s.mmu.Read8(IF)
 	s.mmu.Write8(IF, setBitValue(i.Bit, ifValue, true))
 }

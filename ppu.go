@@ -119,7 +119,6 @@ func (p *PPU) setMode(newMode byte) {
 		if bitValue(5, curStat) != 0 {
 			p.interrupts.ScheduleInterrupt(InterruptLCDStatus)
 		}
-		p.interrupts.ScheduleInterrupt(InterruptVBlank)
 	}
 
 	p.mode = newMode
