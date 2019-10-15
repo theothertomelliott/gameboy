@@ -37,6 +37,14 @@ func drawGraphics(graphics image.Image) {
 	win.Clear(colornames.White)
 	pg := pixel.PictureDataFromImage(graphics)
 	sprite := pixel.NewSprite(pg, pg.Bounds())
-	sprite.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
+
+	mat := pixel.IM
+	mat = mat.Moved(win.Bounds().Center())
+	mat = mat.ScaledXY(win.Bounds().Center(), pixel.V(
+		win.Bounds().Size().X/pg.Bounds().Size().X,
+		win.Bounds().Size().Y/pg.Bounds().Size().Y,
+	))
+
+	sprite.Draw(win, mat)
 	win.Update()
 }
