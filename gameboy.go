@@ -29,13 +29,20 @@ type DMG struct {
 
 // NewDMG creates a Game Boy in an uninitialized state
 func NewDMG() *DMG {
+	dmg := NewDMGWithNoRateLimit()
+	dmg.rateLimiter = NewDefaultRateLimiter()
+	return dmg
+}
+
+// NewDMGWithNoRateLimit creates a Game Boy in an uninitialized state
+// with no rate limit to control speed
+func NewDMGWithNoRateLimit() *DMG {
 	tracer := NewTracer()
 	mmu := NewMMU(tracer)
 	cpu := NewCPU(mmu, tracer)
 	interrupts := NewInterruptScheduler(cpu, mmu)
 	ppu := NewPPU(mmu, interrupts)
 	timer := NewTimer(mmu, interrupts)
-	//rateLimiter := NewDefaultRateLimiter()
 
 	return &DMG{
 		cpu:         cpu,
@@ -46,7 +53,6 @@ func NewDMG() *DMG {
 		done:        make(chan struct{}),
 		Breakpoints: make(map[uint16]struct{}),
 		timer:       timer,
-		rateLimiter: nil,
 	}
 }
 
