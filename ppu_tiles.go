@@ -26,7 +26,7 @@ type Tile []byte
 
 func (t Tile) At(x, y int) byte {
 	if i := x*8 + y; i >= 0 && i < len(t) {
-		return t[x*8+y]
+		return t[i]
 	}
 	return 0
 }

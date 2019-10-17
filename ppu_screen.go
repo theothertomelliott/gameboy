@@ -106,14 +106,14 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 	}
 	for pos := 0; pos < len(s.SpriteData); pos += 4 {
 		yPos := s.SpriteData[pos]
-		y := int(yPos) - 16
+		y := int(yPos) - 8
 		xPos := s.SpriteData[pos+1]
-		x := int(xPos) - 8
+		x := int(xPos)
 
-		x += 8
-		y += 8
-
-		if !(x-pX >= 0 && x-pX < 8 && y-pY >= 0 && y-pY < 8) {
+		if !(x-pX >= 0 &&
+			x-pX < 8 &&
+			y-pY >= 0 &&
+			y-pY < 8) {
 			continue
 		}
 
@@ -146,8 +146,8 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 			paletteValue = s.OBJ1PAL
 		}
 
-		spX := pX % 8
-		spY := pY % 8
+		spX := (pX - 1) % 8
+		spY := (pY - 1) % 8
 
 		if xFlip != 0 {
 			spX = 8 - spX
@@ -171,6 +171,6 @@ func (s *Screen) At(x, y int) color.Color {
 	yS := y + s.Position.Y
 
 	pixel := s.atBg(xS, yS)
-	pixel = s.atSprite(xS, yS, pixel)
+	pixel = s.atSprite(xS+1, yS+1, pixel)
 	return colorForValue(pixel)
 }
