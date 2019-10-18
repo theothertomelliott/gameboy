@@ -7,6 +7,8 @@ import (
 
 var _ image.Image = &Screen{}
 
+// https://gbdev.gg8.se/wiki/articles/Video_Display#VRAM_Sprite_Attribute_Table_.28OAM.29
+
 func NewBackground(mmu *MMU) *Screen {
 	return &Screen{
 		BGTileMap:        mmu.ReadRange(GetLCDControl(mmu).BackgroundTileTableAddress()),
@@ -14,11 +16,17 @@ func NewBackground(mmu *MMU) *Screen {
 		SpriteTiles:      GetTilesForRange(mmu, GetLCDControl(mmu).TilePatternTableAddress()),
 		SpriteData:       mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
 		RenderBackground: GetLCDControl(mmu).BackgroundDisplay(),
+		RenderWindow:     false,
 
 		BGRDPAL: mmu.Read8(BGRDPAL),
 		OBJ0PAL: mmu.Read8(OBJ0PAL),
 		OBJ1PAL: mmu.Read8(OBJ1PAL),
 
+		// Off screen
+		WindowPos: image.Point{
+			X: 167,
+			Y: 144,
+		},
 		Position: image.Point{
 			X: 0,
 			Y: 0,
@@ -32,18 +40,22 @@ func NewBackground(mmu *MMU) *Screen {
 }
 
 func NewScreen(mmu *MMU) *Screen {
+	lcdControl := GetLCDControl(mmu)
 	return &Screen{
-		BGTileMap:        mmu.ReadRange(GetLCDControl(mmu).BackgroundTileTableAddress()),
+		BGTileMap:        mmu.ReadRange(lcdControl.BackgroundTileTableAddress()),
 		BGTiles:          GetBackgroundTiles(mmu),
-		SpriteTiles:      GetTilesForRange(mmu, GetLCDControl(mmu).TilePatternTableAddress()),
+		WindowTiles:      GetWindowTiles(mmu),
+		SpriteTiles:      GetTilesForRange(mmu, lcdControl.TilePatternTableAddress()),
 		SpriteData:       mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
-		RenderBackground: GetLCDControl(mmu).BackgroundDisplay(),
+		RenderBackground: lcdControl.BackgroundDisplay(),
+		RenderWindow:     lcdControl.WindowDisplay(),
 
 		BGRDPAL: mmu.Read8(BGRDPAL),
 		OBJ0PAL: mmu.Read8(OBJ0PAL),
 		OBJ1PAL: mmu.Read8(OBJ1PAL),
 
-		Position: GetScroll(mmu),
+		WindowPos: GetWindowPos(mmu),
+		Position:  GetScroll(mmu),
 
 		bounds: image.Rectangle{
 			Min: image.Point{0, 0},
@@ -56,18 +68,21 @@ func NewScreen(mmu *MMU) *Screen {
 
 type Screen struct {
 	BGTileMap        []byte
+	WindowTiles      []Tile
 	BGTiles          []Tile
 	SpriteTiles      []Tile
 	SpriteData       []byte
 	RenderBackground bool
 	RenderSprites    bool
+	RenderWindow     bool
 
 	BGRDPAL byte
 	OBJ0PAL byte
 	OBJ1PAL byte
 
-	Position image.Point
-	bounds   image.Rectangle
+	WindowPos image.Point
+	Position  image.Point
+	bounds    image.Rectangle
 }
 
 var _ color.Model = &ColorModel{}
@@ -97,6 +112,16 @@ func (s *Screen) atBg(x, y int) byte {
 	}
 	tileRef := s.BGTileMap[tileIndex]
 	renderedTile := s.BGTiles[tileRef]
+	return valueInPalette(s.BGRDPAL, renderedTile.At(x%8, y%8))
+}
+
+func (s *Screen) atWindow(x, y int) byte {
+	tileIndex := y/8*32 + x/8
+	if tileIndex < 0 || tileIndex >= len(s.BGTileMap) {
+		return 0
+	}
+	tileRef := s.BGTileMap[tileIndex]
+	renderedTile := s.WindowTiles[tileRef]
 	return valueInPalette(s.BGRDPAL, renderedTile.At(x%8, y%8))
 }
 
@@ -166,11 +191,23 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 	return bg
 }
 
-func (s *Screen) At(x, y int) color.Color {
+func (s *Screen) valueAt(x, y int) byte {
 	xS := x + s.Position.X
 	yS := y + s.Position.Y
 
-	pixel := s.atBg(xS, yS)
+	var pixel byte
+
+	if s.RenderWindow &&
+		s.WindowPos.X >= 0 && s.WindowPos.X <= 166 &&
+		s.WindowPos.Y >= 0 && s.WindowPos.Y <= 143 {
+		pixel = s.atWindow(xS, yS)
+	} else {
+		pixel = s.atBg(xS, yS)
+	}
 	pixel = s.atSprite(xS+1, yS+1, pixel)
-	return colorForValue(pixel)
+	return pixel
+}
+
+func (s *Screen) At(x, y int) color.Color {
+	return colorForValue(s.valueAt(x, y))
 }

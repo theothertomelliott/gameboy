@@ -5,34 +5,18 @@ import (
 )
 
 func NewTile(tile []byte) Tile {
-	var out = make(Tile, 8*8)
-	if len(tile) < 16 {
-		return out
-	}
-	for line := 0; line < 8; line++ {
-		high := tile[line*2+1]
-		low := tile[line*2]
-		for bit := byte(0); bit < 8; bit++ {
-			h := bitValue(7-bit, high)
-			l := bitValue(7-bit, low)
-			colorValue := l + (h << 1)
-			out.set(int(bit), line, colorValue)
-		}
-	}
-	return out
+	return Tile(tile)
 }
 
 type Tile []byte
 
 func (t Tile) At(x, y int) byte {
-	if i := x*8 + y; i >= 0 && i < len(t) {
-		return t[i]
-	}
-	return 0
-}
+	high := t[y*2+1]
+	low := t[y*2]
 
-func (t Tile) set(x, y int, value byte) {
-	t[x*8+y] = value
+	h := bitValue(7-byte(x), high)
+	l := bitValue(7-byte(x), low)
+	return l + (h << 1)
 }
 
 // ToImage converts this tile into an image.Image using the

@@ -11,12 +11,15 @@ type PPU struct {
 	modeclock  int
 	mode       byte
 	line       byte
+
+	lcd LCD
 }
 
 func NewPPU(mmu *MMU, interrupts *InterruptScheduler) *PPU {
 	return &PPU{
 		MMU:        mmu,
 		interrupts: interrupts,
+		lcd:        NewLCD(),
 	}
 }
 
@@ -41,6 +44,7 @@ func (p *PPU) Step(t int) error {
 			p.setMode(0)
 
 			// render a scanline
+			p.renderLine()
 		}
 	// Hblank
 	// After the last hblank, push the screen data to canvas
@@ -72,6 +76,18 @@ func (p *PPU) Step(t int) error {
 	}
 
 	return nil
+}
+
+func (p *PPU) renderLine() {
+	screen := NewScreen(p.MMU)
+	values := make([]byte, 160)
+
+	// Render line
+	for col := 0; col < 160; col++ {
+		values[col] = screen.valueAt(col, int(p.line))
+	}
+
+	p.lcd.RenderLine(p.line, values)
 }
 
 func (p *PPU) resetLine() {
@@ -139,7 +155,7 @@ func (p *PPU) setStatus() {
 }
 
 func (p *PPU) RenderScreen() image.Image {
-	return NewScreen(p.MMU)
+	return p.lcd
 }
 
 func (p *PPU) RenderBackground() image.Image {
@@ -149,6 +165,13 @@ func (p *PPU) RenderBackground() image.Image {
 func GetLCDControl(mmu *MMU) LCDControl {
 	lcdControl := mmu.Read8(LCDCONT)
 	return LCDControl(lcdControl)
+}
+
+func GetWindowPos(mmu *MMU) image.Point {
+	return image.Point{
+		X: int(mmu.Read8(WNDPOSX)),
+		Y: int(mmu.Read8(WNDPOSY)),
+	}
 }
 
 func GetScroll(mmu *MMU) image.Point {
@@ -173,6 +196,10 @@ func GetTilesForRange(mmu *MMU, r Range) []Tile {
 
 func GetBackgroundTiles(mmu *MMU) []Tile {
 	return GetTilesForRange(mmu, GetLCDControl(mmu).TilePatternTableAddress())
+}
+
+func GetWindowTiles(mmu *MMU) []Tile {
+	return GetTilesForRange(mmu, GetLCDControl(mmu).WindowTileTableAddress())
 }
 
 func valueInPalette(palette byte, color byte) byte {
