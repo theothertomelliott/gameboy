@@ -1,5 +1,7 @@
 package gameboy
 
+import "fmt"
+
 type MMU struct {
 	RAM            []byte
 	CartridgeData  []byte
@@ -39,13 +41,17 @@ func (m *MMU) LoadROM(data []byte) {
 
 // LoadCartridge loads a Cartridge ROM into memory
 func (m *MMU) LoadCartridge(data []byte) {
+	if data[0x0147] != 00 {
+		panic(fmt.Sprintf("Cartridge type unsupported: %v", data[0x147]))
+	}
+
 	m.CartridgeData = data
 	m.testOutput = nil
 	m.RAM = make([]byte, 0x10000)
 	for index := 0x000; index < len(data); index++ {
 		m.RAM[index] = data[index]
 	}
-	// // Write cartridge header to RAM
+	// Write cartridge header to RAM
 	var index = 0
 	for index = 0x100; index < 0x150; index++ {
 		m.RAM[index] = data[index]
@@ -128,11 +134,6 @@ func (m *MMU) Write8(pos uint16, values ...byte) {
 	}
 
 	for _, value := range values {
-		// Check for write to ROM area for bank switching
-		if pos >= 0x150 && pos < 0x8000 {
-			m.switchBank(value - 1)
-			return
-		}
 		m.RAM[pos] = value
 		pos++
 	}
