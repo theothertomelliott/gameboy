@@ -136,15 +136,13 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 		return bg
 	}
 	for pos := 0; pos < len(s.SpriteData); pos += 4 {
-		yPos := s.SpriteData[pos]
-		y := int(yPos) - 8
-		xPos := s.SpriteData[pos+1]
-		x := int(xPos)
+		y := int(s.SpriteData[pos]) - 16
+		x := int(s.SpriteData[pos+1]) - 8
 
-		if !(x-pX >= 0 &&
-			x-pX < 8 &&
-			y-pY >= 0 &&
-			y-pY < 8) {
+		if !(x <= pX &&
+			pX-x < 8 &&
+			y <= pY &&
+			pY-y < 8) {
 			continue
 		}
 
@@ -163,6 +161,9 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 		//  will be hidden behind colors 1, 2, and 3
 		//  of the background & window. (Sprite only
 		//  prevails over color 0 of BG & win.)
+		if priority == 1 && bg != 0 {
+			return bg
+		}
 
 		yFlip := bitValue(6, flags)
 		xFlip := bitValue(5, flags)
@@ -177,8 +178,8 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 			paletteValue = s.OBJ1PAL
 		}
 
-		spX := (pX - 1) % 8
-		spY := (pY - 1) % 8
+		spX := (pX - x)
+		spY := (pY - y)
 
 		if xFlip != 0 {
 			spX = 8 - spX
@@ -188,11 +189,7 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 		}
 
 		renderedTile := s.SpriteTiles[tileNumber]
-		val := valueInPalette(paletteValue, renderedTile.At(spX, spY))
-
-		if priority == 0 || bg == 0 {
-			return val
-		}
+		return valueInPalette(paletteValue, renderedTile.At(spX, spY))
 	}
 	return bg
 }
@@ -210,7 +207,7 @@ func (s *Screen) valueAt(x, y int) byte {
 	} else {
 		pixel = s.atBg(xS, yS)
 	}
-	pixel = s.atSprite(xS+1, yS+1, pixel)
+	pixel = s.atSprite(xS, yS, pixel)
 	return pixel
 }
 
