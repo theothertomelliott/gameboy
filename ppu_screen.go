@@ -40,6 +40,38 @@ func NewBackground(mmu *MMU) *Screen {
 	}
 }
 
+func NewWindow(mmu *MMU) *Screen {
+	return &Screen{
+		BGTileMap:                    mmu.ReadRange(GetLCDControl(mmu).BackgroundTileTableAddress()),
+		BGTiles:                      GetBackgroundTiles(mmu),
+		WindowTileMap:                mmu.ReadRange(GetLCDControl(mmu).WindowTileTableAddress()),
+		SpriteTiles:                  GetTilesForRange(mmu, Range{Start: 0x8000, End: 0x8FFF}),
+		SpriteData:                   mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
+		RenderBackground:             GetLCDControl(mmu).BackgroundDisplay(),
+		BGWindowTileAddressingSigned: GetLCDControl(mmu).BGWindowTileAddressingSigned(),
+		RenderWindow:                 true,
+
+		BGRDPAL: mmu.Read8(BGRDPAL),
+		OBJ0PAL: mmu.Read8(OBJ0PAL),
+		OBJ1PAL: mmu.Read8(OBJ1PAL),
+
+		// Put the window on screen
+		WindowPos: image.Point{
+			X: 7,
+			Y: 0,
+		},
+		Position: image.Point{
+			X: 0,
+			Y: 0,
+		},
+
+		bounds: image.Rectangle{
+			Min: image.Point{0, 0},
+			Max: image.Point{160, 144},
+		},
+	}
+}
+
 func NewScreen(mmu *MMU) *Screen {
 	lcdControl := GetLCDControl(mmu)
 	return &Screen{
@@ -123,10 +155,13 @@ func (s *Screen) atBg(x, y int) byte {
 
 func (s *Screen) atWindow(x, y int) byte {
 	tileIndex := y/8*32 + x/8
-	if tileIndex < 0 || tileIndex >= len(s.BGTileMap) {
+	if tileIndex < 0 || tileIndex >= len(s.WindowTileMap) {
 		return 0
 	}
 	tileRef := s.WindowTileMap[tileIndex]
+	if s.BGWindowTileAddressingSigned {
+		tileRef = (tileRef + 128) % 255
+	}
 	renderedTile := s.BGTiles[tileRef]
 	return valueInPalette(s.BGRDPAL, renderedTile.At(x%8, y%8))
 }
@@ -135,6 +170,7 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 	if !s.RenderSprites {
 		return bg
 	}
+	var value = bg
 	for pos := 0; pos < len(s.SpriteData); pos += 4 {
 		y := int(s.SpriteData[pos]) - 16
 		x := int(s.SpriteData[pos+1]) - 8
@@ -162,7 +198,7 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 		//  of the background & window. (Sprite only
 		//  prevails over color 0 of BG & win.)
 		if priority == 1 && bg != 0 {
-			return bg
+			continue
 		}
 
 		yFlip := bitValue(6, flags)
@@ -190,28 +226,28 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 
 		renderedTile := s.SpriteTiles[tileNumber]
 		val := renderedTile.At(spX, spY)
+		// Transparent
 		if val == 0 {
-			return bg
+			continue
 		}
-		return valueInPalette(paletteValue, val)
+		value = valueInPalette(paletteValue, val)
 	}
-	return bg
+	return value
 }
 
 func (s *Screen) valueAt(x, y int) byte {
-	xS := x + s.Position.X
-	yS := y + s.Position.Y
-
 	var pixel byte
 
-	if s.RenderWindow &&
-		s.WindowPos.X >= 0 && s.WindowPos.X <= 166 &&
-		s.WindowPos.Y >= 0 && s.WindowPos.Y <= 143 {
-		pixel = s.atWindow(xS, yS)
-	} else {
-		pixel = s.atBg(xS, yS)
+	pixel = s.atBg(x+s.Position.X, y+s.Position.Y)
+	if s.RenderWindow {
+		wX := x - (s.WindowPos.X - 7)
+		wY := y - s.WindowPos.Y
+		if wX >= 0 && wX < 166 &&
+			wY >= 0 && wY < 144 {
+			pixel = s.atWindow(wX, wY)
+		}
 	}
-	pixel = s.atSprite(xS, yS, pixel)
+	pixel = s.atSprite(x, y, pixel)
 	return pixel
 }
 

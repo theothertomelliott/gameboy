@@ -158,6 +158,10 @@ func (p *PPU) RenderScreen() image.Image {
 	return p.lcd
 }
 
+func (p *PPU) RenderWindow() image.Image {
+	return NewWindow(p.MMU)
+}
+
 func (p *PPU) RenderBackground() image.Image {
 	return NewBackground(p.MMU)
 }
