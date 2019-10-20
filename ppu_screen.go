@@ -189,7 +189,11 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 		}
 
 		renderedTile := s.SpriteTiles[tileNumber]
-		return valueInPalette(paletteValue, renderedTile.At(spX, spY))
+		val := renderedTile.At(spX, spY)
+		if val == 0 {
+			return bg
+		}
+		return valueInPalette(paletteValue, val)
 	}
 	return bg
 }
