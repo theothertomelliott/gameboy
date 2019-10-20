@@ -11,6 +11,9 @@ func NewTile(tile []byte) Tile {
 type Tile []byte
 
 func (t Tile) At(x, y int) byte {
+	if y*2+1 >= len(t) {
+		return 0
+	}
 	high := t[y*2+1]
 	low := t[y*2]
 
