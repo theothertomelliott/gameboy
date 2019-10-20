@@ -198,7 +198,7 @@ func GetBackgroundTiles(mmu *MMU) []Tile {
 	return GetTilesForRange(mmu, GetLCDControl(mmu).TilePatternTableAddress())
 }
 
-func GetWindowTiles(mmu *MMU) []Tile {
+func GetWindowTileMap(mmu *MMU) []Tile {
 	return GetTilesForRange(mmu, GetLCDControl(mmu).WindowTileTableAddress())
 }
 

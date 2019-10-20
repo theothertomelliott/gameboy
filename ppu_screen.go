@@ -11,12 +11,13 @@ var _ image.Image = &Screen{}
 
 func NewBackground(mmu *MMU) *Screen {
 	return &Screen{
-		BGTileMap:        mmu.ReadRange(GetLCDControl(mmu).BackgroundTileTableAddress()),
-		BGTiles:          GetBackgroundTiles(mmu),
-		SpriteTiles:      GetTilesForRange(mmu, GetLCDControl(mmu).TilePatternTableAddress()),
-		SpriteData:       mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
-		RenderBackground: GetLCDControl(mmu).BackgroundDisplay(),
-		RenderWindow:     false,
+		BGTileMap:                    mmu.ReadRange(GetLCDControl(mmu).BackgroundTileTableAddress()),
+		BGTiles:                      GetBackgroundTiles(mmu),
+		SpriteTiles:                  GetTilesForRange(mmu, Range{Start: 0x8000, End: 0x8FFF}),
+		SpriteData:                   mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
+		RenderBackground:             GetLCDControl(mmu).BackgroundDisplay(),
+		BGWindowTileAddressingSigned: GetLCDControl(mmu).BGWindowTileAddressingSigned(),
+		RenderWindow:                 false,
 
 		BGRDPAL: mmu.Read8(BGRDPAL),
 		OBJ0PAL: mmu.Read8(OBJ0PAL),
@@ -42,13 +43,14 @@ func NewBackground(mmu *MMU) *Screen {
 func NewScreen(mmu *MMU) *Screen {
 	lcdControl := GetLCDControl(mmu)
 	return &Screen{
-		BGTileMap:        mmu.ReadRange(lcdControl.BackgroundTileTableAddress()),
-		BGTiles:          GetBackgroundTiles(mmu),
-		WindowTiles:      GetWindowTiles(mmu),
-		SpriteTiles:      GetTilesForRange(mmu, lcdControl.TilePatternTableAddress()),
-		SpriteData:       mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
-		RenderBackground: lcdControl.BackgroundDisplay(),
-		RenderWindow:     lcdControl.WindowDisplay(),
+		BGTileMap:                    mmu.ReadRange(lcdControl.BackgroundTileTableAddress()),
+		BGTiles:                      GetBackgroundTiles(mmu),
+		WindowTileMap:                mmu.ReadRange(lcdControl.WindowTileTableAddress()),
+		SpriteTiles:                  GetTilesForRange(mmu, Range{Start: 0x8000, End: 0x8FFF}),
+		SpriteData:                   mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
+		RenderBackground:             lcdControl.BackgroundDisplay(),
+		RenderWindow:                 lcdControl.WindowDisplay(),
+		BGWindowTileAddressingSigned: lcdControl.BGWindowTileAddressingSigned(),
 
 		BGRDPAL: mmu.Read8(BGRDPAL),
 		OBJ0PAL: mmu.Read8(OBJ0PAL),
@@ -67,14 +69,15 @@ func NewScreen(mmu *MMU) *Screen {
 }
 
 type Screen struct {
-	BGTileMap        []byte
-	WindowTiles      []Tile
-	BGTiles          []Tile
-	SpriteTiles      []Tile
-	SpriteData       []byte
-	RenderBackground bool
-	RenderSprites    bool
-	RenderWindow     bool
+	BGTileMap                    []byte
+	WindowTileMap                []byte
+	BGTiles                      []Tile
+	SpriteTiles                  []Tile
+	SpriteData                   []byte
+	RenderBackground             bool
+	RenderSprites                bool
+	RenderWindow                 bool
+	BGWindowTileAddressingSigned bool
 
 	BGRDPAL byte
 	OBJ0PAL byte
@@ -111,6 +114,9 @@ func (s *Screen) atBg(x, y int) byte {
 		return 0
 	}
 	tileRef := s.BGTileMap[tileIndex]
+	if s.BGWindowTileAddressingSigned {
+		tileRef = (tileRef + 128) % 255
+	}
 	renderedTile := s.BGTiles[tileRef]
 	return valueInPalette(s.BGRDPAL, renderedTile.At(x%8, y%8))
 }
@@ -120,8 +126,8 @@ func (s *Screen) atWindow(x, y int) byte {
 	if tileIndex < 0 || tileIndex >= len(s.BGTileMap) {
 		return 0
 	}
-	tileRef := s.BGTileMap[tileIndex]
-	renderedTile := s.WindowTiles[tileRef]
+	tileRef := s.WindowTileMap[tileIndex]
+	renderedTile := s.BGTiles[tileRef]
 	return valueInPalette(s.BGRDPAL, renderedTile.At(x%8, y%8))
 }
 

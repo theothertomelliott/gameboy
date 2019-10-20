@@ -27,8 +27,12 @@ func (l LCDControl) WindowDisplay() bool {
 	return bitValue(5, byte(l)) != 0
 }
 
+func (l LCDControl) BGWindowTileAddressingSigned() bool {
+	return bitValue(4, byte(l)) == 0
+}
+
 // TilePatternTableAddress ...
-// Bit4  Tile Pattern Table address              | 8000-8FFF     | 8800-97FF
+// Bit4  BG & Window Tile Data Select            | 8000-8FFF     | 8800-97FF
 func (l LCDControl) TilePatternTableAddress() Range {
 	if bitValue(4, byte(l)) == 0 {
 		return Range{
