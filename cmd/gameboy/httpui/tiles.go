@@ -21,11 +21,16 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 			Index byte
 			Tiles []tileData
 		}
+		oam struct {
+			X, Y byte
+			Tile byte
+		}
 		page struct {
 			Background string
 			Window     string
 			Screen     string
 			Tilesets   []tileset
+			OAM        []oam
 		}
 	)
 
@@ -53,6 +58,16 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 					Gif:   i,
 				},
 			)
+		}
+		for _, o := range gameboy.GetSpriteData(s.gb.MMU()) {
+			if o.X() > 160 || o.Y() > 144 {
+				continue
+			}
+			data.OAM = append(data.OAM, oam{
+				X:    o.X(),
+				Y:    o.Y(),
+				Tile: o.Tile(),
+			})
 		}
 		data.Tilesets = append(
 			data.Tilesets,

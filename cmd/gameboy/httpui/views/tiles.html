@@ -25,6 +25,12 @@
 				{{end}}
 			</div>
 			{{end}}
+			<h1>Sprite OAM</h1>
+			<ul>
+			{{range .OAM}}
+				<li>({{.X}},{{.Y}}) - {{.Tile}}</li>
+			{{end}}
+			</ul>
 			<h1>Background</h1>
 			<img src="data:image/gif;base64,{{.Background}}" />
 			<h1>Window</h1>
