@@ -185,6 +185,15 @@ func GetScroll(mmu *MMU) image.Point {
 	}
 }
 
+func GetSpriteData(mmu *MMU) []OAM {
+	var out []OAM
+	spriteData := mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F})
+	for pos := 0; pos < len(spriteData); pos += 4 {
+		out = append(out, OAM(spriteData[pos:pos+4]))
+	}
+	return out
+}
+
 func GetTilesForRange(mmu *MMU, r Range) []Tile {
 	tileData := mmu.ReadRange(r)
 

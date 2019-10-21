@@ -13,8 +13,6 @@ func NewBackground(mmu *MMU) *Screen {
 	return &Screen{
 		BGTileMap:                    mmu.ReadRange(GetLCDControl(mmu).BackgroundTileTableAddress()),
 		BGTiles:                      GetBackgroundTiles(mmu),
-		SpriteTiles:                  GetTilesForRange(mmu, Range{Start: 0x8000, End: 0x8FFF}),
-		SpriteData:                   mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
 		RenderBackground:             GetLCDControl(mmu).BackgroundDisplay(),
 		BGWindowTileAddressingSigned: GetLCDControl(mmu).BGWindowTileAddressingSigned(),
 		RenderWindow:                 false,
@@ -45,8 +43,6 @@ func NewWindow(mmu *MMU) *Screen {
 		BGTileMap:                    mmu.ReadRange(GetLCDControl(mmu).BackgroundTileTableAddress()),
 		BGTiles:                      GetBackgroundTiles(mmu),
 		WindowTileMap:                mmu.ReadRange(GetLCDControl(mmu).WindowTileTableAddress()),
-		SpriteTiles:                  GetTilesForRange(mmu, Range{Start: 0x8000, End: 0x8FFF}),
-		SpriteData:                   mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
 		RenderBackground:             GetLCDControl(mmu).BackgroundDisplay(),
 		BGWindowTileAddressingSigned: GetLCDControl(mmu).BGWindowTileAddressingSigned(),
 		RenderWindow:                 true,
@@ -79,7 +75,7 @@ func NewScreen(mmu *MMU) *Screen {
 		BGTiles:                      GetBackgroundTiles(mmu),
 		WindowTileMap:                mmu.ReadRange(lcdControl.WindowTileTableAddress()),
 		SpriteTiles:                  GetTilesForRange(mmu, Range{Start: 0x8000, End: 0x8FFF}),
-		SpriteData:                   mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F}),
+		SpriteData:                   GetSpriteData(mmu),
 		RenderBackground:             lcdControl.BackgroundDisplay(),
 		RenderWindow:                 lcdControl.WindowDisplay(),
 		BGWindowTileAddressingSigned: lcdControl.BGWindowTileAddressingSigned(),
@@ -106,7 +102,7 @@ type Screen struct {
 	WindowTileMap                []byte
 	BGTiles                      []Tile
 	SpriteTiles                  []Tile
-	SpriteData                   []byte
+	SpriteData                   []OAM
 	RenderBackground             bool
 	RenderSprites                bool
 	RenderWindow                 bool
@@ -173,9 +169,9 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 		return bg
 	}
 	var value = bg
-	for pos := 0; pos < len(s.SpriteData); pos += 4 {
-		y := int(s.SpriteData[pos]) - 16
-		x := int(s.SpriteData[pos+1]) - 8
+	for _, oam := range s.SpriteData {
+		y := int(oam.Y())
+		x := int(oam.X())
 
 		if !(x <= pX &&
 			pX-x < s.SpriteSize.X &&
@@ -184,14 +180,9 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 			continue
 		}
 
-		tileNumber := s.SpriteData[pos+2]
+		tileNumber := oam.Tile()
 
-		flags := byte(0)
-		if pos+3 < len(s.SpriteData) {
-			flags = s.SpriteData[pos+3]
-		}
-
-		priority := bitValue(7, flags)
+		priority := oam.Priority()
 		// 		Bit7 Priority
 		//  If this bit is set to 0, sprite is
 		//  displayed on top of background & window.
@@ -199,20 +190,12 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 		//  will be hidden behind colors 1, 2, and 3
 		//  of the background & window. (Sprite only
 		//  prevails over color 0 of BG & win.)
-		if priority == 1 && bg != 0 {
+		if priority && bg != 0 {
 			continue
 		}
 
-		yFlip := bitValue(6, flags)
-		xFlip := bitValue(5, flags)
-
-		// Bit4 Palette number
-		paletteNum := bitValue(4, flags)
-		// Sprite colors are taken from OBJ1PAL if
-		// this bit is set to 1 and from OBJ0PAL
-		// otherwise.
 		paletteValue := s.OBJ0PAL
-		if paletteNum == 1 {
+		if oam.Palette() == 1 {
 			paletteValue = s.OBJ1PAL
 		}
 
@@ -220,10 +203,10 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 		tiledY := (pY - y)
 		spY := tiledY % 8
 
-		if xFlip != 0 {
+		if oam.XFlip() {
 			spX = 8 - spX
 		}
-		if yFlip != 0 {
+		if oam.YFlip() {
 			spY = 8 - spY
 		}
 		var renderedTile Tile
