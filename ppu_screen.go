@@ -88,8 +88,9 @@ func NewScreen(mmu *MMU) *Screen {
 		OBJ0PAL: mmu.Read8(OBJ0PAL),
 		OBJ1PAL: mmu.Read8(OBJ1PAL),
 
-		WindowPos: GetWindowPos(mmu),
-		Position:  GetScroll(mmu),
+		WindowPos:  GetWindowPos(mmu),
+		Position:   GetScroll(mmu),
+		SpriteSize: lcdControl.SpriteSize(),
 
 		bounds: image.Rectangle{
 			Min: image.Point{0, 0},
@@ -115,9 +116,10 @@ type Screen struct {
 	OBJ0PAL byte
 	OBJ1PAL byte
 
-	WindowPos image.Point
-	Position  image.Point
-	bounds    image.Rectangle
+	SpriteSize image.Point
+	WindowPos  image.Point
+	Position   image.Point
+	bounds     image.Rectangle
 }
 
 var _ color.Model = &ColorModel{}
@@ -176,9 +178,9 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 		x := int(s.SpriteData[pos+1]) - 8
 
 		if !(x <= pX &&
-			pX-x < 8 &&
+			pX-x < s.SpriteSize.X &&
 			y <= pY &&
-			pY-y < 8) {
+			pY-y < s.SpriteSize.Y) {
 			continue
 		}
 
@@ -215,7 +217,8 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 		}
 
 		spX := (pX - x)
-		spY := (pY - y)
+		tiledY := (pY - y)
+		spY := tiledY % 8
 
 		if xFlip != 0 {
 			spX = 8 - spX
@@ -223,8 +226,12 @@ func (s *Screen) atSprite(pX, pY int, bg byte) byte {
 		if yFlip != 0 {
 			spY = 8 - spY
 		}
-
-		renderedTile := s.SpriteTiles[tileNumber]
+		var renderedTile Tile
+		if tiledY >= 8 {
+			renderedTile = s.SpriteTiles[tileNumber+1]
+		} else {
+			renderedTile = s.SpriteTiles[tileNumber]
+		}
 		val := renderedTile.At(spX, spY)
 		// Transparent
 		if val == 0 {

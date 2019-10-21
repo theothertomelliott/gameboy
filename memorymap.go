@@ -1,5 +1,7 @@
 package gameboy
 
+import "image"
+
 type LCDControl byte
 
 // LCDOperation ...
@@ -59,11 +61,12 @@ func (l LCDControl) BackgroundTileTableAddress() Range {
 
 // SpriteSize ...
 // Bit2  Sprite size                             | 8x16          | 8x8
-func (l LCDControl) SpriteSize() (byte, byte) {
-	if bitValue(2, byte(l)) == 0 {
-		return 8, 16
+func (l LCDControl) SpriteSize() image.Point {
+	if bitValue(2, byte(l)) == 1 {
+		return image.Point{X: 8, Y: 16}
+
 	}
-	return 8, 8
+	return image.Point{X: 8, Y: 8}
 }
 
 // WindowTransparencyOnColorZero ...
