@@ -59,20 +59,21 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 				},
 			)
 		}
-		for _, o := range gameboy.GetSpriteData(s.gb.MMU()) {
-			if o.X() > 160 || o.Y() > 144 {
-				continue
-			}
-			data.OAM = append(data.OAM, oam{
-				X:    o.X(),
-				Y:    o.Y(),
-				Tile: o.Tile(),
-			})
-		}
 		data.Tilesets = append(
 			data.Tilesets,
 			ts,
 		)
+	}
+
+	for _, o := range gameboy.GetSpriteData(s.gb.MMU()) {
+		if o.X() > 160 || o.Y() > 144 {
+			continue
+		}
+		data.OAM = append(data.OAM, oam{
+			X:    o.X(),
+			Y:    o.Y(),
+			Tile: o.Tile(),
+		})
 	}
 
 	data.Background, err = renderImageToBase64(s.gb.PPU().RenderBackground())
