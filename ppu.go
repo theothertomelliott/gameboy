@@ -227,8 +227,31 @@ func valueInPalette(palette byte, color byte) byte {
 }
 
 func colorForValue(value uint8) color.RGBA {
-	adjustedValue := 255 - ((256 / 4) * value)
-	return color.RGBA{
-		R: adjustedValue, G: adjustedValue, B: adjustedValue, A: 255,
+	/**
+	* 0  White
+	* 1  Light gray
+	* 2  Dark gray
+	* 3  Black
+	* Colors based on:
+	*   https://www.designpieces.com/palette/game-boy-original-color-palette-hex-and-rgb/
+	 */
+	switch value {
+	case 3:
+		return color.RGBA{
+			R: 15, G: 56, B: 15, A: 255,
+		}
+	case 2:
+		return color.RGBA{
+			R: 48, G: 98, B: 48, A: 255,
+		}
+	case 1:
+		return color.RGBA{
+			R: 139, G: 172, B: 15, A: 255,
+		}
+	default:
+		// 0
+		return color.RGBA{
+			R: 155, G: 188, B: 15, A: 255,
+		}
 	}
 }
