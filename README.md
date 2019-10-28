@@ -16,13 +16,11 @@ Graphics and keyboard input are implemented using [Pixel](https://github.com/fai
 This project is very much a work in progress. Current milestones reached:
 
 * Successfully runs the DMG-01 boot rom
-* Passes most tests in the Blargg cpu instruction roms
-* Joypad support
-* Video interrupts
+* Passes individual tests in the Blargg cpu instruction roms (does not pass the combined tests due to need for bank switching).
+* Tetris is playable
 
 Key remaining work:
 
-* Pass remaining Blargg tests
 * Sound support
 * Cartridge bank switching
 
