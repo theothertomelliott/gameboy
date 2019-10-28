@@ -1,7 +1,9 @@
-package gameboy
+package ppu
 
 import (
 	"image"
+
+	"github.com/theothertomelliott/gameboy/binary"
 )
 
 func NewTile(tile []byte) Tile {
@@ -17,8 +19,8 @@ func (t Tile) At(x, y int) byte {
 	high := t[y*2+1]
 	low := t[y*2]
 
-	h := bitValue(7-byte(x), high)
-	l := bitValue(7-byte(x), low)
+	h := binary.Bit(7-byte(x), high)
+	l := binary.Bit(7-byte(x), low)
 	return l + (h << 1)
 }
 

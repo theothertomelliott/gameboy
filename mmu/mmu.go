@@ -1,6 +1,10 @@
 package mmu
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/theothertomelliott/gameboy/ioports"
+)
 
 type MMU struct {
 	RAM            []byte
@@ -105,7 +109,7 @@ func (m *MMU) Read8(pos uint16) byte {
 }
 
 func (m *MMU) Write8(pos uint16, values ...byte) {
-	if pos == DMACONT {
+	if pos == ioports.DMACONT {
 		start := uint16(values[0]) * 0x100
 		end := start + 0x100
 		m.Write8(0xFE00, m.ReadRange(Range{

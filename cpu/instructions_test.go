@@ -1,20 +1,21 @@
-package gameboy_test
+package cpu_test
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/theothertomelliott/gameboy"
+	"github.com/theothertomelliott/gameboy/cpu"
+	"github.com/theothertomelliott/gameboy/mmu"
 )
 
 func TestLD(t *testing.T) {
-	cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
+	c := cpu.New(mmu.New(nil), nil)
 
-	src := &gameboy.Register{}
+	src := &cpu.Register{}
 	src.Write8(100)
-	dst := &gameboy.Register{}
+	dst := &cpu.Register{}
 
-	cpu.LD(dst, src)
+	c.LD(dst, src)
 
 	if dst.Read8() != 100 {
 		t.Errorf("dst: expected %d, got %d", 100, dst.Read8())
@@ -22,13 +23,13 @@ func TestLD(t *testing.T) {
 }
 
 func TestLD16(t *testing.T) {
-	cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
+	c := cpu.New(mmu.New(nil), nil)
 
-	src := &gameboy.RegisterPair{}
+	src := &cpu.RegisterPair{}
 	src.Write16(100)
-	dst := &gameboy.RegisterPair{}
+	dst := &cpu.RegisterPair{}
 
-	cpu.LD(dst, src)
+	c.LD(dst, src)
 
 	if dst.Read16() != 100 {
 		t.Errorf("dst: expected %d, got %d", 100, dst.Read16())
@@ -82,17 +83,17 @@ func TestAND(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.A.Write8(test.a)
-			src := &gameboy.Register{}
+			c := cpu.New(mmu.New(nil), nil)
+			c.A.Write8(test.a)
+			src := &cpu.Register{}
 			src.Write8(test.in)
 
-			cpu.AND(src)
+			c.AND(src)
 
-			if got := cpu.A.Read8(); got != test.expected {
+			if got := c.A.Read8(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -132,17 +133,17 @@ func TestOR(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.A.Write8(test.a)
-			src := &gameboy.Register{}
+			c := cpu.New(mmu.New(nil), nil)
+			c.A.Write8(test.a)
+			src := &cpu.Register{}
 			src.Write8(test.in)
 
-			cpu.OR(src)
+			c.OR(src)
 
-			if got := cpu.A.Read8(); got != test.expected {
+			if got := c.A.Read8(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -179,17 +180,17 @@ func TestXOR(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.A.Write8(test.a)
-			src := &gameboy.Register{}
+			c := cpu.New(mmu.New(nil), nil)
+			c.A.Write8(test.a)
+			src := &cpu.Register{}
 			src.Write8(test.in)
 
-			cpu.XOR(src)
+			c.XOR(src)
 
-			if got := cpu.A.Read8(); got != test.expected {
+			if got := c.A.Read8(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -257,18 +258,18 @@ func TestADD(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			dst := &gameboy.Register{}
+			c := cpu.New(mmu.New(nil), nil)
+			dst := &cpu.Register{}
 			dst.Write8(test.dst)
-			src := &gameboy.Register{}
+			src := &cpu.Register{}
 			src.Write8(test.src)
 
-			cpu.ADD(dst, src)
+			c.ADD(dst, src)
 
 			if got := dst.Read8(); got != test.expected {
 				t.Errorf("dst: expected %d, got %d", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -322,19 +323,19 @@ func TestADD16(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
+			c := cpu.New(mmu.New(nil), nil)
 
-			dst := &gameboy.RegisterPair{}
+			dst := &cpu.RegisterPair{}
 			dst.Write16(test.dst)
-			src := &gameboy.RegisterPair{}
+			src := &cpu.RegisterPair{}
 			src.Write16(test.src)
 
-			cpu.ADD(dst, src)
+			c.ADD(dst, src)
 
 			if got := dst.Read16(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -404,22 +405,22 @@ func TestADC(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.A.Write8(test.a)
-			src := &gameboy.Register{}
+			c := cpu.New(mmu.New(nil), nil)
+			c.A.Write8(test.a)
+			src := &cpu.Register{}
 			src.Write8(test.in)
 
 			if test.cIn {
-				cpu.F.SetC(test.cIn)
+				c.F.SetC(test.cIn)
 			}
 
-			cpu.ADC(cpu.A, src)
+			c.ADC(c.A, src)
 
-			if got := cpu.A.Read8(); got != test.expected {
+			if got := c.A.Read8(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
 
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -501,17 +502,17 @@ func TestSUB(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.A.Write8(test.a)
-			src := &gameboy.Register{}
+			c := cpu.New(mmu.New(nil), nil)
+			c.A.Write8(test.a)
+			src := &cpu.Register{}
 			src.Write8(test.in)
 
-			cpu.SUB(src)
+			c.SUB(src)
 
-			if got := cpu.A.Read8(); got != test.expected {
+			if got := c.A.Read8(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -607,18 +608,18 @@ func TestSBC(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.A.Write8(test.a)
-			src := &gameboy.Register{}
+			c := cpu.New(mmu.New(nil), nil)
+			c.A.Write8(test.a)
+			src := &cpu.Register{}
 			src.Write8(test.in)
 
-			cpu.F.SetC(test.cIn)
-			cpu.SBC(cpu.A, src)
+			c.F.SetC(test.cIn)
+			c.SBC(c.A, src)
 
-			if got := cpu.A.Read8(); got != test.expected {
+			if got := c.A.Read8(); got != test.expected {
 				t.Errorf("A: expected %d, got %d", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -694,17 +695,17 @@ func TestCP(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.A.Write8(test.a)
-			src := &gameboy.Register{}
+			c := cpu.New(mmu.New(nil), nil)
+			c.A.Write8(test.a)
+			src := &cpu.Register{}
 			src.Write8(test.in)
 
-			cpu.CP(src)
+			c.CP(src)
 
-			if got := cpu.A.Read8(); got != test.a {
+			if got := c.A.Read8(); got != test.a {
 				t.Errorf("A: expected %d, got %d", test.a, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -736,16 +737,16 @@ func TestINC(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			src := &gameboy.Register{}
+			c := cpu.New(mmu.New(nil), nil)
+			src := &cpu.Register{}
 			src.Write8(test.in)
 
-			cpu.INC(src)
+			c.INC(src)
 
 			if got := src.Read8(); got != test.expected {
 				t.Errorf("n: expected %d, got %d", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -779,16 +780,16 @@ func TestINC16(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			src := &gameboy.RegisterPair{}
+			c := cpu.New(mmu.New(nil), nil)
+			src := &cpu.RegisterPair{}
 			src.Write16(test.in)
 
-			cpu.INC(src)
+			c.INC(src)
 
 			if got := src.Read16(); got != test.expected {
 				t.Errorf("n: expected %d, got %d", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -831,17 +832,17 @@ func TestDEC(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			src := &gameboy.Register{}
+			c := cpu.New(mmu.New(nil), nil)
+			src := &cpu.Register{}
 			src.Write8(test.in)
 
-			cpu.DEC(src)
+			c.DEC(src)
 
 			if got := src.Read8(); got != test.expected {
 				t.Errorf("n: expected %d, got %d", test.expected, got)
 			}
 
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -866,27 +867,27 @@ func TestDEC16(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			src := &gameboy.RegisterPair{}
+			c := cpu.New(mmu.New(nil), nil)
+			src := &cpu.RegisterPair{}
 			src.Write16(test.in)
 
-			cpu.DEC(src)
+			c.DEC(src)
 
 			if got := src.Read16(); got != test.expected {
 				t.Errorf("n: expected %d, got %d", test.expected, got)
 			}
 
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
 
 func TestSwap(t *testing.T) {
-	cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-	in := &gameboy.Register{}
+	c := cpu.New(mmu.New(nil), nil)
+	in := &cpu.Register{}
 	in.Write8(0xAB)
 
-	cpu.SWAP(in)
+	c.SWAP(in)
 
 	if in.Read8() != 0xBA {
 		t.Errorf("input was not swapped, got %d", in.Read8())
@@ -894,41 +895,41 @@ func TestSwap(t *testing.T) {
 }
 
 func TestCPL(t *testing.T) {
-	cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-	cpu.A.Write8(0xF0)
-	cpu.CPL()
-	if cpu.A.Read8() != 0x0F {
-		t.Errorf("input was not flipped, got %d", cpu.A.Read8())
+	c := cpu.New(mmu.New(nil), nil)
+	c.A.Write8(0xF0)
+	c.CPL()
+	if c.A.Read8() != 0x0F {
+		t.Errorf("input was not flipped, got %d", c.A.Read8())
 	}
 }
 
 func TestBit(t *testing.T) {
-	cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-	cpu.A.Write8(0x04)
-	cpu.BIT(5, cpu.A)
-	if !cpu.F.Z() {
+	c := cpu.New(mmu.New(nil), nil)
+	c.A.Write8(0x04)
+	c.BIT(5, c.A)
+	if !c.F.Z() {
 		t.Errorf("expected zero on bit 5")
 	}
-	cpu.BIT(2, cpu.A)
-	if cpu.F.Z() {
+	c.BIT(2, c.A)
+	if c.F.Z() {
 		t.Errorf("expected one on bit 3")
 	}
 }
 
 func TestSet(t *testing.T) {
-	cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-	cpu.A.Write8(0x04)
-	cpu.SET(1, cpu.A)
-	if got := cpu.A.Read8(); got != 0x6 {
+	c := cpu.New(mmu.New(nil), nil)
+	c.A.Write8(0x04)
+	c.SET(1, c.A)
+	if got := c.A.Read8(); got != 0x6 {
 		t.Errorf("value not as expected, got %d", got)
 	}
 }
 
 func TestRES(t *testing.T) {
-	cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-	cpu.A.Write8(0x04)
-	cpu.RES(2, cpu.A)
-	if got := cpu.A.Read8(); got != 0 {
+	c := cpu.New(mmu.New(nil), nil)
+	c.A.Write8(0x04)
+	c.RES(2, c.A)
+	if got := c.A.Read8(); got != 0 {
 		t.Errorf("value not as expected, got 0x%X", got)
 	}
 }
@@ -962,13 +963,13 @@ func TestSLA(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.A.Write8(test.in)
-			cpu.SLA(cpu.A)
-			if got := cpu.A.Read8(); got != test.expected {
+			c := cpu.New(mmu.New(nil), nil)
+			c.A.Write8(test.in)
+			c.SLA(c.A)
+			if got := c.A.Read8(); got != test.expected {
 				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -1011,13 +1012,13 @@ func TestSRA(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.A.Write8(test.in)
-			cpu.SRA(cpu.A)
-			if got := cpu.A.Read8(); got != test.expected {
+			c := cpu.New(mmu.New(nil), nil)
+			c.A.Write8(test.in)
+			c.SRA(c.A)
+			if got := c.A.Read8(); got != test.expected {
 				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -1060,13 +1061,13 @@ func TestSRL(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.A.Write8(test.in)
-			cpu.SRL(cpu.A)
-			if got := cpu.A.Read8(); got != test.expected {
+			c := cpu.New(mmu.New(nil), nil)
+			c.A.Write8(test.in)
+			c.SRL(c.A)
+			if got := c.A.Read8(); got != test.expected {
 				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -1100,13 +1101,13 @@ func TestRLC(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.A.Write8(test.in)
-			cpu.RLC(cpu.A)
-			if got := cpu.A.Read8(); got != test.expected {
+			c := cpu.New(mmu.New(nil), nil)
+			c.A.Write8(test.in)
+			c.RLC(c.A)
+			if got := c.A.Read8(); got != test.expected {
 				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -1150,14 +1151,14 @@ func TestRL(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.F.SetC(test.carry)
-			cpu.A.Write8(test.in)
-			cpu.RL(cpu.A)
-			if got := cpu.A.Read8(); got != test.expected {
+			c := cpu.New(mmu.New(nil), nil)
+			c.F.SetC(test.carry)
+			c.A.Write8(test.in)
+			c.RL(c.A)
+			if got := c.A.Read8(); got != test.expected {
 				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -1191,13 +1192,13 @@ func TestRRC(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.A.Write8(test.in)
-			cpu.RRC(cpu.A)
-			if got := cpu.A.Read8(); got != test.expected {
+			c := cpu.New(mmu.New(nil), nil)
+			c.A.Write8(test.in)
+			c.RRC(c.A)
+			if got := c.A.Read8(); got != test.expected {
 				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -1241,14 +1242,14 @@ func TestRR(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
-			cpu.F.SetC(test.carry)
-			cpu.A.Write8(test.in)
-			cpu.RR(cpu.A)
-			if got := cpu.A.Read8(); got != test.expected {
+			c := cpu.New(mmu.New(nil), nil)
+			c.F.SetC(test.carry)
+			c.A.Write8(test.in)
+			c.RR(c.A)
+			if got := c.A.Read8(); got != test.expected {
 				t.Errorf("expected 0x%X, got 0x%X", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
@@ -1376,21 +1377,21 @@ func TestDAA(t *testing.T) {
 				valueBefore := u<<4 + l
 				valueExpected := valueBefore + test.correctionExpected
 				t.Run(fmt.Sprintf("%s: 0x%02X", test.name, valueBefore), func(t *testing.T) {
-					cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
+					c := cpu.New(mmu.New(nil), nil)
 
-					cpu.F.SetN(test.nBefore)
-					cpu.F.SetC(test.cBefore)
-					cpu.F.SetH(test.hBefore)
+					c.F.SetN(test.nBefore)
+					c.F.SetC(test.cBefore)
+					c.F.SetH(test.hBefore)
 
-					cpu.A.Write8(valueBefore)
+					c.A.Write8(valueBefore)
 
-					cpu.DAA(cpu.A)
+					c.DAA(c.A)
 
-					if got := cpu.A.Read8(); got != valueExpected {
+					if got := c.A.Read8(); got != valueExpected {
 						t.Errorf("expected 0x%X, got 0x%X", valueExpected, got)
 					}
-					if cpu.F.C() != test.cExpected {
-						t.Errorf("C, expected %v, got %v", test.cExpected, cpu.F.C())
+					if c.F.C() != test.cExpected {
+						t.Errorf("C, expected %v, got %v", test.cExpected, c.F.C())
 					}
 				})
 			}
@@ -1438,26 +1439,26 @@ func TestLDHL(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			mmu := gameboy.NewMMU(nil)
-			mmu.Write16(test.expected, 0xAEBF)
+			m := mmu.New(nil)
+			m.Write16(test.expected, 0xAEBF)
 
-			cpu := gameboy.NewCPU(mmu, nil)
-			a := &gameboy.RegisterPair{}
+			c := cpu.New(m, nil)
+			a := &cpu.RegisterPair{}
 			a.Write16(test.a)
-			b := gameboy.DirectSigned8(test.b)
+			b := cpu.DirectSigned8(test.b)
 
-			cpu.LDHL(a, b)
+			c.LDHL(a, b)
 
-			if got := cpu.HL.Read16(); got != test.expected {
+			if got := c.HL.Read16(); got != test.expected {
 				t.Errorf("HL: expected 0x%04X, got 0x%04X", test.expected, got)
 			}
-			test.flags.compare(t, cpu)
+			test.flags.compare(t, c)
 		})
 	}
 }
 
 func TestCCF(t *testing.T) {
-	cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
+	cpu := cpu.New(mmu.New(nil), nil)
 
 	cpu.F.SetZ(true)
 	cpu.F.SetN(true)
@@ -1472,26 +1473,26 @@ func TestCCF(t *testing.T) {
 }
 
 func TestSCF(t *testing.T) {
-	cpu := gameboy.NewCPU(gameboy.NewMMU(nil), nil)
+	c := cpu.New(mmu.New(nil), nil)
 
-	cpu.F.SetZ(true)
-	cpu.F.SetN(true)
-	cpu.F.SetH(true)
-	cpu.F.SetC(false)
+	c.F.SetZ(true)
+	c.F.SetN(true)
+	c.F.SetH(true)
+	c.F.SetC(false)
 
-	cpu.SCF()
+	c.SCF()
 
 	expectedFlags{
 		z: true,
 		c: true,
-	}.compare(t, cpu)
+	}.compare(t, c)
 }
 
 type expectedFlags struct {
 	z, n, h, c bool
 }
 
-func (e expectedFlags) compare(t *testing.T, cpu *gameboy.CPU) {
+func (e expectedFlags) compare(t *testing.T, cpu *cpu.CPU) {
 	t.Helper()
 	if got := cpu.F.Z(); got != e.z {
 		t.Errorf("Z Flag: expected %v, got %v", e.z, got)

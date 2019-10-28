@@ -1,4 +1,4 @@
-package gameboy
+package cpu
 
 type ConditionalCase int
 

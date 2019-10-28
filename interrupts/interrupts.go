@@ -1,6 +1,11 @@
-package gameboy
+package interrupts
 
-import "github.com/theothertomelliott/gameboy/mmu"
+import (
+	"github.com/theothertomelliott/gameboy/binary"
+	"github.com/theothertomelliott/gameboy/cpu"
+	"github.com/theothertomelliott/gameboy/ioports"
+	"github.com/theothertomelliott/gameboy/mmu"
+)
 
 type Interrupt struct {
 	Bit byte
@@ -37,7 +42,7 @@ var (
 	}
 )
 
-func NewInterruptScheduler(cpu *CPU, mmu *mmu.MMU) *InterruptScheduler {
+func New(cpu *cpu.CPU, mmu *mmu.MMU) *InterruptScheduler {
 	return &InterruptScheduler{
 		cpu: cpu,
 		mmu: mmu,
@@ -45,41 +50,41 @@ func NewInterruptScheduler(cpu *CPU, mmu *mmu.MMU) *InterruptScheduler {
 }
 
 type InterruptScheduler struct {
-	cpu *CPU
+	cpu *cpu.CPU
 	mmu *mmu.MMU
 }
 
 func (s *InterruptScheduler) ScheduleInterrupt(i Interrupt) {
 	// Set the appropriate bit in IF to request an interrupt
-	ifValue := s.mmu.Read8(IF)
-	s.mmu.Write8(IF, setBitValue(i.Bit, ifValue, true))
+	ifValue := s.mmu.Read8(ioports.IF)
+	s.mmu.Write8(ioports.IF, binary.SetBit(i.Bit, ifValue, true))
 }
 
 func (s *InterruptScheduler) HandleInterrupts() {
-	ieValue := s.mmu.Read8(IE)
-	ifValue := s.mmu.Read8(IF)
+	ieValue := s.mmu.Read8(ioports.IE)
+	ifValue := s.mmu.Read8(ioports.IF)
 
 	if ieValue&ifValue == 0 {
 		return
 	}
 
 	for _, i := range allInterrupts {
-		if bitValue(i.Bit, ieValue) != 0 && bitValue(i.Bit, ifValue) != 0 {
+		if binary.Bit(i.Bit, ieValue) != 0 && binary.Bit(i.Bit, ifValue) != 0 {
 			// When halt is enabled, don't service the interrupt
 			// Just un-halt the CPU
 			if !s.cpu.IME {
-				s.cpu.isHalted = false
+				s.cpu.SetHalted(false)
 				return
 			}
 
 			// Reset the bit in IF (the request)
-			s.mmu.Write8(IF, setBitValue(i.Bit, ifValue, false))
+			s.mmu.Write8(ioports.IF, binary.SetBit(i.Bit, ifValue, false))
 
 			// Disable interrupts
 			s.cpu.DI()
 
 			// CALL interrupt vector
-			s.cpu.CALL(Direct16(i.ISR))
+			s.cpu.CALL(cpu.Direct16(i.ISR))
 			return
 		}
 	}

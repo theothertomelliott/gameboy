@@ -1,6 +1,11 @@
-package gameboy
+package cpu
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/theothertomelliott/gameboy/ioports"
+	"github.com/theothertomelliott/gameboy/values"
+)
 
 // Memory references a position on memory.
 // The index is fixed on the first read, so MemoryAt may be called to provide a reference
@@ -30,10 +35,10 @@ func (m *Memory) pos() uint16 {
 	}
 
 	var pos uint16
-	if index8, is8Bit := m.index.(Value8); is8Bit {
+	if index8, is8Bit := m.index.(values.Value8); is8Bit {
 		pos = m.offset + uint16(index8.Read8())
 	}
-	if index16, is16Bit := m.index.(Value16); is16Bit {
+	if index16, is16Bit := m.index.(values.Value16); is16Bit {
 		pos = m.offset + uint16(index16.Read16())
 	}
 	m.cachedPos = &pos
@@ -43,7 +48,7 @@ func (m *Memory) pos() uint16 {
 func (m *Memory) Write8(value byte) {
 	pos := m.pos()
 	switch pos {
-	case DIVIDER:
+	case ioports.DIVIDER:
 		value = 0
 	}
 	m.cpu.MMU.Write8(pos, value)
@@ -76,9 +81,9 @@ func (c *CPU) MemoryAtH(pos Param) *Memory {
 	}
 }
 
-var _ Value8 = Direct8(0)
-var _ Value16 = Direct16(0)
-var _ ValueSigned8 = DirectSigned8(0)
+var _ values.Value8 = Direct8(0)
+var _ values.Value16 = Direct16(0)
+var _ values.ValueSigned8 = DirectSigned8(0)
 
 type Direct8 byte
 
@@ -118,31 +123,31 @@ func (b Direct16) Write16(uint16) {
 	panic("write to direct memory")
 }
 
-func (c *CPU) D8() Value8 {
+func (c *CPU) D8() values.Value8 {
 	v := c.MMU.Read8(c.PC.Read16())
 	c.PC.Inc(1)
 	return Direct8(v)
 }
 
-func (c *CPU) R8() ValueSigned8 {
+func (c *CPU) R8() values.ValueSigned8 {
 	v := c.MMU.Read8(c.PC.Read16())
 	c.PC.Inc(1)
 	return DirectSigned8(v)
 }
 
-func (c *CPU) D16() Value16 {
+func (c *CPU) D16() values.Value16 {
 	v := c.MMU.Read16(c.PC.Read16())
 	c.PC.Inc(2)
 	return Direct16(v)
 }
 
-func (c *CPU) A8() Value16 {
+func (c *CPU) A8() values.Value16 {
 	v := c.MMU.Read16(c.PC.Read16())
 	c.PC.Inc(1)
 	return Direct16(0xFF00 | v)
 }
 
-func (c *CPU) A16() Value16 {
+func (c *CPU) A16() values.Value16 {
 	v := c.MMU.Read16(c.PC.Read16())
 	c.PC.Inc(2)
 	return Direct16(v)

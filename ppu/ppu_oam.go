@@ -1,4 +1,6 @@
-package gameboy
+package ppu
+
+import "github.com/theothertomelliott/gameboy/binary"
 
 type OAM []byte
 
@@ -22,17 +24,17 @@ func (o OAM) flags() byte {
 }
 
 func (o OAM) Priority() bool {
-	return bitValue(7, o.flags()) != 0
+	return binary.Bit(7, o.flags()) != 0
 }
 
 func (o OAM) YFlip() bool {
-	return bitValue(6, o.flags()) != 0
+	return binary.Bit(6, o.flags()) != 0
 }
 
 func (o OAM) XFlip() bool {
-	return bitValue(5, o.flags()) != 0
+	return binary.Bit(5, o.flags()) != 0
 }
 
 func (o OAM) Palette() byte {
-	return bitValue(4, o.flags())
+	return binary.Bit(4, o.flags())
 }

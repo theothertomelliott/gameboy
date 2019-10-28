@@ -1,15 +1,18 @@
-package gameboy
+package ppu
 
 import (
 	"image"
 	"image/color"
 
+	"github.com/theothertomelliott/gameboy/binary"
+	"github.com/theothertomelliott/gameboy/interrupts"
+	"github.com/theothertomelliott/gameboy/ioports"
 	"github.com/theothertomelliott/gameboy/mmu"
 )
 
 type PPU struct {
 	MMU        *mmu.MMU
-	interrupts *InterruptScheduler
+	interrupts *interrupts.InterruptScheduler
 	modeclock  int
 	mode       byte
 	line       byte
@@ -17,7 +20,7 @@ type PPU struct {
 	lcd LCD
 }
 
-func NewPPU(mmu *mmu.MMU, interrupts *InterruptScheduler) *PPU {
+func New(mmu *mmu.MMU, interrupts *interrupts.InterruptScheduler) *PPU {
 	return &PPU{
 		MMU:        mmu,
 		interrupts: interrupts,
@@ -102,16 +105,16 @@ func (p *PPU) incLine() {
 
 func (p *PPU) setLine(line byte) {
 	p.line = line
-	if p.MMU.Read8(CURLINE) != p.line {
+	if p.MMU.Read8(ioports.CURLINE) != p.line {
 		// Write the current line to memory
-		p.MMU.Write8(CURLINE, p.line)
+		p.MMU.Write8(ioports.CURLINE, p.line)
 	}
 
 	// Handle line coincidence
-	if p.line == p.MMU.Read8(CMPLINE) {
-		curStat := p.MMU.Read8(LCDSTAT)
-		if bitValue(6, curStat) != 0 {
-			p.interrupts.ScheduleInterrupt(InterruptLCDStatus)
+	if p.line == p.MMU.Read8(ioports.CMPLINE) {
+		curStat := p.MMU.Read8(ioports.LCDSTAT)
+		if binary.Bit(6, curStat) != 0 {
+			p.interrupts.ScheduleInterrupt(interrupts.InterruptLCDStatus)
 		}
 	}
 }
@@ -121,21 +124,21 @@ func (p *PPU) setMode(newMode byte) {
 		return
 	}
 
-	curStat := p.MMU.Read8(LCDSTAT)
+	curStat := p.MMU.Read8(ioports.LCDSTAT)
 	if newMode == 0 {
-		if bitValue(3, curStat) != 0 {
-			p.interrupts.ScheduleInterrupt(InterruptLCDStatus)
+		if binary.Bit(3, curStat) != 0 {
+			p.interrupts.ScheduleInterrupt(interrupts.InterruptLCDStatus)
 		}
 	}
 	if newMode == 1 {
-		if bitValue(4, curStat) != 0 {
-			p.interrupts.ScheduleInterrupt(InterruptLCDStatus)
+		if binary.Bit(4, curStat) != 0 {
+			p.interrupts.ScheduleInterrupt(interrupts.InterruptLCDStatus)
 		}
-		p.interrupts.ScheduleInterrupt(InterruptVBlank)
+		p.interrupts.ScheduleInterrupt(interrupts.InterruptVBlank)
 	}
 	if newMode == 2 {
-		if bitValue(5, curStat) != 0 {
-			p.interrupts.ScheduleInterrupt(InterruptLCDStatus)
+		if binary.Bit(5, curStat) != 0 {
+			p.interrupts.ScheduleInterrupt(interrupts.InterruptLCDStatus)
 		}
 	}
 
@@ -143,17 +146,17 @@ func (p *PPU) setMode(newMode byte) {
 }
 
 func (p *PPU) setStatus() {
-	curStat := p.MMU.Read8(LCDSTAT)
+	curStat := p.MMU.Read8(ioports.LCDSTAT)
 	// Set mode stat
 	curStat = curStat & 0xF8
 	curStat = curStat | p.mode
 
 	// Handle line coincidence
-	if p.line == p.MMU.Read8(CMPLINE) {
+	if p.line == p.MMU.Read8(ioports.CMPLINE) {
 		curStat = curStat | 0x4
 	}
 
-	p.MMU.Write8(LCDSTAT, curStat|0x4)
+	p.MMU.Write8(ioports.LCDSTAT, curStat|0x4)
 }
 
 func (p *PPU) RenderScreen() image.Image {
@@ -169,21 +172,21 @@ func (p *PPU) RenderBackground() image.Image {
 }
 
 func GetLCDControl(mmu *mmu.MMU) LCDControl {
-	lcdControl := mmu.Read8(LCDCONT)
+	lcdControl := mmu.Read8(ioports.LCDCONT)
 	return LCDControl(lcdControl)
 }
 
 func GetWindowPos(mmu *mmu.MMU) image.Point {
 	return image.Point{
-		X: int(mmu.Read8(WNDPOSX)),
-		Y: int(mmu.Read8(WNDPOSY)),
+		X: int(mmu.Read8(ioports.WNDPOSX)),
+		Y: int(mmu.Read8(ioports.WNDPOSY)),
 	}
 }
 
 func GetScroll(mmu *mmu.MMU) image.Point {
 	return image.Point{
-		X: int(mmu.Read8(SCROLLX)),
-		Y: int(mmu.Read8(SCROLLY)),
+		X: int(mmu.Read8(ioports.SCROLLX)),
+		Y: int(mmu.Read8(ioports.SCROLLY)),
 	}
 }
 

@@ -1,4 +1,4 @@
-package mmu
+package ioports
 
 const (
 	// Interrupt flag locations

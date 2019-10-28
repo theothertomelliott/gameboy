@@ -5,18 +5,20 @@ import (
 
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/theothertomelliott/gameboy"
+	"github.com/theothertomelliott/gameboy/input"
+	"github.com/theothertomelliott/gameboy/ppu"
 )
 
 func run(
 	gb *gameboy.DMG,
 ) {
-	ppu := gb.PPU()
+	p := gb.PPU()
 
 	setupGraphics()
 
 	for !win.Closed() {
-		if gameboy.GetLCDControl(ppu.MMU).LCDOperation() {
-			drawGraphics(ppu.RenderScreen())
+		if ppu.GetLCDControl(p.MMU).LCDOperation() {
+			drawGraphics(p.RenderScreen())
 		}
 
 		win.UpdateInput()
@@ -32,15 +34,15 @@ func run(
 
 // Store key press state (Press and Release)
 var (
-	keyByIndex = map[gameboy.Key]pixelgl.Button{
-		gameboy.KeyA:      pixelgl.KeyZ,
-		gameboy.KeyB:      pixelgl.KeyX,
-		gameboy.KeyStart:  pixelgl.KeyEnter,
-		gameboy.KeySelect: pixelgl.KeySpace,
-		gameboy.KeyUp:     pixelgl.KeyUp,
-		gameboy.KeyDown:   pixelgl.KeyDown,
-		gameboy.KeyLeft:   pixelgl.KeyLeft,
-		gameboy.KeyRight:  pixelgl.KeyRight,
+	keyByIndex = map[input.Key]pixelgl.Button{
+		input.KeyA:      pixelgl.KeyZ,
+		input.KeyB:      pixelgl.KeyX,
+		input.KeyStart:  pixelgl.KeyEnter,
+		input.KeySelect: pixelgl.KeySpace,
+		input.KeyUp:     pixelgl.KeyUp,
+		input.KeyDown:   pixelgl.KeyDown,
+		input.KeyLeft:   pixelgl.KeyLeft,
+		input.KeyRight:  pixelgl.KeyRight,
 	}
 	keysDown [16]*time.Ticker
 )

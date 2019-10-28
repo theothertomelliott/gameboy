@@ -1,4 +1,9 @@
-package gameboy
+package cpu
+
+import (
+	"github.com/theothertomelliott/gameboy/binary"
+	"github.com/theothertomelliott/gameboy/values"
+)
 
 // Instructions for the Gameboy
 // Based on: http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf
@@ -67,18 +72,18 @@ func (c *CPU) NOP(...Param) {}
 // Use with:
 //  nn = two byte immediate address.
 func (c *CPU) LD(params ...Param) {
-	if dst, is8 := params[0].(Value8); is8 {
-		if src, is8 := params[1].(Value8); is8 {
+	if dst, is8 := params[0].(values.Value8); is8 {
+		if src, is8 := params[1].(values.Value8); is8 {
 			dst.Write8(src.Read8())
 			return
 		}
 	}
-	if dst, is16 := params[0].(Value16); is16 {
+	if dst, is16 := params[0].(values.Value16); is16 {
 		if params[1] == c.C {
 			dst.Write16(0xFF00 + uint16(c.C.Read8()))
 			return
 		}
-		src := params[1].(Value16)
+		src := params[1].(values.Value16)
 		value := src.Read16()
 		dst.Write16(value)
 	}
@@ -91,30 +96,30 @@ func (c *CPU) LD(params ...Param) {
 //  LDI (HL),A
 //   Same as: LD (HL),A - INC HL
 func (c *CPU) LDI(params ...Param) {
-	dst := params[0].(Value8)
-	src := params[1].(Value8)
+	dst := params[0].(values.Value8)
+	src := params[1].(values.Value8)
 	dst.Write8(src.Read8())
 	if mem, isMem := dst.(*Memory); isMem {
-		index := mem.GetIndex().(Value16)
+		index := mem.GetIndex().(values.Value16)
 		index.Write16(index.Read16() + 1)
 	}
 	if mem, isMem := src.(*Memory); isMem {
-		index := mem.GetIndex().(Value16)
+		index := mem.GetIndex().(values.Value16)
 		index.Write16(index.Read16() + 1)
 	}
 }
 
 // LDD loads src into dst and decrements src
 func (c *CPU) LDD(params ...Param) {
-	dst := params[0].(Value8)
-	src := params[1].(Value8)
+	dst := params[0].(values.Value8)
+	src := params[1].(values.Value8)
 	dst.Write8(src.Read8())
 	if mem, isMem := dst.(*Memory); isMem {
-		index := mem.GetIndex().(Value16)
+		index := mem.GetIndex().(values.Value16)
 		index.Write16(index.Read16() - 1)
 	}
 	if mem, isMem := src.(*Memory); isMem {
-		index := mem.GetIndex().(Value16)
+		index := mem.GetIndex().(values.Value16)
 		index.Write16(index.Read16() - 1)
 	}
 }
@@ -145,8 +150,8 @@ func (c *CPU) LDH(params ...Param) {
 //  H - Set or reset according to operation.
 //  C - Set or reset according to operation.
 func (c *CPU) LDHL(params ...Param) {
-	sp := params[0].(Value16)
-	n := params[1].(ValueSigned8)
+	sp := params[0].(values.Value16)
+	n := params[1].(values.ValueSigned8)
 
 	c.F.SetZ(false)
 	c.F.SetN(false)
@@ -171,7 +176,7 @@ func (c *CPU) LDHL(params ...Param) {
 // Use with:
 //  nn = AF,BC,DE,HL
 func (c *CPU) PUSH(params ...Param) {
-	nn := params[0].(Value16)
+	nn := params[0].(values.Value16)
 	v := nn.Read16()
 	c.SP.Inc(-2)
 	m := c.MemoryAt(c.SP)
@@ -187,7 +192,7 @@ func (c *CPU) PUSH(params ...Param) {
 // Use with:
 // nn = AF,BC,DE,HL
 func (c *CPU) POP(params ...Param) {
-	nn := params[0].(Value16)
+	nn := params[0].(values.Value16)
 	m := c.MemoryAt(c.SP)
 	low := m.Read8()
 	initialPos := c.SP.Read16()
@@ -235,26 +240,26 @@ func (c *CPU) POP(params ...Param) {
 //  C - Set or reset according to operation.
 func (c *CPU) ADD(params ...Param) {
 	// 16 bit
-	if dst, is16Bit := params[0].(Value16); is16Bit {
+	if dst, is16Bit := params[0].(values.Value16); is16Bit {
 		x := dst.Read16()
 		var (
 			result           uint16
 			halfCarry, carry bool
 		)
-		if src, is16Bit := params[1].(Value16); is16Bit {
+		if src, is16Bit := params[1].(values.Value16); is16Bit {
 			y := src.Read16()
 			result = x + y
 			halfCarry = ((x & 0xFFF) + (y & 0xFFF)) > 0xFFF
 			carry = (uint32(x) + uint32(y)) > 0xFFFF
 		}
-		if src, is8Bit := params[1].(Value8); is8Bit {
+		if src, is8Bit := params[1].(values.Value8); is8Bit {
 			y := src.Read8()
 			result = x + uint16(y)
 			halfCarry = ((x & 0xF) + (uint16(y) & 0xF)) > 0xF
 			carry = (uint32(x&0xFF) + uint32(uint16(y)&0xFF)) > 0xFF
 			c.F.SetZ(result == 0)
 		}
-		if src, isSigned8Bit := params[1].(ValueSigned8); isSigned8Bit {
+		if src, isSigned8Bit := params[1].(values.ValueSigned8); isSigned8Bit {
 			y := src.ReadSigned8()
 			result = uint16(int16(x) + int16(y))
 			carry = (int32(x)^int32(y)^int32(result))&0x100 == 0x100
@@ -270,8 +275,8 @@ func (c *CPU) ADD(params ...Param) {
 	}
 
 	// 8 bit
-	if dst, is8Bit := params[0].(Value8); is8Bit {
-		n := params[1].(Value8)
+	if dst, is8Bit := params[0].(values.Value8); is8Bit {
+		n := params[1].(values.Value8)
 		x := n.Read8()
 		y := dst.Read8()
 		result := y + x
@@ -298,7 +303,7 @@ func (c *CPU) ADD(params ...Param) {
 //   H - Set if carry from bit 3.
 //   C - Set if carry from bit 7.
 func (c *CPU) ADC(params ...Param) {
-	n := params[1].(Value8)
+	n := params[1].(values.Value8)
 	a := c.A.Read8()
 	in := n.Read8()
 
@@ -328,7 +333,7 @@ func (c *CPU) ADC(params ...Param) {
 //  H - Set if no borrow from bit 4.
 //  C - Set if no borrow.
 func (c *CPU) SUB(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(values.Value8)
 	a := c.A.Read8()
 	in := n.Read8()
 
@@ -353,8 +358,8 @@ func (c *CPU) SUB(params ...Param) {
 //   H - Set if no borrow from bit 4.
 //   C - Set if no borrow.
 func (c *CPU) SBC(params ...Param) {
-	a := params[0].(Value8)
-	n := params[1].(Value8)
+	a := params[0].(values.Value8)
+	n := params[1].(values.Value8)
 	av := a.Read8()
 	in := n.Read8()
 
@@ -385,7 +390,7 @@ func (c *CPU) SBC(params ...Param) {
 //  H - Set.
 //  C - Reset.
 func (c *CPU) AND(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(values.Value8)
 	result := n.Read8() & c.A.Read8()
 	c.F.SetZ(result == 0)
 	c.F.SetN(false)
@@ -404,7 +409,7 @@ func (c *CPU) AND(params ...Param) {
 //  H - Reset.
 //  C - Reset.
 func (c *CPU) OR(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(values.Value8)
 	result := n.Read8() | c.A.Read8()
 	c.F.SetZ(result == 0)
 	c.F.SetN(false)
@@ -423,7 +428,7 @@ func (c *CPU) OR(params ...Param) {
 //  H - Reset.
 //  C - Reset.
 func (c *CPU) XOR(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(values.Value8)
 	result := n.Read8() ^ c.A.Read8()
 	c.F.SetZ(result == 0)
 	c.F.SetN(false)
@@ -442,7 +447,7 @@ func (c *CPU) XOR(params ...Param) {
 //  H - Set if borrow from bit 4.
 //  C - Set for borrow. (Set if A < n.)
 func (c *CPU) CP(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(values.Value8)
 	a := c.A.Read8()
 	in := n.Read8()
 	c.F.SetZ(a == in)
@@ -472,7 +477,7 @@ func (c *CPU) CP(params ...Param) {
 // Flags affected:
 //  None.
 func (c *CPU) INC(params ...Param) {
-	if n, is8Bit := params[0].(Value8); is8Bit {
+	if n, is8Bit := params[0].(values.Value8); is8Bit {
 		in := n.Read8()
 		result := in + 1
 		c.F.SetZ(result == 0)
@@ -484,7 +489,7 @@ func (c *CPU) INC(params ...Param) {
 		return
 	}
 
-	if n, is16Bit := params[0].(Value16); is16Bit {
+	if n, is16Bit := params[0].(values.Value16); is16Bit {
 		n.Write16(n.Read16() + 1)
 		return
 	}
@@ -507,7 +512,7 @@ func (c *CPU) INC(params ...Param) {
 // Flags affected:
 //  None.
 func (c *CPU) DEC(params ...Param) {
-	if n, is8Bit := params[0].(Value8); is8Bit {
+	if n, is8Bit := params[0].(values.Value8); is8Bit {
 		in := n.Read8()
 		c.F.SetZ(in == 1)
 		result := in - 1
@@ -523,7 +528,7 @@ func (c *CPU) DEC(params ...Param) {
 		return
 	}
 
-	if n, is16Bit := params[0].(Value16); is16Bit {
+	if n, is16Bit := params[0].(values.Value16); is16Bit {
 		in := n.Read16()
 		result := in - 1
 		n.Write16(result)
@@ -540,7 +545,7 @@ func (c *CPU) DEC(params ...Param) {
 //  H - Reset.
 //  C - Reset.
 func (c *CPU) SWAP(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(values.Value8)
 	in := n.Read8()
 	high := (in & 0xF0) >> 4
 	low := (in & 0xF)
@@ -735,7 +740,7 @@ func (c *CPU) RRA(...Param) {
 //  H - Reset.
 //  C - Contains old bit 7 data.
 func (c *CPU) RLC(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(values.Value8)
 	value := n.Read8()
 	msb := value & (0x1 << 7)
 	result := value<<1 | (msb >> 7)
@@ -756,7 +761,7 @@ func (c *CPU) RLC(params ...Param) {
 //  H - Reset.
 //  C - Contains old bit 7 data.
 func (c *CPU) RL(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(values.Value8)
 	value := n.Read8()
 	msb := value & (0x1 << 7)
 	result := value << 1
@@ -781,7 +786,7 @@ func (c *CPU) RL(params ...Param) {
 //  H - Reset.
 //  C - Contains old bit 0 data.
 func (c *CPU) RRC(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(values.Value8)
 	value := n.Read8()
 	result := value>>1 | value<<7
 	c.F.SetZ(value == 0)
@@ -801,7 +806,7 @@ func (c *CPU) RRC(params ...Param) {
 //  H - Reset.
 //  C - Contains old bit 0 data.
 func (c *CPU) RR(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(values.Value8)
 	value := n.Read8()
 	lsb := value & 0x1
 	result := value >> 1
@@ -826,7 +831,7 @@ func (c *CPU) RR(params ...Param) {
 //  H - Reset.
 //  C - Contains old bit 7 data.
 func (c *CPU) SLA(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(values.Value8)
 	v := n.Read8()
 	shifted := v << 1
 	c.F.SetZ(shifted == 0)
@@ -846,7 +851,7 @@ func (c *CPU) SLA(params ...Param) {
 //  H - Reset.
 //  C - Contains old bit 0 data.
 func (c *CPU) SRA(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(values.Value8)
 	value := n.Read8()
 	msb := value & (0x1 << 7)
 	c.F.SetC(value&0x1 > 0)
@@ -867,7 +872,7 @@ func (c *CPU) SRA(params ...Param) {
 //  H - Reset.
 //  C - Contains old bit 0 data.
 func (c *CPU) SRL(params ...Param) {
-	n := params[0].(Value8)
+	n := params[0].(values.Value8)
 	value := n.Read8()
 	c.F.SetC(value&0x1 > 0)
 	shifted := value >> 1
@@ -888,8 +893,8 @@ func (c *CPU) SRL(params ...Param) {
 //  C - Not affected.
 func (c *CPU) BIT(params ...Param) {
 	pos := byte(params[0].(int))
-	value := params[1].(Value8).Read8()
-	result := bitValue(pos, value) == 0
+	value := params[1].(values.Value8).Read8()
+	result := binary.Bit(pos, value) == 0
 	c.F.SetH(true)
 	c.F.SetN(false)
 	c.F.SetZ(result)
@@ -901,7 +906,7 @@ func (c *CPU) BIT(params ...Param) {
 //  b = 0 - 7, r = A,B,C,D,E,H,L,(HL)
 func (c *CPU) SET(params ...Param) {
 	pos := byte(params[0].(int))
-	r := params[1].(Value8)
+	r := params[1].(values.Value8)
 	value := r.Read8()
 	value |= (1 << pos)
 	r.Write8(value)
@@ -913,7 +918,7 @@ func (c *CPU) SET(params ...Param) {
 //  b = 0 - 7, r = A,B,C,D,E,H,L,(HL)
 func (c *CPU) RES(params ...Param) {
 	pos := byte(params[0].(int))
-	r := params[1].(Value8)
+	r := params[1].(values.Value8)
 	value := r.Read8()
 	value &^= (1 << pos)
 	r.Write8(value)
@@ -924,7 +929,7 @@ func (c *CPU) RES(params ...Param) {
 // Use with:
 //  nn = two byte immediate value. (LS byte first.)
 func (c *CPU) JP(params ...Param) {
-	nn := params[0].(Value16)
+	nn := params[0].(values.Value16)
 	c.PC.Write16(nn.Read16())
 }
 
@@ -947,7 +952,7 @@ func (c *CPU) JPC(params ...Param) {
 // Use with:
 //  n = one byte signed immediate value
 func (c *CPU) JR(params ...Param) {
-	n := params[0].(ValueSigned8)
+	n := params[0].(values.ValueSigned8)
 	current := c.PC.Read16()
 	v := int16(current) + int16(n.ReadSigned8())
 	c.PC.Write16(uint16(v))
@@ -971,7 +976,7 @@ func (c *CPU) JRC(params ...Param) {
 // Use with:
 //  nn = two byte immediate value. (LS byte first.)
 func (c *CPU) CALL(params ...Param) {
-	n := params[0].(Value16)
+	n := params[0].(values.Value16)
 	dst := n.Read16()
 	c.PUSH(c.PC)
 	c.PC.Write16(dst)

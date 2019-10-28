@@ -4,19 +4,25 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/theothertomelliott/gameboy/cpu"
+	"github.com/theothertomelliott/gameboy/input"
+	"github.com/theothertomelliott/gameboy/interrupts"
 	"github.com/theothertomelliott/gameboy/mmu"
+	"github.com/theothertomelliott/gameboy/ppu"
+	"github.com/theothertomelliott/gameboy/timer"
+	"github.com/theothertomelliott/gameboy/tracer"
 )
 
 // DMG provides a means of managing running emulation
 type DMG struct {
-	cpu         *CPU
-	ppu         *PPU
-	tracer      *Tracer
-	input       *Input
-	timer       *Timer
+	cpu         *cpu.CPU
+	ppu         *ppu.PPU
+	tracer      *tracer.Tracer
+	input       *input.Input
+	timer       *timer.Timer
 	rateLimiter *RateLimiter
 
-	interrupts *InterruptScheduler
+	interrupts *interrupts.InterruptScheduler
 
 	paused bool
 
@@ -39,19 +45,19 @@ func NewDMG() *DMG {
 // NewDMGWithNoRateLimit creates a Game Boy in an uninitialized state
 // with no rate limit to control speed
 func NewDMGWithNoRateLimit() *DMG {
-	tracer := NewTracer()
+	tracer := tracer.New()
 	m := mmu.New(tracer)
-	cpu := NewCPU(m, tracer)
-	interrupts := NewInterruptScheduler(cpu, m)
-	ppu := NewPPU(m, interrupts)
-	timer := NewTimer(m, interrupts)
+	cpu := cpu.New(m, tracer)
+	interrupts := interrupts.New(cpu, m)
+	ppu := ppu.New(m, interrupts)
+	timer := timer.New(m, interrupts)
 
 	return &DMG{
 		cpu:         cpu,
 		ppu:         ppu,
 		tracer:      tracer,
 		interrupts:  interrupts,
-		input:       NewInput(interrupts),
+		input:       input.New(interrupts),
 		done:        make(chan struct{}),
 		Breakpoints: make(map[uint16]struct{}),
 		timer:       timer,
@@ -64,15 +70,15 @@ func (c *DMG) Reset() {
 	c.cpu.Init()
 }
 
-func (c *DMG) CPU() *CPU {
+func (c *DMG) CPU() *cpu.CPU {
 	return c.cpu
 }
 
-func (c *DMG) PPU() *PPU {
+func (c *DMG) PPU() *ppu.PPU {
 	return c.ppu
 }
 
-func (c *DMG) Tracer() *Tracer {
+func (c *DMG) Tracer() *tracer.Tracer {
 	return c.tracer
 }
 
@@ -80,7 +86,7 @@ func (c *DMG) MMU() *mmu.MMU {
 	return c.cpu.MMU
 }
 
-func (c *DMG) Input() *Input {
+func (c *DMG) Input() *input.Input {
 	return c.input
 }
 

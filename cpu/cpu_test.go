@@ -1,11 +1,14 @@
-package gameboy_test
+package cpu_test
 
 import (
 	"fmt"
 	"runtime/debug"
 	"testing"
 
-	"github.com/theothertomelliott/gameboy"
+	"github.com/theothertomelliott/gameboy/cpu"
+	"github.com/theothertomelliott/gameboy/mmu"
+	"github.com/theothertomelliott/gameboy/tracer"
+	"github.com/theothertomelliott/gameboy/values"
 )
 
 func neg(value uint8) byte {
@@ -335,15 +338,15 @@ func TestPrograms(t *testing.T) {
 					debug.PrintStack()
 				}
 			}()
-			tracer := gameboy.NewTracer()
+			trace := tracer.New()
 
-			mmu := gameboy.NewMMU(tracer)
-			mmu.LoadROM(append(test.rom, make([]byte, 0xFF00)...))
+			m := mmu.New(trace)
+			m.LoadROM(append(test.rom, make([]byte, 0xFF00)...))
 
-			cpu := gameboy.NewCPU(mmu, tracer)
+			cpu := cpu.New(m, trace)
 			cpu.SP.Write16(0xFFFE) // Set up stack
 
-			tracer.Logger = func(tm gameboy.TraceMessage) {
+			trace.Logger = func(tm tracer.TraceMessage) {
 				if tm.CPU == nil {
 					return
 				}
@@ -354,7 +357,7 @@ func TestPrograms(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				tracer.Flush()
+				trace.Flush()
 			}
 			test.expected.compare(t, cpu)
 		})
@@ -371,7 +374,7 @@ type expectation struct {
 	RAM map[uint16][]byte
 }
 
-func (e expectation) compare(t *testing.T, cpu *gameboy.CPU) {
+func (e expectation) compare(t *testing.T, cpu *cpu.CPU) {
 	t.Helper()
 
 	e.compareReg(t, "A", cpu.A, e.A)
@@ -394,14 +397,14 @@ func (e expectation) compare(t *testing.T, cpu *gameboy.CPU) {
 	}
 }
 
-func (e expectation) compareReg(t *testing.T, name string, r gameboy.Value8, expected byte) {
+func (e expectation) compareReg(t *testing.T, name string, r values.Value8, expected byte) {
 	t.Helper()
 	if got := r.Read8(); got != expected {
 		t.Errorf("%s: expected 0x%X, got 0x%X", name, expected, got)
 	}
 }
 
-func sprintRAM(cpu *gameboy.CPU, index, length int) []string {
+func sprintRAM(cpu *cpu.CPU, index, length int) []string {
 	var out []string
 	data := cpu.MMU.RAM[index : index+length]
 	for _, d := range data {

@@ -1,8 +1,9 @@
-package gameboy
+package ppu
 
 import (
 	"image"
 
+	"github.com/theothertomelliott/gameboy/binary"
 	"github.com/theothertomelliott/gameboy/mmu"
 )
 
@@ -11,13 +12,13 @@ type LCDControl byte
 // LCDOperation ...
 // Bit7  LCD operation                           | ON            | OFF
 func (l LCDControl) LCDOperation() bool {
-	return bitValue(7, byte(l)) != 0
+	return binary.Bit(7, byte(l)) != 0
 }
 
 // WindowTileTableAddress ...
 // Bit6  Window Tile Table address               | 9C00-9FFF     | 9800-9BFF
 func (l LCDControl) WindowTileTableAddress() mmu.Range {
-	if bitValue(6, byte(l)) == 0 {
+	if binary.Bit(6, byte(l)) == 0 {
 		return mmu.Range{
 			Start: 0x9800, End: 0x9BFF,
 		}
@@ -30,17 +31,17 @@ func (l LCDControl) WindowTileTableAddress() mmu.Range {
 // WindowDisplay ...
 // Bit5  Window display                          | ON            | OFF
 func (l LCDControl) WindowDisplay() bool {
-	return bitValue(5, byte(l)) != 0
+	return binary.Bit(5, byte(l)) != 0
 }
 
 func (l LCDControl) BGWindowTileAddressingSigned() bool {
-	return bitValue(4, byte(l)) == 0
+	return binary.Bit(4, byte(l)) == 0
 }
 
 // TilePatternTableAddress ...
 // Bit4  BG & Window Tile Data Select            | 8000-8FFF     | 8800-97FF
 func (l LCDControl) TilePatternTableAddress() mmu.Range {
-	if bitValue(4, byte(l)) == 0 {
+	if binary.Bit(4, byte(l)) == 0 {
 		return mmu.Range{
 			Start: 0x8800, End: 0x97FF,
 		}
@@ -53,7 +54,7 @@ func (l LCDControl) TilePatternTableAddress() mmu.Range {
 // BackgroundTileTableAddress ...
 // Bit3  Background Tile Table address           | 9C00-9FFF     | 9800-9BFF
 func (l LCDControl) BackgroundTileTableAddress() mmu.Range {
-	if bitValue(3, byte(l)) == 0 {
+	if binary.Bit(3, byte(l)) == 0 {
 		return mmu.Range{
 			Start: 0x9800, End: 0x9BFF,
 		}
@@ -66,7 +67,7 @@ func (l LCDControl) BackgroundTileTableAddress() mmu.Range {
 // SpriteSize ...
 // Bit2  Sprite size                             | 8x16          | 8x8
 func (l LCDControl) SpriteSize() image.Point {
-	if bitValue(2, byte(l)) == 1 {
+	if binary.Bit(2, byte(l)) == 1 {
 		return image.Point{X: 8, Y: 16}
 
 	}
@@ -76,11 +77,11 @@ func (l LCDControl) SpriteSize() image.Point {
 // WindowTransparencyOnColorZero ...
 // Bit1  Color #0 transparency in the window     | SOLID         | TRANSPARENT
 func (l LCDControl) WindowTransparencyOnColorZero() bool {
-	return bitValue(1, byte(l)) != 0
+	return binary.Bit(1, byte(l)) != 0
 }
 
 // BackgroundDisplay ...
 // Bit0  Background display
 func (l LCDControl) BackgroundDisplay() bool {
-	return bitValue(0, byte(l)) != 0
+	return binary.Bit(0, byte(l)) != 0
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/theothertomelliott/gameboy"
 	"github.com/theothertomelliott/gameboy/cmd/gameboy/httpui"
+	"github.com/theothertomelliott/gameboy/tracer"
 )
 
 func main() {
@@ -63,7 +64,7 @@ func main() {
 
 	uiserver := httpui.NewServer(gb, debugEnabled)
 
-	gb.Tracer().Logger = func(ev gameboy.TraceMessage) {
+	gb.Tracer().Logger = func(ev tracer.TraceMessage) {
 		uiserver.Trace(ev)
 	}
 

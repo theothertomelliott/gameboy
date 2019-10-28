@@ -1,4 +1,4 @@
-package gameboy
+package cpu
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/theothertomelliott/gameboy/mmu"
+	"github.com/theothertomelliott/gameboy/tracer"
 )
 
 // Built while watching the ultimate Game Boy Talk
@@ -51,15 +52,23 @@ type CPU struct {
 	OperationsPerSecond uint64
 }
 
+func (c *CPU) IsHalted() bool {
+	return c.isHalted
+}
+
+func (c *CPU) SetHalted(v bool) {
+	c.isHalted = v
+}
+
 type CPUTracer interface {
-	LogTracer
+	tracer.LogTracer
 	RegisterTracer
 	AddCPU(pc uint16, description string)
 	AddStack(pos, in, out uint16)
 }
 
-// NewCPU creates a CPU in a zeroed initial state.
-func NewCPU(mmu *mmu.MMU, tracer CPUTracer) *CPU {
+// New creates a CPU in a zeroed initial state.
+func New(mmu *mmu.MMU, tracer CPUTracer) *CPU {
 	cpu := &CPU{
 		MMU: mmu,
 

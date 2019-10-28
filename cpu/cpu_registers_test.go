@@ -1,13 +1,13 @@
-package gameboy_test
+package cpu_test
 
 import (
 	"testing"
 
-	"github.com/theothertomelliott/gameboy"
+	"github.com/theothertomelliott/gameboy/cpu"
 )
 
 func TestRegister8(t *testing.T) {
-	src := &gameboy.Register{}
+	src := &cpu.Register{}
 	src.Write8(100)
 	if src.Read8() != 100 {
 		t.Errorf("expected %d, got %d", 100, src.Read8())
@@ -15,7 +15,7 @@ func TestRegister8(t *testing.T) {
 }
 
 func TestRegister16(t *testing.T) {
-	src := &gameboy.RegisterPair{}
+	src := &cpu.RegisterPair{}
 	src.Write16(100)
 	t.Logf("%#v: %v, %v", src, src.Low, src.High)
 	if src.Read16() != 100 {
@@ -63,7 +63,7 @@ func TestRegisterFlagRead(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			src := &gameboy.Register{}
+			src := &cpu.Register{}
 			src.Write8(test.value)
 			if src.Z() != test.z {
 				t.Errorf("Z: expected %v, got %v", test.z, src.Z())
@@ -116,7 +116,7 @@ func TestRegisterFlagSet(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			src := &gameboy.Register{}
+			src := &cpu.Register{}
 			src.Write8(test.value)
 
 			src.SetZ(test.z)

@@ -1,4 +1,4 @@
-package gameboy
+package tracer
 
 import (
 	"fmt"
@@ -75,7 +75,7 @@ type Tracer struct {
 	currentMessage TraceMessage
 }
 
-func NewTracer() *Tracer {
+func New() *Tracer {
 	return &Tracer{}
 }
 

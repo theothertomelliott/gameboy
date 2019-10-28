@@ -9,6 +9,7 @@ import (
 
 	packr "github.com/gobuffalo/packr/v2"
 	"github.com/theothertomelliott/gameboy"
+	"github.com/theothertomelliott/gameboy/tracer"
 )
 
 // NewServer creates a UI server for the provided DMG instance
@@ -92,7 +93,7 @@ func (s *Server) addTraceOrRecordRepeat(t traceEntry) {
 	s.trace = append(s.trace, t)
 }
 
-func (s *Server) Trace(ev gameboy.TraceMessage) {
+func (s *Server) Trace(ev tracer.TraceMessage) {
 	if !s.debugEnabled {
 		return
 	}

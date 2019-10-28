@@ -1,4 +1,4 @@
-package gameboy
+package values
 
 type Value8 interface {
 	Write8(byte)

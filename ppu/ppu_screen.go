@@ -1,9 +1,10 @@
-package gameboy
+package ppu
 
 import (
 	"image"
 	"image/color"
 
+	"github.com/theothertomelliott/gameboy/ioports"
 	"github.com/theothertomelliott/gameboy/mmu"
 )
 
@@ -19,9 +20,9 @@ func NewBackground(mmu *mmu.MMU) *Screen {
 		BGWindowTileAddressingSigned: GetLCDControl(mmu).BGWindowTileAddressingSigned(),
 		RenderWindow:                 false,
 
-		BGRDPAL: mmu.Read8(BGRDPAL),
-		OBJ0PAL: mmu.Read8(OBJ0PAL),
-		OBJ1PAL: mmu.Read8(OBJ1PAL),
+		BGRDPAL: mmu.Read8(ioports.BGRDPAL),
+		OBJ0PAL: mmu.Read8(ioports.OBJ0PAL),
+		OBJ1PAL: mmu.Read8(ioports.OBJ1PAL),
 
 		// Off screen
 		WindowPos: image.Point{
@@ -49,9 +50,9 @@ func NewWindow(mmu *mmu.MMU) *Screen {
 		BGWindowTileAddressingSigned: GetLCDControl(mmu).BGWindowTileAddressingSigned(),
 		RenderWindow:                 true,
 
-		BGRDPAL: mmu.Read8(BGRDPAL),
-		OBJ0PAL: mmu.Read8(OBJ0PAL),
-		OBJ1PAL: mmu.Read8(OBJ1PAL),
+		BGRDPAL: mmu.Read8(ioports.BGRDPAL),
+		OBJ0PAL: mmu.Read8(ioports.OBJ0PAL),
+		OBJ1PAL: mmu.Read8(ioports.OBJ1PAL),
 
 		// Put the window on screen
 		WindowPos: image.Point{
@@ -82,9 +83,9 @@ func NewScreen(m *mmu.MMU) *Screen {
 		RenderWindow:                 lcdControl.WindowDisplay(),
 		BGWindowTileAddressingSigned: lcdControl.BGWindowTileAddressingSigned(),
 
-		BGRDPAL: m.Read8(BGRDPAL),
-		OBJ0PAL: m.Read8(OBJ0PAL),
-		OBJ1PAL: m.Read8(OBJ1PAL),
+		BGRDPAL: m.Read8(ioports.BGRDPAL),
+		OBJ0PAL: m.Read8(ioports.OBJ0PAL),
+		OBJ1PAL: m.Read8(ioports.OBJ1PAL),
 
 		WindowPos:  GetWindowPos(m),
 		Position:   GetScroll(m),

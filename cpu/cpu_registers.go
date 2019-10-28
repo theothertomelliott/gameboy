@@ -1,4 +1,9 @@
-package gameboy
+package cpu
+
+import (
+	"github.com/theothertomelliott/gameboy/binary"
+	"github.com/theothertomelliott/gameboy/values"
+)
 
 type (
 	Register struct {
@@ -10,8 +15,8 @@ type (
 		Register
 	}
 	RegisterPair struct {
-		Low         Value8
-		High        Value8
+		Low         values.Value8
+		High        values.Value8
 		description string
 	}
 
@@ -45,7 +50,7 @@ func (r *Register) Read8() byte {
 	return 0
 }
 
-func NewRegisterPair(description string, high, low Value8) *RegisterPair {
+func NewRegisterPair(description string, high, low values.Value8) *RegisterPair {
 	return &RegisterPair{
 		High:        high,
 		Low:         low,
@@ -76,11 +81,11 @@ func (r *RegisterPair) Read16() uint16 {
 }
 
 func (r *Register) getBit(pos byte) bool {
-	return bitValue(pos, r.value) == 1
+	return binary.Bit(pos, r.value) == 1
 }
 
 func (r *Register) setBit(v bool, pos byte) {
-	r.value = setBitValue(pos, r.value, v)
+	r.value = binary.SetBit(pos, r.value, v)
 }
 
 func (r *Register) Z() bool {

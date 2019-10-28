@@ -7,7 +7,7 @@ import (
 	"image/gif"
 	"net/http"
 
-	"github.com/theothertomelliott/gameboy"
+	"github.com/theothertomelliott/gameboy/ppu"
 )
 
 // HandleTiles renders a page displaying the current tile sets
@@ -40,8 +40,8 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 	)
 
 	for i := 0; i < 2; i++ {
-		lcdcont := gameboy.LCDControl(i * 0xFF)
-		tiles := gameboy.GetTilesForRange(s.gb.MMU(), lcdcont.TilePatternTableAddress())
+		lcdcont := ppu.LCDControl(i * 0xFF)
+		tiles := ppu.GetTilesForRange(s.gb.MMU(), lcdcont.TilePatternTableAddress())
 		ts := tileset{
 			Index: byte(i),
 		}
@@ -65,7 +65,7 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 		)
 	}
 
-	for _, o := range gameboy.GetSpriteData(s.gb.MMU()) {
+	for _, o := range ppu.GetSpriteData(s.gb.MMU()) {
 		if o.X() > 160 || o.Y() > 144 {
 			continue
 		}
@@ -107,7 +107,7 @@ func (s *Server) HandleTiles(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func renderTileToBase64(tile gameboy.Tile) (string, error) {
+func renderTileToBase64(tile ppu.Tile) (string, error) {
 	var b bytes.Buffer
 	err := gif.Encode(&b, tile.ToImage(), &gif.Options{})
 	if err != nil {
