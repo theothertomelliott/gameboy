@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/theothertomelliott/gameboy"
+	"github.com/theothertomelliott/gameboy/mmu"
 )
 
 // HandleMemory displays a Hex Editor like view of the emulator's memory
@@ -27,7 +27,7 @@ func (s *Server) HandleMemory(w http.ResponseWriter, r *http.Request) {
 	)
 
 	mem := s.gb.MMU()
-	allMem := mem.ReadRange(gameboy.Range{
+	allMem := mem.ReadRange(mmu.Range{
 		Start: 0x0000,
 		End:   0xFFFF,
 	})

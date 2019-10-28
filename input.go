@@ -1,5 +1,7 @@
 package gameboy
 
+import "github.com/theothertomelliott/gameboy/mmu"
+
 type Key int
 
 const (
@@ -47,7 +49,7 @@ func (i *Input) Reset() {
 	}
 }
 
-func (i *Input) Write(mmu *MMU) {
+func (i *Input) Write(mmu *mmu.MMU) {
 	joy := mmu.Read8(JOYPAD)
 	p14 := bitValue(4, joy)
 	p15 := bitValue(5, joy)

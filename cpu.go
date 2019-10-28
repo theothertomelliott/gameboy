@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/theothertomelliott/gameboy/mmu"
 )
 
 // Built while watching the ultimate Game Boy Talk
@@ -14,7 +15,7 @@ import (
 // http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf
 
 type CPU struct {
-	MMU *MMU
+	MMU *mmu.MMU
 
 	// Interrupt master enable
 	IME bool
@@ -58,7 +59,7 @@ type CPUTracer interface {
 }
 
 // NewCPU creates a CPU in a zeroed initial state.
-func NewCPU(mmu *MMU, tracer CPUTracer) *CPU {
+func NewCPU(mmu *mmu.MMU, tracer CPUTracer) *CPU {
 	cpu := &CPU{
 		MMU: mmu,
 

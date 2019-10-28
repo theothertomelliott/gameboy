@@ -1,12 +1,14 @@
 package gameboy
 
+import "github.com/theothertomelliott/gameboy/mmu"
+
 type Timer struct {
-	mmu        *MMU
+	mmu        *mmu.MMU
 	interrupts *InterruptScheduler
 	clock      int
 }
 
-func NewTimer(mmu *MMU, interrupts *InterruptScheduler) *Timer {
+func NewTimer(mmu *mmu.MMU, interrupts *InterruptScheduler) *Timer {
 	return &Timer{
 		mmu:        mmu,
 		interrupts: interrupts,

@@ -3,10 +3,12 @@ package gameboy
 import (
 	"image"
 	"image/color"
+
+	"github.com/theothertomelliott/gameboy/mmu"
 )
 
 type PPU struct {
-	MMU        *MMU
+	MMU        *mmu.MMU
 	interrupts *InterruptScheduler
 	modeclock  int
 	mode       byte
@@ -15,7 +17,7 @@ type PPU struct {
 	lcd LCD
 }
 
-func NewPPU(mmu *MMU, interrupts *InterruptScheduler) *PPU {
+func NewPPU(mmu *mmu.MMU, interrupts *InterruptScheduler) *PPU {
 	return &PPU{
 		MMU:        mmu,
 		interrupts: interrupts,
@@ -166,35 +168,35 @@ func (p *PPU) RenderBackground() image.Image {
 	return NewBackground(p.MMU)
 }
 
-func GetLCDControl(mmu *MMU) LCDControl {
+func GetLCDControl(mmu *mmu.MMU) LCDControl {
 	lcdControl := mmu.Read8(LCDCONT)
 	return LCDControl(lcdControl)
 }
 
-func GetWindowPos(mmu *MMU) image.Point {
+func GetWindowPos(mmu *mmu.MMU) image.Point {
 	return image.Point{
 		X: int(mmu.Read8(WNDPOSX)),
 		Y: int(mmu.Read8(WNDPOSY)),
 	}
 }
 
-func GetScroll(mmu *MMU) image.Point {
+func GetScroll(mmu *mmu.MMU) image.Point {
 	return image.Point{
 		X: int(mmu.Read8(SCROLLX)),
 		Y: int(mmu.Read8(SCROLLY)),
 	}
 }
 
-func GetSpriteData(mmu *MMU) []OAM {
+func GetSpriteData(m *mmu.MMU) []OAM {
 	var out []OAM
-	spriteData := mmu.ReadRange(Range{Start: 0xFE00, End: 0xFE9F})
+	spriteData := m.ReadRange(mmu.Range{Start: 0xFE00, End: 0xFE9F})
 	for pos := 0; pos < len(spriteData); pos += 4 {
 		out = append(out, OAM(spriteData[pos:pos+4]))
 	}
 	return out
 }
 
-func GetTilesForRange(mmu *MMU, r Range) []Tile {
+func GetTilesForRange(mmu *mmu.MMU, r mmu.Range) []Tile {
 	tileData := mmu.ReadRange(r)
 
 	var tilesByIndex []Tile
@@ -207,11 +209,11 @@ func GetTilesForRange(mmu *MMU, r Range) []Tile {
 	return tilesByIndex
 }
 
-func GetBackgroundTiles(mmu *MMU) []Tile {
+func GetBackgroundTiles(mmu *mmu.MMU) []Tile {
 	return GetTilesForRange(mmu, GetLCDControl(mmu).TilePatternTableAddress())
 }
 
-func GetWindowTileMap(mmu *MMU) []Tile {
+func GetWindowTileMap(mmu *mmu.MMU) []Tile {
 	return GetTilesForRange(mmu, GetLCDControl(mmu).WindowTileTableAddress())
 }
 

@@ -3,6 +3,8 @@ package gameboy
 import (
 	"fmt"
 	"time"
+
+	"github.com/theothertomelliott/gameboy/mmu"
 )
 
 // DMG provides a means of managing running emulation
@@ -38,11 +40,11 @@ func NewDMG() *DMG {
 // with no rate limit to control speed
 func NewDMGWithNoRateLimit() *DMG {
 	tracer := NewTracer()
-	mmu := NewMMU(tracer)
-	cpu := NewCPU(mmu, tracer)
-	interrupts := NewInterruptScheduler(cpu, mmu)
-	ppu := NewPPU(mmu, interrupts)
-	timer := NewTimer(mmu, interrupts)
+	m := mmu.New(tracer)
+	cpu := NewCPU(m, tracer)
+	interrupts := NewInterruptScheduler(cpu, m)
+	ppu := NewPPU(m, interrupts)
+	timer := NewTimer(m, interrupts)
 
 	return &DMG{
 		cpu:         cpu,
@@ -74,7 +76,7 @@ func (c *DMG) Tracer() *Tracer {
 	return c.tracer
 }
 
-func (c *DMG) MMU() *MMU {
+func (c *DMG) MMU() *mmu.MMU {
 	return c.cpu.MMU
 }
 

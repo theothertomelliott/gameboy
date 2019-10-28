@@ -1,6 +1,10 @@
 package gameboy
 
-import "image"
+import (
+	"image"
+
+	"github.com/theothertomelliott/gameboy/mmu"
+)
 
 type LCDControl byte
 
@@ -12,13 +16,13 @@ func (l LCDControl) LCDOperation() bool {
 
 // WindowTileTableAddress ...
 // Bit6  Window Tile Table address               | 9C00-9FFF     | 9800-9BFF
-func (l LCDControl) WindowTileTableAddress() Range {
+func (l LCDControl) WindowTileTableAddress() mmu.Range {
 	if bitValue(6, byte(l)) == 0 {
-		return Range{
+		return mmu.Range{
 			Start: 0x9800, End: 0x9BFF,
 		}
 	}
-	return Range{
+	return mmu.Range{
 		Start: 0x9C00, End: 0x9FFF,
 	}
 }
@@ -35,26 +39,26 @@ func (l LCDControl) BGWindowTileAddressingSigned() bool {
 
 // TilePatternTableAddress ...
 // Bit4  BG & Window Tile Data Select            | 8000-8FFF     | 8800-97FF
-func (l LCDControl) TilePatternTableAddress() Range {
+func (l LCDControl) TilePatternTableAddress() mmu.Range {
 	if bitValue(4, byte(l)) == 0 {
-		return Range{
+		return mmu.Range{
 			Start: 0x8800, End: 0x97FF,
 		}
 	}
-	return Range{
+	return mmu.Range{
 		Start: 0x8000, End: 0x8FFF,
 	}
 }
 
 // BackgroundTileTableAddress ...
 // Bit3  Background Tile Table address           | 9C00-9FFF     | 9800-9BFF
-func (l LCDControl) BackgroundTileTableAddress() Range {
+func (l LCDControl) BackgroundTileTableAddress() mmu.Range {
 	if bitValue(3, byte(l)) == 0 {
-		return Range{
+		return mmu.Range{
 			Start: 0x9800, End: 0x9BFF,
 		}
 	}
-	return Range{
+	return mmu.Range{
 		Start: 0x9C00, End: 0x9FFF,
 	}
 }

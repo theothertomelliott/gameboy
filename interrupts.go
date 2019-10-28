@@ -1,5 +1,7 @@
 package gameboy
 
+import "github.com/theothertomelliott/gameboy/mmu"
+
 type Interrupt struct {
 	Bit byte
 	ISR uint16
@@ -35,7 +37,7 @@ var (
 	}
 )
 
-func NewInterruptScheduler(cpu *CPU, mmu *MMU) *InterruptScheduler {
+func NewInterruptScheduler(cpu *CPU, mmu *mmu.MMU) *InterruptScheduler {
 	return &InterruptScheduler{
 		cpu: cpu,
 		mmu: mmu,
@@ -44,7 +46,7 @@ func NewInterruptScheduler(cpu *CPU, mmu *MMU) *InterruptScheduler {
 
 type InterruptScheduler struct {
 	cpu *CPU
-	mmu *MMU
+	mmu *mmu.MMU
 }
 
 func (s *InterruptScheduler) ScheduleInterrupt(i Interrupt) {

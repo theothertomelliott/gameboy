@@ -1,4 +1,4 @@
-package gameboy
+package mmu
 
 import "fmt"
 
@@ -24,7 +24,7 @@ type Range struct {
 	End   uint16
 }
 
-func NewMMU(tracer MMUTracer) *MMU {
+func New(tracer MMUTracer) *MMU {
 	return &MMU{
 		RAM:    make([]byte, 0x10000),
 		tracer: tracer,

@@ -3,13 +3,15 @@ package gameboy
 import (
 	"image"
 	"image/color"
+
+	"github.com/theothertomelliott/gameboy/mmu"
 )
 
 var _ image.Image = &Screen{}
 
 // https://gbdev.gg8.se/wiki/articles/Video_Display#VRAM_Sprite_Attribute_Table_.28OAM.29
 
-func NewBackground(mmu *MMU) *Screen {
+func NewBackground(mmu *mmu.MMU) *Screen {
 	return &Screen{
 		BGTileMap:                    mmu.ReadRange(GetLCDControl(mmu).BackgroundTileTableAddress()),
 		BGTiles:                      GetBackgroundTiles(mmu),
@@ -38,7 +40,7 @@ func NewBackground(mmu *MMU) *Screen {
 	}
 }
 
-func NewWindow(mmu *MMU) *Screen {
+func NewWindow(mmu *mmu.MMU) *Screen {
 	return &Screen{
 		BGTileMap:                    mmu.ReadRange(GetLCDControl(mmu).BackgroundTileTableAddress()),
 		BGTiles:                      GetBackgroundTiles(mmu),
@@ -68,24 +70,24 @@ func NewWindow(mmu *MMU) *Screen {
 	}
 }
 
-func NewScreen(mmu *MMU) *Screen {
-	lcdControl := GetLCDControl(mmu)
+func NewScreen(m *mmu.MMU) *Screen {
+	lcdControl := GetLCDControl(m)
 	return &Screen{
-		BGTileMap:                    mmu.ReadRange(lcdControl.BackgroundTileTableAddress()),
-		BGTiles:                      GetBackgroundTiles(mmu),
-		WindowTileMap:                mmu.ReadRange(lcdControl.WindowTileTableAddress()),
-		SpriteTiles:                  GetTilesForRange(mmu, Range{Start: 0x8000, End: 0x8FFF}),
-		SpriteData:                   GetSpriteData(mmu),
+		BGTileMap:                    m.ReadRange(lcdControl.BackgroundTileTableAddress()),
+		BGTiles:                      GetBackgroundTiles(m),
+		WindowTileMap:                m.ReadRange(lcdControl.WindowTileTableAddress()),
+		SpriteTiles:                  GetTilesForRange(m, mmu.Range{Start: 0x8000, End: 0x8FFF}),
+		SpriteData:                   GetSpriteData(m),
 		RenderBackground:             lcdControl.BackgroundDisplay(),
 		RenderWindow:                 lcdControl.WindowDisplay(),
 		BGWindowTileAddressingSigned: lcdControl.BGWindowTileAddressingSigned(),
 
-		BGRDPAL: mmu.Read8(BGRDPAL),
-		OBJ0PAL: mmu.Read8(OBJ0PAL),
-		OBJ1PAL: mmu.Read8(OBJ1PAL),
+		BGRDPAL: m.Read8(BGRDPAL),
+		OBJ0PAL: m.Read8(OBJ0PAL),
+		OBJ1PAL: m.Read8(OBJ1PAL),
 
-		WindowPos:  GetWindowPos(mmu),
-		Position:   GetScroll(mmu),
+		WindowPos:  GetWindowPos(m),
+		Position:   GetScroll(m),
 		SpriteSize: lcdControl.SpriteSize(),
 
 		bounds: image.Rectangle{
