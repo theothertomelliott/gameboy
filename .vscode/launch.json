@@ -5,20 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${fileDirname}",
-            "env": {},
-            "args": []
-        },
-        {
             "name": "Tetris",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/cmd/gameboy/main.go",
+            "program": "${workspaceFolder}/cmd/gameboy",
             "env": {},
             "args": ["${workspaceFolder}/data/roms/tetris.gb"]
         }
