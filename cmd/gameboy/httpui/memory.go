@@ -29,7 +29,7 @@ func (s *Server) HandleMemory(w http.ResponseWriter, r *http.Request) {
 	mem := s.gb.MMU()
 	allMem := mem.ReadRange(mmu.Range{
 		Start: 0x0000,
-		End:   0xFFFF,
+		End:   0xFFFE,
 	})
 
 	data := table{}

@@ -69,6 +69,7 @@ func main() {
 	}
 
 	go uiserver.ListenAndServe(8080)
+	fmt.Println("Debug server listening on http://localhost:8080")
 
 	gb.Start()
 	defer gb.Stop()
