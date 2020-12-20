@@ -655,20 +655,14 @@ type IMEUpdate struct {
 // immediately. Interrupts are disabled after
 // instruction after DI is executed.
 func (c *CPU) DI(...Param) {
-	c.IMEUpdate = &IMEUpdate{
-		Delay: 1,
-		Value: false,
-	}
+	c.IME = false
 }
 
 // EI enables interrupts. This intruction enables interrupts
 // but not immediately. Interrupts are enabled after
 // instruction after EI is executed.
 func (c *CPU) EI(...Param) {
-	c.IMEUpdate = &IMEUpdate{
-		Delay: 1,
-		Value: true,
-	}
+	c.IME = true
 }
 
 // RLCA rotates A left.

@@ -19,8 +19,7 @@ type CPU struct {
 	MMU *mmu.MMU
 
 	// Interrupt master enable
-	IMEUpdate *IMEUpdate
-	IME       bool
+	IME bool
 
 	// Registers
 	AF *RegisterPair
@@ -215,16 +214,6 @@ func (c *CPU) Step() (int, error) {
 	description, cycles, err := c.ExecuteOperation()
 	if err != nil {
 		return 0, errors.WithMessage(err, fmt.Sprintf("0x%04X", pcBefore))
-	}
-
-	// Set IME as needed
-	if c.IMEUpdate != nil {
-		if c.IMEUpdate.Delay == 0 {
-			c.IME = c.IMEUpdate.Value
-			c.IMEUpdate = nil
-		} else {
-			c.IMEUpdate.Delay--
-		}
 	}
 
 	if c.tracer != nil {
