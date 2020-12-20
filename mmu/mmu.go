@@ -47,9 +47,10 @@ func (m *MMU) LoadROM(data []byte) {
 func (m *MMU) LoadCartridge(data []byte) {
 	// This prevents use of the combined blarg test roms
 	cartridgeType := data[0x0147]
-	if cartridgeType != 00 {
-		panic(fmt.Sprintf("Cartridge type unsupported: 0x%x", data[0x147]))
-	}
+	fmt.Printf("Cartridge type: 0x%x\n", cartridgeType)
+	// if cartridgeType != 0x00 && cartridgeType != 0x01 {
+	// 	panic("Cartridge type unsupported")
+	// }
 
 	m.CartridgeData = data
 	m.testOutput = nil
@@ -74,6 +75,7 @@ func (m *MMU) LoadCartridge(data []byte) {
 		}
 		m.CartridgeBanks = append(m.CartridgeBanks, data[index:end])
 	}
+	fmt.Printf("Loaded %d cartridge banks\n", len(m.CartridgeBanks))
 
 	// Add the first bank to RAM
 	m.switchBank(0)
@@ -85,10 +87,9 @@ func (m *MMU) ResetCartridge() {
 }
 
 func (m *MMU) switchBank(bank byte) {
-	if len(m.CartridgeBanks) > int(bank-1) {
-		for i := 0; i < len(m.CartridgeBanks[bank]); i++ {
-			m.RAM[0x4000+i] = m.CartridgeBanks[bank][i]
-		}
+	fmt.Println("Switching to bank:", bank)
+	for i := 0; i < len(m.CartridgeBanks[bank]); i++ {
+		m.RAM[0x4000+i] = m.CartridgeBanks[bank][i]
 	}
 }
 
@@ -111,6 +112,9 @@ func (m *MMU) Read8(pos uint16) byte {
 }
 
 func (m *MMU) Write8(pos uint16, values ...byte) {
+	if pos == 0x2000 {
+		m.switchBank(values[0])
+	}
 	if pos == ioports.DMACONT {
 		start := uint16(values[0]) * 0x100
 		end := start + 0x100
