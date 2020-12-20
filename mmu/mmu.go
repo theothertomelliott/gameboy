@@ -45,8 +45,10 @@ func (m *MMU) LoadROM(data []byte) {
 
 // LoadCartridge loads a Cartridge ROM into memory
 func (m *MMU) LoadCartridge(data []byte) {
-	if data[0x0147] != 00 {
-		panic(fmt.Sprintf("Cartridge type unsupported: %v", data[0x147]))
+	// This prevents use of the combined blarg test roms
+	cartridgeType := data[0x0147]
+	if cartridgeType != 00 {
+		panic(fmt.Sprintf("Cartridge type unsupported: 0x%x", data[0x147]))
 	}
 
 	m.CartridgeData = data
@@ -134,7 +136,9 @@ func (m *MMU) Write8(pos uint16, values ...byte) {
 	}
 
 	if pos == 0xFF02 && values[0] == 0x81 {
-		m.testOutput = append(m.testOutput, m.Read8(0xFF01))
+		c := m.Read8(0xFF01)
+		m.testOutput = append(m.testOutput, c)
+		fmt.Print(string([]byte{c}))
 	}
 
 	for _, value := range values {
