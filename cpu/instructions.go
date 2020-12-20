@@ -646,20 +646,29 @@ func (c *CPU) STOP(...Param) {
 	c.isStopped = true
 }
 
+type IMEUpdate struct {
+	Delay int
+	Value bool
+}
+
 // DI disables interrupts but not
 // immediately. Interrupts are disabled after
 // instruction after DI is executed.
 func (c *CPU) DI(...Param) {
-	// TODO: Delay interrupts
-	c.IME = false
+	c.IMEUpdate = &IMEUpdate{
+		Delay: 1,
+		Value: false,
+	}
 }
 
 // EI enables interrupts. This intruction enables interrupts
 // but not immediately. Interrupts are enabled after
 // instruction after EI is executed.
 func (c *CPU) EI(...Param) {
-	// TODO: Delay interrupts
-	c.IME = true
+	c.IMEUpdate = &IMEUpdate{
+		Delay: 1,
+		Value: true,
+	}
 }
 
 // RLCA rotates A left.
@@ -941,10 +950,13 @@ func (c *CPU) JP(params ...Param) {
 //
 // Use with:
 //  nn = two byte immediate value. (LS byte first.)
-func (c *CPU) JPC(params ...Param) {
+// Returns true iff branching occurred
+func (c *CPU) JPC(params ...Param) bool {
 	if c.conditionMet(params...) {
 		c.JP(params[1:]...)
+		return true
 	}
+	return false
 }
 
 // JR adds n to current address and jumps to it.
@@ -964,10 +976,13 @@ func (c *CPU) JR(params ...Param) {
 // cc = Z, Jump if Z flag is set.
 // cc = NC, Jump if C flag is reset.
 // cc = C, Jump if C flag is set.
-func (c *CPU) JRC(params ...Param) {
+// Returns true iff branching occurred
+func (c *CPU) JRC(params ...Param) bool {
 	if c.conditionMet(params...) {
 		c.JR(params[1:]...)
+		return true
 	}
+	return false
 }
 
 // CALL pushes address of next instruction onto stack and then
@@ -990,10 +1005,13 @@ func (c *CPU) CALL(params ...Param) {
 //
 // Use with:
 //  nn = two byte immediate value. (LS byte first.)
-func (c *CPU) CALLC(params ...Param) {
+// Returns true iff branching occurred
+func (c *CPU) CALLC(params ...Param) bool {
 	if c.conditionMet(params...) {
 		c.CALL(params[1:]...)
+		return true
 	}
+	return false
 }
 
 // RST pushes present address onto stack.
@@ -1017,10 +1035,13 @@ func (c *CPU) RET(...Param) {
 // cc = Z, Return if Z flag is set.
 // cc = NC, Return if C flag is reset.
 // cc = C, Return if C flag is set.
-func (c *CPU) RETC(params ...Param) {
+// Returns true iff branching occurred
+func (c *CPU) RETC(params ...Param) bool {
 	if c.conditionMet(params...) {
 		c.RET(params...)
+		return true
 	}
+	return false
 }
 
 // RETI pops two bytes from stack & jumps to that address then

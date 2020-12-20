@@ -2,7 +2,7 @@ package cpu
 
 import "fmt"
 
-func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
+func cbprefixedHandler(c *CPU, code Opcode) (string, int, error) {
 	switch code {
 	case 0x0:
 		o1 := c.B
@@ -13,8 +13,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RLC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x1:
 		o1 := c.C
 		c.RLC(
@@ -24,8 +23,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RLC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x10:
 		o1 := c.B
 		c.RL(
@@ -35,8 +33,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x11:
 		o1 := c.C
 		c.RL(
@@ -46,8 +43,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x12:
 		o1 := c.D
 		c.RL(
@@ -57,8 +53,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x13:
 		o1 := c.E
 		c.RL(
@@ -68,8 +63,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x14:
 		o1 := c.H
 		c.RL(
@@ -79,8 +73,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x15:
 		o1 := c.L
 		c.RL(
@@ -90,8 +83,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x16:
 		o1 := c.MemoryAt(c.HL)
 		c.RL(
@@ -101,8 +93,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RL ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x17:
 		o1 := c.A
 		c.RL(
@@ -112,8 +103,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x18:
 		o1 := c.B
 		c.RR(
@@ -123,8 +113,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RR ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x19:
 		o1 := c.C
 		c.RR(
@@ -134,8 +123,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RR ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x1a:
 		o1 := c.D
 		c.RR(
@@ -145,8 +133,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RR ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x1b:
 		o1 := c.E
 		c.RR(
@@ -156,8 +143,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RR ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x1c:
 		o1 := c.H
 		c.RR(
@@ -167,8 +153,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RR ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x1d:
 		o1 := c.L
 		c.RR(
@@ -178,8 +163,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RR ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x1e:
 		o1 := c.MemoryAt(c.HL)
 		c.RR(
@@ -189,8 +173,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RR ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x1f:
 		o1 := c.A
 		c.RR(
@@ -200,8 +183,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RR ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x2:
 		o1 := c.D
 		c.RLC(
@@ -211,8 +193,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RLC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x20:
 		o1 := c.B
 		c.SLA(
@@ -222,8 +203,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SLA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x21:
 		o1 := c.C
 		c.SLA(
@@ -233,8 +213,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SLA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x22:
 		o1 := c.D
 		c.SLA(
@@ -244,8 +223,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SLA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x23:
 		o1 := c.E
 		c.SLA(
@@ -255,8 +233,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SLA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x24:
 		o1 := c.H
 		c.SLA(
@@ -266,8 +243,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SLA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x25:
 		o1 := c.L
 		c.SLA(
@@ -277,8 +253,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SLA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x26:
 		o1 := c.MemoryAt(c.HL)
 		c.SLA(
@@ -288,8 +263,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SLA ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x27:
 		o1 := c.A
 		c.SLA(
@@ -299,8 +273,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SLA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x28:
 		o1 := c.B
 		c.SRA(
@@ -310,8 +283,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x29:
 		o1 := c.C
 		c.SRA(
@@ -321,8 +293,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x2a:
 		o1 := c.D
 		c.SRA(
@@ -332,8 +303,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x2b:
 		o1 := c.E
 		c.SRA(
@@ -343,8 +313,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x2c:
 		o1 := c.H
 		c.SRA(
@@ -354,8 +323,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x2d:
 		o1 := c.L
 		c.SRA(
@@ -365,8 +333,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x2e:
 		o1 := c.MemoryAt(c.HL)
 		c.SRA(
@@ -376,8 +343,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRA ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x2f:
 		o1 := c.A
 		c.SRA(
@@ -387,8 +353,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRA ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x3:
 		o1 := c.E
 		c.RLC(
@@ -398,8 +363,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RLC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x30:
 		o1 := c.B
 		c.SWAP(
@@ -409,8 +373,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SWAP ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x31:
 		o1 := c.C
 		c.SWAP(
@@ -420,8 +383,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SWAP ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x32:
 		o1 := c.D
 		c.SWAP(
@@ -431,8 +393,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SWAP ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x33:
 		o1 := c.E
 		c.SWAP(
@@ -442,8 +403,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SWAP ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x34:
 		o1 := c.H
 		c.SWAP(
@@ -453,8 +413,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SWAP ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x35:
 		o1 := c.L
 		c.SWAP(
@@ -464,8 +423,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SWAP ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x36:
 		o1 := c.MemoryAt(c.HL)
 		c.SWAP(
@@ -475,8 +433,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SWAP ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x37:
 		o1 := c.A
 		c.SWAP(
@@ -486,8 +443,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SWAP ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x38:
 		o1 := c.B
 		c.SRL(
@@ -497,8 +453,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x39:
 		o1 := c.C
 		c.SRL(
@@ -508,8 +463,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x3a:
 		o1 := c.D
 		c.SRL(
@@ -519,8 +473,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x3b:
 		o1 := c.E
 		c.SRL(
@@ -530,8 +483,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x3c:
 		o1 := c.H
 		c.SRL(
@@ -541,8 +493,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x3d:
 		o1 := c.L
 		c.SRL(
@@ -552,8 +503,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x3e:
 		o1 := c.MemoryAt(c.HL)
 		c.SRL(
@@ -563,8 +513,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRL ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x3f:
 		o1 := c.A
 		c.SRL(
@@ -574,8 +523,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SRL ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x4:
 		o1 := c.H
 		c.RLC(
@@ -585,8 +533,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RLC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x40:
 		o1 := 0
 		o2 := c.B
@@ -599,8 +546,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x41:
 		o1 := 0
 		o2 := c.C
@@ -613,8 +559,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x42:
 		o1 := 0
 		o2 := c.D
@@ -627,8 +572,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x43:
 		o1 := 0
 		o2 := c.E
@@ -641,8 +585,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x44:
 		o1 := 0
 		o2 := c.H
@@ -655,8 +598,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x45:
 		o1 := 0
 		o2 := c.L
@@ -669,8 +611,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x46:
 		o1 := 0
 		o2 := c.MemoryAt(c.HL)
@@ -683,8 +624,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x47:
 		o1 := 0
 		o2 := c.A
@@ -697,8 +637,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x48:
 		o1 := 1
 		o2 := c.B
@@ -711,8 +650,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x49:
 		o1 := 1
 		o2 := c.C
@@ -725,8 +663,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x4a:
 		o1 := 1
 		o2 := c.D
@@ -739,8 +676,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x4b:
 		o1 := 1
 		o2 := c.E
@@ -753,8 +689,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x4c:
 		o1 := 1
 		o2 := c.H
@@ -767,8 +702,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x4d:
 		o1 := 1
 		o2 := c.L
@@ -781,8 +715,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x4e:
 		o1 := 1
 		o2 := c.MemoryAt(c.HL)
@@ -795,8 +728,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x4f:
 		o1 := 1
 		o2 := c.A
@@ -809,8 +741,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x5:
 		o1 := c.L
 		c.RLC(
@@ -820,8 +751,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RLC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x50:
 		o1 := 2
 		o2 := c.B
@@ -834,8 +764,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x51:
 		o1 := 2
 		o2 := c.C
@@ -848,8 +777,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x52:
 		o1 := 2
 		o2 := c.D
@@ -862,8 +790,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x53:
 		o1 := 2
 		o2 := c.E
@@ -876,8 +803,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x54:
 		o1 := 2
 		o2 := c.H
@@ -890,8 +816,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x55:
 		o1 := 2
 		o2 := c.L
@@ -904,8 +829,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x56:
 		o1 := 2
 		o2 := c.MemoryAt(c.HL)
@@ -918,8 +842,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x57:
 		o1 := 2
 		o2 := c.A
@@ -932,8 +855,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x58:
 		o1 := 3
 		o2 := c.B
@@ -946,8 +868,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x59:
 		o1 := 3
 		o2 := c.C
@@ -960,8 +881,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x5a:
 		o1 := 3
 		o2 := c.D
@@ -974,8 +894,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x5b:
 		o1 := 3
 		o2 := c.E
@@ -988,8 +907,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x5c:
 		o1 := 3
 		o2 := c.H
@@ -1002,8 +920,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x5d:
 		o1 := 3
 		o2 := c.L
@@ -1016,8 +933,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x5e:
 		o1 := 3
 		o2 := c.MemoryAt(c.HL)
@@ -1030,8 +946,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x5f:
 		o1 := 3
 		o2 := c.A
@@ -1044,8 +959,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x6:
 		o1 := c.MemoryAt(c.HL)
 		c.RLC(
@@ -1055,8 +969,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RLC ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x60:
 		o1 := 4
 		o2 := c.B
@@ -1069,8 +982,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x61:
 		o1 := 4
 		o2 := c.C
@@ -1083,8 +995,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x62:
 		o1 := 4
 		o2 := c.D
@@ -1097,8 +1008,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x63:
 		o1 := 4
 		o2 := c.E
@@ -1111,8 +1021,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x64:
 		o1 := 4
 		o2 := c.H
@@ -1125,8 +1034,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x65:
 		o1 := 4
 		o2 := c.L
@@ -1139,8 +1047,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x66:
 		o1 := 4
 		o2 := c.MemoryAt(c.HL)
@@ -1153,8 +1060,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x67:
 		o1 := 4
 		o2 := c.A
@@ -1167,8 +1073,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x68:
 		o1 := 5
 		o2 := c.B
@@ -1181,8 +1086,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x69:
 		o1 := 5
 		o2 := c.C
@@ -1195,8 +1099,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x6a:
 		o1 := 5
 		o2 := c.D
@@ -1209,8 +1112,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x6b:
 		o1 := 5
 		o2 := c.E
@@ -1223,8 +1125,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x6c:
 		o1 := 5
 		o2 := c.H
@@ -1237,8 +1138,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x6d:
 		o1 := 5
 		o2 := c.L
@@ -1251,8 +1151,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x6e:
 		o1 := 5
 		o2 := c.MemoryAt(c.HL)
@@ -1265,8 +1164,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x6f:
 		o1 := 5
 		o2 := c.A
@@ -1279,8 +1177,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x7:
 		o1 := c.A
 		c.RLC(
@@ -1290,8 +1187,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RLC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x70:
 		o1 := 6
 		o2 := c.B
@@ -1304,8 +1200,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x71:
 		o1 := 6
 		o2 := c.C
@@ -1318,8 +1213,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x72:
 		o1 := 6
 		o2 := c.D
@@ -1332,8 +1226,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x73:
 		o1 := 6
 		o2 := c.E
@@ -1346,8 +1239,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x74:
 		o1 := 6
 		o2 := c.H
@@ -1360,8 +1252,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x75:
 		o1 := 6
 		o2 := c.L
@@ -1374,8 +1265,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x76:
 		o1 := 6
 		o2 := c.MemoryAt(c.HL)
@@ -1388,8 +1278,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x77:
 		o1 := 6
 		o2 := c.A
@@ -1402,8 +1291,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x78:
 		o1 := 7
 		o2 := c.B
@@ -1416,8 +1304,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x79:
 		o1 := 7
 		o2 := c.C
@@ -1430,8 +1317,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x7a:
 		o1 := 7
 		o2 := c.D
@@ -1444,8 +1330,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x7b:
 		o1 := 7
 		o2 := c.E
@@ -1458,8 +1343,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x7c:
 		o1 := 7
 		o2 := c.H
@@ -1472,8 +1356,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x7d:
 		o1 := 7
 		o2 := c.L
@@ -1486,8 +1369,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x7e:
 		o1 := 7
 		o2 := c.MemoryAt(c.HL)
@@ -1500,8 +1382,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x7f:
 		o1 := 7
 		o2 := c.A
@@ -1514,8 +1395,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x8:
 		o1 := c.B
 		c.RRC(
@@ -1525,8 +1405,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RRC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x80:
 		o1 := 0
 		o2 := c.B
@@ -1539,8 +1418,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x81:
 		o1 := 0
 		o2 := c.C
@@ -1553,8 +1431,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x82:
 		o1 := 0
 		o2 := c.D
@@ -1567,8 +1444,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x83:
 		o1 := 0
 		o2 := c.E
@@ -1581,8 +1457,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x84:
 		o1 := 0
 		o2 := c.H
@@ -1595,8 +1470,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x85:
 		o1 := 0
 		o2 := c.L
@@ -1609,8 +1483,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x86:
 		o1 := 0
 		o2 := c.MemoryAt(c.HL)
@@ -1623,8 +1496,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x87:
 		o1 := 0
 		o2 := c.A
@@ -1637,8 +1509,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x88:
 		o1 := 1
 		o2 := c.B
@@ -1651,8 +1522,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x89:
 		o1 := 1
 		o2 := c.C
@@ -1665,8 +1535,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x8a:
 		o1 := 1
 		o2 := c.D
@@ -1679,8 +1548,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x8b:
 		o1 := 1
 		o2 := c.E
@@ -1693,8 +1561,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x8c:
 		o1 := 1
 		o2 := c.H
@@ -1707,8 +1574,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x8d:
 		o1 := 1
 		o2 := c.L
@@ -1721,8 +1587,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x8e:
 		o1 := 1
 		o2 := c.MemoryAt(c.HL)
@@ -1735,8 +1600,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x8f:
 		o1 := 1
 		o2 := c.A
@@ -1749,8 +1613,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x9:
 		o1 := c.C
 		c.RRC(
@@ -1760,8 +1623,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RRC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x90:
 		o1 := 2
 		o2 := c.B
@@ -1774,8 +1636,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x91:
 		o1 := 2
 		o2 := c.C
@@ -1788,8 +1649,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x92:
 		o1 := 2
 		o2 := c.D
@@ -1802,8 +1662,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x93:
 		o1 := 2
 		o2 := c.E
@@ -1816,8 +1675,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x94:
 		o1 := 2
 		o2 := c.H
@@ -1830,8 +1688,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x95:
 		o1 := 2
 		o2 := c.L
@@ -1844,8 +1701,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x96:
 		o1 := 2
 		o2 := c.MemoryAt(c.HL)
@@ -1858,8 +1714,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x97:
 		o1 := 2
 		o2 := c.A
@@ -1872,8 +1727,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x98:
 		o1 := 3
 		o2 := c.B
@@ -1886,8 +1740,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x99:
 		o1 := 3
 		o2 := c.C
@@ -1900,8 +1753,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x9a:
 		o1 := 3
 		o2 := c.D
@@ -1914,8 +1766,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x9b:
 		o1 := 3
 		o2 := c.E
@@ -1928,8 +1779,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x9c:
 		o1 := 3
 		o2 := c.H
@@ -1942,8 +1792,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x9d:
 		o1 := 3
 		o2 := c.L
@@ -1956,8 +1805,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x9e:
 		o1 := 3
 		o2 := c.MemoryAt(c.HL)
@@ -1970,8 +1818,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0x9f:
 		o1 := 3
 		o2 := c.A
@@ -1984,8 +1831,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xa:
 		o1 := c.D
 		c.RRC(
@@ -1995,8 +1841,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RRC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xa0:
 		o1 := 4
 		o2 := c.B
@@ -2009,8 +1854,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xa1:
 		o1 := 4
 		o2 := c.C
@@ -2023,8 +1867,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xa2:
 		o1 := 4
 		o2 := c.D
@@ -2037,8 +1880,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xa3:
 		o1 := 4
 		o2 := c.E
@@ -2051,8 +1893,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xa4:
 		o1 := 4
 		o2 := c.H
@@ -2065,8 +1906,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xa5:
 		o1 := 4
 		o2 := c.L
@@ -2079,8 +1919,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xa6:
 		o1 := 4
 		o2 := c.MemoryAt(c.HL)
@@ -2093,8 +1932,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xa7:
 		o1 := 4
 		o2 := c.A
@@ -2107,8 +1945,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xa8:
 		o1 := 5
 		o2 := c.B
@@ -2121,8 +1958,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xa9:
 		o1 := 5
 		o2 := c.C
@@ -2135,8 +1971,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xaa:
 		o1 := 5
 		o2 := c.D
@@ -2149,8 +1984,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xab:
 		o1 := 5
 		o2 := c.E
@@ -2163,8 +1997,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xac:
 		o1 := 5
 		o2 := c.H
@@ -2177,8 +2010,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xad:
 		o1 := 5
 		o2 := c.L
@@ -2191,8 +2023,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xae:
 		o1 := 5
 		o2 := c.MemoryAt(c.HL)
@@ -2205,8 +2036,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xaf:
 		o1 := 5
 		o2 := c.A
@@ -2219,8 +2049,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xb:
 		o1 := c.E
 		c.RRC(
@@ -2230,8 +2059,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RRC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xb0:
 		o1 := 6
 		o2 := c.B
@@ -2244,8 +2072,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xb1:
 		o1 := 6
 		o2 := c.C
@@ -2258,8 +2085,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xb2:
 		o1 := 6
 		o2 := c.D
@@ -2272,8 +2098,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xb3:
 		o1 := 6
 		o2 := c.E
@@ -2286,8 +2111,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xb4:
 		o1 := 6
 		o2 := c.H
@@ -2300,8 +2124,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xb5:
 		o1 := 6
 		o2 := c.L
@@ -2314,8 +2137,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xb6:
 		o1 := 6
 		o2 := c.MemoryAt(c.HL)
@@ -2328,8 +2150,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xb7:
 		o1 := 6
 		o2 := c.A
@@ -2342,8 +2163,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xb8:
 		o1 := 7
 		o2 := c.B
@@ -2356,8 +2176,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xb9:
 		o1 := 7
 		o2 := c.C
@@ -2370,8 +2189,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xba:
 		o1 := 7
 		o2 := c.D
@@ -2384,8 +2202,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xbb:
 		o1 := 7
 		o2 := c.E
@@ -2398,8 +2215,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xbc:
 		o1 := 7
 		o2 := c.H
@@ -2412,8 +2228,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xbd:
 		o1 := 7
 		o2 := c.L
@@ -2426,8 +2241,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xbe:
 		o1 := 7
 		o2 := c.MemoryAt(c.HL)
@@ -2440,8 +2254,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xbf:
 		o1 := 7
 		o2 := c.A
@@ -2454,8 +2267,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xc:
 		o1 := c.H
 		c.RRC(
@@ -2465,8 +2277,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RRC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xc0:
 		o1 := 0
 		o2 := c.B
@@ -2479,8 +2290,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xc1:
 		o1 := 0
 		o2 := c.C
@@ -2493,8 +2303,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xc2:
 		o1 := 0
 		o2 := c.D
@@ -2507,8 +2316,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xc3:
 		o1 := 0
 		o2 := c.E
@@ -2521,8 +2329,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xc4:
 		o1 := 0
 		o2 := c.H
@@ -2535,8 +2342,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xc5:
 		o1 := 0
 		o2 := c.L
@@ -2549,8 +2355,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xc6:
 		o1 := 0
 		o2 := c.MemoryAt(c.HL)
@@ -2563,8 +2368,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xc7:
 		o1 := 0
 		o2 := c.A
@@ -2577,8 +2381,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xc8:
 		o1 := 1
 		o2 := c.B
@@ -2591,8 +2394,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xc9:
 		o1 := 1
 		o2 := c.C
@@ -2605,8 +2407,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xca:
 		o1 := 1
 		o2 := c.D
@@ -2619,8 +2420,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xcb:
 		o1 := 1
 		o2 := c.E
@@ -2633,8 +2433,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xcc:
 		o1 := 1
 		o2 := c.H
@@ -2647,8 +2446,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xcd:
 		o1 := 1
 		o2 := c.L
@@ -2661,8 +2459,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xce:
 		o1 := 1
 		o2 := c.MemoryAt(c.HL)
@@ -2675,8 +2472,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xcf:
 		o1 := 1
 		o2 := c.A
@@ -2689,8 +2485,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xd:
 		o1 := c.L
 		c.RRC(
@@ -2700,8 +2495,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RRC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xd0:
 		o1 := 2
 		o2 := c.B
@@ -2714,8 +2508,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xd1:
 		o1 := 2
 		o2 := c.C
@@ -2728,8 +2521,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xd2:
 		o1 := 2
 		o2 := c.D
@@ -2742,8 +2534,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xd3:
 		o1 := 2
 		o2 := c.E
@@ -2756,8 +2547,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xd4:
 		o1 := 2
 		o2 := c.H
@@ -2770,8 +2560,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xd5:
 		o1 := 2
 		o2 := c.L
@@ -2784,8 +2573,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xd6:
 		o1 := 2
 		o2 := c.MemoryAt(c.HL)
@@ -2798,8 +2586,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xd7:
 		o1 := 2
 		o2 := c.A
@@ -2812,8 +2599,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xd8:
 		o1 := 3
 		o2 := c.B
@@ -2826,8 +2612,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xd9:
 		o1 := 3
 		o2 := c.C
@@ -2840,8 +2625,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xda:
 		o1 := 3
 		o2 := c.D
@@ -2854,8 +2638,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xdb:
 		o1 := 3
 		o2 := c.E
@@ -2868,8 +2651,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xdc:
 		o1 := 3
 		o2 := c.H
@@ -2882,8 +2664,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xdd:
 		o1 := 3
 		o2 := c.L
@@ -2896,8 +2677,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xde:
 		o1 := 3
 		o2 := c.MemoryAt(c.HL)
@@ -2910,8 +2690,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xdf:
 		o1 := 3
 		o2 := c.A
@@ -2924,8 +2703,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xe:
 		o1 := c.MemoryAt(c.HL)
 		c.RRC(
@@ -2935,8 +2713,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RRC ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xe0:
 		o1 := 4
 		o2 := c.B
@@ -2949,8 +2726,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xe1:
 		o1 := 4
 		o2 := c.C
@@ -2963,8 +2739,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xe2:
 		o1 := 4
 		o2 := c.D
@@ -2977,8 +2752,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xe3:
 		o1 := 4
 		o2 := c.E
@@ -2991,8 +2765,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xe4:
 		o1 := 4
 		o2 := c.H
@@ -3005,8 +2778,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xe5:
 		o1 := 4
 		o2 := c.L
@@ -3019,8 +2791,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xe6:
 		o1 := 4
 		o2 := c.MemoryAt(c.HL)
@@ -3033,8 +2804,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xe7:
 		o1 := 4
 		o2 := c.A
@@ -3047,8 +2817,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xe8:
 		o1 := 5
 		o2 := c.B
@@ -3061,8 +2830,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xe9:
 		o1 := 5
 		o2 := c.C
@@ -3075,8 +2843,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xea:
 		o1 := 5
 		o2 := c.D
@@ -3089,8 +2856,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xeb:
 		o1 := 5
 		o2 := c.E
@@ -3103,8 +2869,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xec:
 		o1 := 5
 		o2 := c.H
@@ -3117,8 +2882,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xed:
 		o1 := 5
 		o2 := c.L
@@ -3131,8 +2895,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xee:
 		o1 := 5
 		o2 := c.MemoryAt(c.HL)
@@ -3145,8 +2908,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xef:
 		o1 := 5
 		o2 := c.A
@@ -3159,8 +2921,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xf:
 		o1 := c.A
 		c.RRC(
@@ -3170,8 +2931,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RRC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xf0:
 		o1 := 6
 		o2 := c.B
@@ -3184,8 +2944,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xf1:
 		o1 := 6
 		o2 := c.C
@@ -3198,8 +2957,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xf2:
 		o1 := 6
 		o2 := c.D
@@ -3212,8 +2970,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xf3:
 		o1 := 6
 		o2 := c.E
@@ -3226,8 +2983,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xf4:
 		o1 := 6
 		o2 := c.H
@@ -3240,8 +2996,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xf5:
 		o1 := 6
 		o2 := c.L
@@ -3254,8 +3009,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xf6:
 		o1 := 6
 		o2 := c.MemoryAt(c.HL)
@@ -3268,8 +3022,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xf7:
 		o1 := 6
 		o2 := c.A
@@ -3282,8 +3035,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xf8:
 		o1 := 7
 		o2 := c.B
@@ -3296,8 +3048,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xf9:
 		o1 := 7
 		o2 := c.C
@@ -3310,8 +3061,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xfa:
 		o1 := 7
 		o2 := c.D
@@ -3324,8 +3074,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xfb:
 		o1 := 7
 		o2 := c.E
@@ -3338,8 +3087,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xfc:
 		o1 := 7
 		o2 := c.H
@@ -3352,8 +3100,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xfd:
 		o1 := 7
 		o2 := c.L
@@ -3366,8 +3113,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xfe:
 		o1 := 7
 		o2 := c.MemoryAt(c.HL)
@@ -3380,8 +3126,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xff:
 		o1 := 7
 		o2 := c.A
@@ -3394,21 +3139,19 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	default:
-		return "", nil, fmt.Errorf("unknown opcode: 0x%X", code)
+		return "", 0, fmt.Errorf("unknown opcode: 0x%X", code)
 	}
 }
-func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
+func unprefixedHandler(c *CPU, code Opcode) (string, int, error) {
 	switch code {
 	case 0x0:
 		c.NOP()
 		description := fmt.Sprint(
 			"NOP ",
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x1:
 		o1 := c.BC
 		o2 := c.D16()
@@ -3421,8 +3164,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0x10:
 		o1 := 0
 		c.STOP(
@@ -3432,8 +3174,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"STOP ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x11:
 		o1 := c.DE
 		o2 := c.D16()
@@ -3446,8 +3187,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0x12:
 		o1 := c.MemoryAt(c.DE)
 		o2 := c.A
@@ -3460,8 +3200,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x13:
 		o1 := c.DE
 		c.INC(
@@ -3471,8 +3210,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"INC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x14:
 		o1 := c.D
 		c.INC(
@@ -3482,8 +3220,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"INC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x15:
 		o1 := c.D
 		c.DEC(
@@ -3493,8 +3230,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"DEC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x16:
 		o1 := c.D
 		o2 := c.D8()
@@ -3507,8 +3243,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x17:
 		o1 := c.A
 		c.RLA(
@@ -3518,8 +3253,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RLA ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x18:
 		o1 := c.R8()
 		c.JR(
@@ -3529,8 +3263,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"JR ",
 			o1,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0x19:
 		o1 := c.HL
 		o2 := c.DE
@@ -3543,8 +3276,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x1a:
 		o1 := c.A
 		o2 := c.MemoryAt(c.DE)
@@ -3557,8 +3289,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x1b:
 		o1 := c.DE
 		c.DEC(
@@ -3568,8 +3299,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"DEC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x1c:
 		o1 := c.E
 		c.INC(
@@ -3579,8 +3309,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"INC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x1d:
 		o1 := c.E
 		c.DEC(
@@ -3590,8 +3319,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"DEC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x1e:
 		o1 := c.E
 		o2 := c.D8()
@@ -3604,15 +3332,13 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x1f:
 		c.RRA()
 		description := fmt.Sprint(
 			"RRA ",
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x2:
 		o1 := c.MemoryAt(c.BC)
 		o2 := c.A
@@ -3625,12 +3351,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x20:
 		o1 := CaseNZ
 		o2 := c.R8()
-		c.JRC(
+		branched := c.JRC(
 			o1,
 			o2,
 		)
@@ -3639,9 +3364,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			12,
-			8}, nil
+		cycles := 8
+		if branched {
+			cycles = 12
+		}
+		return description, cycles, nil
 	case 0x21:
 		o1 := c.HL
 		o2 := c.D16()
@@ -3654,8 +3381,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0x22:
 		o1 := c.MemoryAt(c.HL)
 		o2 := c.A
@@ -3668,8 +3394,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x23:
 		o1 := c.HL
 		c.INC(
@@ -3679,8 +3404,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"INC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x24:
 		o1 := c.H
 		c.INC(
@@ -3690,8 +3414,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"INC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x25:
 		o1 := c.H
 		c.DEC(
@@ -3701,8 +3424,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"DEC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x26:
 		o1 := c.H
 		o2 := c.D8()
@@ -3715,19 +3437,17 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x27:
 		c.DAA()
 		description := fmt.Sprint(
 			"DAA ",
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x28:
 		o1 := CaseZ
 		o2 := c.R8()
-		c.JRC(
+		branched := c.JRC(
 			o1,
 			o2,
 		)
@@ -3736,9 +3456,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			12,
-			8}, nil
+		cycles := 8
+		if branched {
+			cycles = 12
+		}
+		return description, cycles, nil
 	case 0x29:
 		o1 := c.HL
 		o2 := c.HL
@@ -3751,8 +3473,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x2a:
 		o1 := c.A
 		o2 := c.MemoryAt(c.HL)
@@ -3765,8 +3486,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x2b:
 		o1 := c.HL
 		c.DEC(
@@ -3776,8 +3496,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"DEC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x2c:
 		o1 := c.L
 		c.INC(
@@ -3787,8 +3506,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"INC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x2d:
 		o1 := c.L
 		c.DEC(
@@ -3798,8 +3516,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"DEC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x2e:
 		o1 := c.L
 		o2 := c.D8()
@@ -3812,15 +3529,13 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x2f:
 		c.CPL()
 		description := fmt.Sprint(
 			"CPL ",
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x3:
 		o1 := c.BC
 		c.INC(
@@ -3830,12 +3545,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"INC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x30:
 		o1 := CaseNC
 		o2 := c.R8()
-		c.JRC(
+		branched := c.JRC(
 			o1,
 			o2,
 		)
@@ -3844,9 +3558,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			12,
-			8}, nil
+		cycles := 8
+		if branched {
+			cycles = 12
+		}
+		return description, cycles, nil
 	case 0x31:
 		o1 := c.SP
 		o2 := c.D16()
@@ -3859,8 +3575,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0x32:
 		o1 := c.MemoryAt(c.HL)
 		o2 := c.A
@@ -3873,8 +3588,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x33:
 		o1 := c.SP
 		c.INC(
@@ -3884,8 +3598,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"INC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x34:
 		o1 := c.MemoryAt(c.HL)
 		c.INC(
@@ -3895,8 +3608,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"INC ",
 			o1,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0x35:
 		o1 := c.MemoryAt(c.HL)
 		c.DEC(
@@ -3906,8 +3618,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"DEC ",
 			o1,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0x36:
 		o1 := c.MemoryAt(c.HL)
 		o2 := c.D8()
@@ -3920,19 +3631,17 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0x37:
 		c.SCF()
 		description := fmt.Sprint(
 			"SCF ",
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x38:
 		o1 := CaseC
 		o2 := c.R8()
-		c.JRC(
+		branched := c.JRC(
 			o1,
 			o2,
 		)
@@ -3941,9 +3650,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			12,
-			8}, nil
+		cycles := 8
+		if branched {
+			cycles = 12
+		}
+		return description, cycles, nil
 	case 0x39:
 		o1 := c.HL
 		o2 := c.SP
@@ -3956,8 +3667,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x3a:
 		o1 := c.A
 		o2 := c.MemoryAt(c.HL)
@@ -3970,8 +3680,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x3b:
 		o1 := c.SP
 		c.DEC(
@@ -3981,8 +3690,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"DEC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x3c:
 		o1 := c.A
 		c.INC(
@@ -3992,8 +3700,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"INC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x3d:
 		o1 := c.A
 		c.DEC(
@@ -4003,8 +3710,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"DEC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x3e:
 		o1 := c.A
 		o2 := c.D8()
@@ -4017,15 +3723,13 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x3f:
 		c.CCF()
 		description := fmt.Sprint(
 			"CCF ",
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x4:
 		o1 := c.B
 		c.INC(
@@ -4035,8 +3739,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"INC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x40:
 		o1 := c.B
 		o2 := c.B
@@ -4049,8 +3752,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x41:
 		o1 := c.B
 		o2 := c.C
@@ -4063,8 +3765,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x42:
 		o1 := c.B
 		o2 := c.D
@@ -4077,8 +3778,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x43:
 		o1 := c.B
 		o2 := c.E
@@ -4091,8 +3791,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x44:
 		o1 := c.B
 		o2 := c.H
@@ -4105,8 +3804,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x45:
 		o1 := c.B
 		o2 := c.L
@@ -4119,8 +3817,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x46:
 		o1 := c.B
 		o2 := c.MemoryAt(c.HL)
@@ -4133,8 +3830,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x47:
 		o1 := c.B
 		o2 := c.A
@@ -4147,8 +3843,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x48:
 		o1 := c.C
 		o2 := c.B
@@ -4161,8 +3856,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x49:
 		o1 := c.C
 		o2 := c.C
@@ -4175,8 +3869,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x4a:
 		o1 := c.C
 		o2 := c.D
@@ -4189,8 +3882,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x4b:
 		o1 := c.C
 		o2 := c.E
@@ -4203,8 +3895,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x4c:
 		o1 := c.C
 		o2 := c.H
@@ -4217,8 +3908,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x4d:
 		o1 := c.C
 		o2 := c.L
@@ -4231,8 +3921,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x4e:
 		o1 := c.C
 		o2 := c.MemoryAt(c.HL)
@@ -4245,8 +3934,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x4f:
 		o1 := c.C
 		o2 := c.A
@@ -4259,8 +3947,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x5:
 		o1 := c.B
 		c.DEC(
@@ -4270,8 +3957,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"DEC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x50:
 		o1 := c.D
 		o2 := c.B
@@ -4284,8 +3970,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x51:
 		o1 := c.D
 		o2 := c.C
@@ -4298,8 +3983,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x52:
 		o1 := c.D
 		o2 := c.D
@@ -4312,8 +3996,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x53:
 		o1 := c.D
 		o2 := c.E
@@ -4326,8 +4009,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x54:
 		o1 := c.D
 		o2 := c.H
@@ -4340,8 +4022,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x55:
 		o1 := c.D
 		o2 := c.L
@@ -4354,8 +4035,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x56:
 		o1 := c.D
 		o2 := c.MemoryAt(c.HL)
@@ -4368,8 +4048,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x57:
 		o1 := c.D
 		o2 := c.A
@@ -4382,8 +4061,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x58:
 		o1 := c.E
 		o2 := c.B
@@ -4396,8 +4074,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x59:
 		o1 := c.E
 		o2 := c.C
@@ -4410,8 +4087,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x5a:
 		o1 := c.E
 		o2 := c.D
@@ -4424,8 +4100,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x5b:
 		o1 := c.E
 		o2 := c.E
@@ -4438,8 +4113,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x5c:
 		o1 := c.E
 		o2 := c.H
@@ -4452,8 +4126,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x5d:
 		o1 := c.E
 		o2 := c.L
@@ -4466,8 +4139,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x5e:
 		o1 := c.E
 		o2 := c.MemoryAt(c.HL)
@@ -4480,8 +4152,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x5f:
 		o1 := c.E
 		o2 := c.A
@@ -4494,8 +4165,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x6:
 		o1 := c.B
 		o2 := c.D8()
@@ -4508,8 +4178,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x60:
 		o1 := c.H
 		o2 := c.B
@@ -4522,8 +4191,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x61:
 		o1 := c.H
 		o2 := c.C
@@ -4536,8 +4204,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x62:
 		o1 := c.H
 		o2 := c.D
@@ -4550,8 +4217,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x63:
 		o1 := c.H
 		o2 := c.E
@@ -4564,8 +4230,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x64:
 		o1 := c.H
 		o2 := c.H
@@ -4578,8 +4243,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x65:
 		o1 := c.H
 		o2 := c.L
@@ -4592,8 +4256,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x66:
 		o1 := c.H
 		o2 := c.MemoryAt(c.HL)
@@ -4606,8 +4269,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x67:
 		o1 := c.H
 		o2 := c.A
@@ -4620,8 +4282,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x68:
 		o1 := c.L
 		o2 := c.B
@@ -4634,8 +4295,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x69:
 		o1 := c.L
 		o2 := c.C
@@ -4648,8 +4308,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x6a:
 		o1 := c.L
 		o2 := c.D
@@ -4662,8 +4321,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x6b:
 		o1 := c.L
 		o2 := c.E
@@ -4676,8 +4334,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x6c:
 		o1 := c.L
 		o2 := c.H
@@ -4690,8 +4347,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x6d:
 		o1 := c.L
 		o2 := c.L
@@ -4704,8 +4360,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x6e:
 		o1 := c.L
 		o2 := c.MemoryAt(c.HL)
@@ -4718,8 +4373,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x6f:
 		o1 := c.L
 		o2 := c.A
@@ -4732,15 +4386,13 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x7:
 		c.RLCA()
 		description := fmt.Sprint(
 			"RLCA ",
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x70:
 		o1 := c.MemoryAt(c.HL)
 		o2 := c.B
@@ -4753,8 +4405,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x71:
 		o1 := c.MemoryAt(c.HL)
 		o2 := c.C
@@ -4767,8 +4418,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x72:
 		o1 := c.MemoryAt(c.HL)
 		o2 := c.D
@@ -4781,8 +4431,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x73:
 		o1 := c.MemoryAt(c.HL)
 		o2 := c.E
@@ -4795,8 +4444,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x74:
 		o1 := c.MemoryAt(c.HL)
 		o2 := c.H
@@ -4809,8 +4457,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x75:
 		o1 := c.MemoryAt(c.HL)
 		o2 := c.L
@@ -4823,15 +4470,13 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x76:
 		c.HALT()
 		description := fmt.Sprint(
 			"HALT ",
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x77:
 		o1 := c.MemoryAt(c.HL)
 		o2 := c.A
@@ -4844,8 +4489,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x78:
 		o1 := c.A
 		o2 := c.B
@@ -4858,8 +4502,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x79:
 		o1 := c.A
 		o2 := c.C
@@ -4872,8 +4515,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x7a:
 		o1 := c.A
 		o2 := c.D
@@ -4886,8 +4528,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x7b:
 		o1 := c.A
 		o2 := c.E
@@ -4900,8 +4541,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x7c:
 		o1 := c.A
 		o2 := c.H
@@ -4914,8 +4554,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x7d:
 		o1 := c.A
 		o2 := c.L
@@ -4928,8 +4567,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x7e:
 		o1 := c.A
 		o2 := c.MemoryAt(c.HL)
@@ -4942,8 +4580,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x7f:
 		o1 := c.A
 		o2 := c.A
@@ -4956,8 +4593,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x8:
 		o1 := c.MemoryAt(c.A16())
 		o2 := c.SP
@@ -4970,8 +4606,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			20}, nil
+		return description, 20, nil
 	case 0x80:
 		o1 := c.A
 		o2 := c.B
@@ -4984,8 +4619,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x81:
 		o1 := c.A
 		o2 := c.C
@@ -4998,8 +4632,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x82:
 		o1 := c.A
 		o2 := c.D
@@ -5012,8 +4645,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x83:
 		o1 := c.A
 		o2 := c.E
@@ -5026,8 +4658,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x84:
 		o1 := c.A
 		o2 := c.H
@@ -5040,8 +4671,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x85:
 		o1 := c.A
 		o2 := c.L
@@ -5054,8 +4684,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x86:
 		o1 := c.A
 		o2 := c.MemoryAt(c.HL)
@@ -5068,8 +4697,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x87:
 		o1 := c.A
 		o2 := c.A
@@ -5082,8 +4710,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x88:
 		o1 := c.A
 		o2 := c.B
@@ -5096,8 +4723,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x89:
 		o1 := c.A
 		o2 := c.C
@@ -5110,8 +4736,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x8a:
 		o1 := c.A
 		o2 := c.D
@@ -5124,8 +4749,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x8b:
 		o1 := c.A
 		o2 := c.E
@@ -5138,8 +4762,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x8c:
 		o1 := c.A
 		o2 := c.H
@@ -5152,8 +4775,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x8d:
 		o1 := c.A
 		o2 := c.L
@@ -5166,8 +4788,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x8e:
 		o1 := c.A
 		o2 := c.MemoryAt(c.HL)
@@ -5180,8 +4801,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x8f:
 		o1 := c.A
 		o2 := c.A
@@ -5194,8 +4814,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x9:
 		o1 := c.HL
 		o2 := c.BC
@@ -5208,8 +4827,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x90:
 		o1 := c.B
 		c.SUB(
@@ -5219,8 +4837,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SUB ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x91:
 		o1 := c.C
 		c.SUB(
@@ -5230,8 +4847,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SUB ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x92:
 		o1 := c.D
 		c.SUB(
@@ -5241,8 +4857,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SUB ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x93:
 		o1 := c.E
 		c.SUB(
@@ -5252,8 +4867,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SUB ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x94:
 		o1 := c.H
 		c.SUB(
@@ -5263,8 +4877,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SUB ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x95:
 		o1 := c.L
 		c.SUB(
@@ -5274,8 +4887,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SUB ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x96:
 		o1 := c.MemoryAt(c.HL)
 		c.SUB(
@@ -5285,8 +4897,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SUB ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x97:
 		o1 := c.A
 		c.SUB(
@@ -5296,8 +4907,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SUB ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x98:
 		o1 := c.A
 		o2 := c.B
@@ -5310,8 +4920,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x99:
 		o1 := c.A
 		o2 := c.C
@@ -5324,8 +4933,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x9a:
 		o1 := c.A
 		o2 := c.D
@@ -5338,8 +4946,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x9b:
 		o1 := c.A
 		o2 := c.E
@@ -5352,8 +4959,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x9c:
 		o1 := c.A
 		o2 := c.H
@@ -5366,8 +4972,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x9d:
 		o1 := c.A
 		o2 := c.L
@@ -5380,8 +4985,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0x9e:
 		o1 := c.A
 		o2 := c.MemoryAt(c.HL)
@@ -5394,8 +4998,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0x9f:
 		o1 := c.A
 		o2 := c.A
@@ -5408,8 +5011,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xa:
 		o1 := c.A
 		o2 := c.MemoryAt(c.BC)
@@ -5422,8 +5024,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xa0:
 		o1 := c.B
 		c.AND(
@@ -5433,8 +5034,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"AND ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xa1:
 		o1 := c.C
 		c.AND(
@@ -5444,8 +5044,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"AND ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xa2:
 		o1 := c.D
 		c.AND(
@@ -5455,8 +5054,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"AND ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xa3:
 		o1 := c.E
 		c.AND(
@@ -5466,8 +5064,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"AND ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xa4:
 		o1 := c.H
 		c.AND(
@@ -5477,8 +5074,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"AND ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xa5:
 		o1 := c.L
 		c.AND(
@@ -5488,8 +5084,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"AND ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xa6:
 		o1 := c.MemoryAt(c.HL)
 		c.AND(
@@ -5499,8 +5094,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"AND ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xa7:
 		o1 := c.A
 		c.AND(
@@ -5510,8 +5104,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"AND ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xa8:
 		o1 := c.B
 		c.XOR(
@@ -5521,8 +5114,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"XOR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xa9:
 		o1 := c.C
 		c.XOR(
@@ -5532,8 +5124,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"XOR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xaa:
 		o1 := c.D
 		c.XOR(
@@ -5543,8 +5134,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"XOR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xab:
 		o1 := c.E
 		c.XOR(
@@ -5554,8 +5144,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"XOR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xac:
 		o1 := c.H
 		c.XOR(
@@ -5565,8 +5154,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"XOR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xad:
 		o1 := c.L
 		c.XOR(
@@ -5576,8 +5164,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"XOR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xae:
 		o1 := c.MemoryAt(c.HL)
 		c.XOR(
@@ -5587,8 +5174,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"XOR ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xaf:
 		o1 := c.A
 		c.XOR(
@@ -5598,8 +5184,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"XOR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xb:
 		o1 := c.BC
 		c.DEC(
@@ -5609,8 +5194,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"DEC ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xb0:
 		o1 := c.B
 		c.OR(
@@ -5620,8 +5204,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"OR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xb1:
 		o1 := c.C
 		c.OR(
@@ -5631,8 +5214,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"OR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xb2:
 		o1 := c.D
 		c.OR(
@@ -5642,8 +5224,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"OR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xb3:
 		o1 := c.E
 		c.OR(
@@ -5653,8 +5234,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"OR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xb4:
 		o1 := c.H
 		c.OR(
@@ -5664,8 +5244,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"OR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xb5:
 		o1 := c.L
 		c.OR(
@@ -5675,8 +5254,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"OR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xb6:
 		o1 := c.MemoryAt(c.HL)
 		c.OR(
@@ -5686,8 +5264,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"OR ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xb7:
 		o1 := c.A
 		c.OR(
@@ -5697,8 +5274,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"OR ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xb8:
 		o1 := c.B
 		c.CP(
@@ -5708,8 +5284,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"CP ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xb9:
 		o1 := c.C
 		c.CP(
@@ -5719,8 +5294,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"CP ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xba:
 		o1 := c.D
 		c.CP(
@@ -5730,8 +5304,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"CP ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xbb:
 		o1 := c.E
 		c.CP(
@@ -5741,8 +5314,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"CP ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xbc:
 		o1 := c.H
 		c.CP(
@@ -5752,8 +5324,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"CP ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xbd:
 		o1 := c.L
 		c.CP(
@@ -5763,8 +5334,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"CP ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xbe:
 		o1 := c.MemoryAt(c.HL)
 		c.CP(
@@ -5774,8 +5344,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"CP ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xbf:
 		o1 := c.A
 		c.CP(
@@ -5785,8 +5354,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"CP ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xc:
 		o1 := c.C
 		c.INC(
@@ -5796,20 +5364,21 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"INC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xc0:
 		o1 := CaseNZ
-		c.RETC(
+		branched := c.RETC(
 			o1,
 		)
 		description := fmt.Sprint(
 			"RET ",
 			o1,
 		)
-		return description, []int{
-			20,
-			8}, nil
+		cycles := 8
+		if branched {
+			cycles = 20
+		}
+		return description, cycles, nil
 	case 0xc1:
 		o1 := c.BC
 		c.POP(
@@ -5819,12 +5388,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"POP ",
 			o1,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0xc2:
 		o1 := CaseNZ
 		o2 := c.A16()
-		c.JPC(
+		branched := c.JPC(
 			o1,
 			o2,
 		)
@@ -5833,9 +5401,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16,
-			12}, nil
+		cycles := 12
+		if branched {
+			cycles = 16
+		}
+		return description, cycles, nil
 	case 0xc3:
 		o1 := c.A16()
 		c.JP(
@@ -5845,12 +5415,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"JP ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xc4:
 		o1 := CaseNZ
 		o2 := c.A16()
-		c.CALLC(
+		branched := c.CALLC(
 			o1,
 			o2,
 		)
@@ -5859,9 +5428,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			24,
-			12}, nil
+		cycles := 12
+		if branched {
+			cycles = 24
+		}
+		return description, cycles, nil
 	case 0xc5:
 		o1 := c.BC
 		c.PUSH(
@@ -5871,8 +5442,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"PUSH ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xc6:
 		o1 := c.A
 		o2 := c.D8()
@@ -5885,8 +5455,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xc7:
 		o1 := 0x00
 		c.RST(
@@ -5896,31 +5465,31 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RST ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xc8:
 		o1 := CaseZ
-		c.RETC(
+		branched := c.RETC(
 			o1,
 		)
 		description := fmt.Sprint(
 			"RET ",
 			o1,
 		)
-		return description, []int{
-			20,
-			8}, nil
+		cycles := 8
+		if branched {
+			cycles = 20
+		}
+		return description, cycles, nil
 	case 0xc9:
 		c.RET()
 		description := fmt.Sprint(
 			"RET ",
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xca:
 		o1 := CaseZ
 		o2 := c.A16()
-		c.JPC(
+		branched := c.JPC(
 			o1,
 			o2,
 		)
@@ -5929,9 +5498,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16,
-			12}, nil
+		cycles := 12
+		if branched {
+			cycles = 16
+		}
+		return description, cycles, nil
 	case 0xcb:
 		o1 := c.CB
 		c.PREFIX(
@@ -5941,12 +5512,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"PREFIX ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xcc:
 		o1 := CaseZ
 		o2 := c.A16()
-		c.CALLC(
+		branched := c.CALLC(
 			o1,
 			o2,
 		)
@@ -5955,9 +5525,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			24,
-			12}, nil
+		cycles := 12
+		if branched {
+			cycles = 24
+		}
+		return description, cycles, nil
 	case 0xcd:
 		o1 := c.A16()
 		c.CALL(
@@ -5967,8 +5539,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"CALL ",
 			o1,
 		)
-		return description, []int{
-			24}, nil
+		return description, 24, nil
 	case 0xce:
 		o1 := c.A
 		o2 := c.D8()
@@ -5981,8 +5552,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xcf:
 		o1 := 0x08
 		c.RST(
@@ -5992,8 +5562,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RST ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xd:
 		o1 := c.C
 		c.DEC(
@@ -6003,20 +5572,21 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"DEC ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xd0:
 		o1 := CaseNC
-		c.RETC(
+		branched := c.RETC(
 			o1,
 		)
 		description := fmt.Sprint(
 			"RET ",
 			o1,
 		)
-		return description, []int{
-			20,
-			8}, nil
+		cycles := 8
+		if branched {
+			cycles = 20
+		}
+		return description, cycles, nil
 	case 0xd1:
 		o1 := c.DE
 		c.POP(
@@ -6026,12 +5596,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"POP ",
 			o1,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0xd2:
 		o1 := CaseNC
 		o2 := c.A16()
-		c.JPC(
+		branched := c.JPC(
 			o1,
 			o2,
 		)
@@ -6040,13 +5609,15 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16,
-			12}, nil
+		cycles := 12
+		if branched {
+			cycles = 16
+		}
+		return description, cycles, nil
 	case 0xd4:
 		o1 := CaseNC
 		o2 := c.A16()
-		c.CALLC(
+		branched := c.CALLC(
 			o1,
 			o2,
 		)
@@ -6055,9 +5626,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			24,
-			12}, nil
+		cycles := 12
+		if branched {
+			cycles = 24
+		}
+		return description, cycles, nil
 	case 0xd5:
 		o1 := c.DE
 		c.PUSH(
@@ -6067,8 +5640,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"PUSH ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xd6:
 		o1 := c.D8()
 		c.SUB(
@@ -6078,8 +5650,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"SUB ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xd7:
 		o1 := 0x10
 		c.RST(
@@ -6089,31 +5660,31 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RST ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xd8:
 		o1 := CaseC
-		c.RETC(
+		branched := c.RETC(
 			o1,
 		)
 		description := fmt.Sprint(
 			"RET ",
 			o1,
 		)
-		return description, []int{
-			20,
-			8}, nil
+		cycles := 8
+		if branched {
+			cycles = 20
+		}
+		return description, cycles, nil
 	case 0xd9:
 		c.RETI()
 		description := fmt.Sprint(
 			"RETI ",
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xda:
 		o1 := CaseC
 		o2 := c.A16()
-		c.JPC(
+		branched := c.JPC(
 			o1,
 			o2,
 		)
@@ -6122,13 +5693,15 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16,
-			12}, nil
+		cycles := 12
+		if branched {
+			cycles = 16
+		}
+		return description, cycles, nil
 	case 0xdc:
 		o1 := CaseC
 		o2 := c.A16()
-		c.CALLC(
+		branched := c.CALLC(
 			o1,
 			o2,
 		)
@@ -6137,9 +5710,11 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			24,
-			12}, nil
+		cycles := 12
+		if branched {
+			cycles = 24
+		}
+		return description, cycles, nil
 	case 0xde:
 		o1 := c.A
 		o2 := c.D8()
@@ -6152,8 +5727,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xdf:
 		o1 := 0x18
 		c.RST(
@@ -6163,8 +5737,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RST ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xe:
 		o1 := c.C
 		o2 := c.D8()
@@ -6177,8 +5750,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xe0:
 		o1 := c.MemoryAt(c.A8())
 		o2 := c.A
@@ -6191,8 +5763,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0xe1:
 		o1 := c.HL
 		c.POP(
@@ -6202,8 +5773,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"POP ",
 			o1,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0xe2:
 		o1 := c.MemoryAtH(c.C)
 		o2 := c.A
@@ -6216,8 +5786,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xe5:
 		o1 := c.HL
 		c.PUSH(
@@ -6227,8 +5796,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"PUSH ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xe6:
 		o1 := c.D8()
 		c.AND(
@@ -6238,8 +5806,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"AND ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xe7:
 		o1 := 0x20
 		c.RST(
@@ -6249,8 +5816,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RST ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xe8:
 		o1 := c.SP
 		o2 := c.R8()
@@ -6263,8 +5829,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xe9:
 		o1 := c.HL
 		c.JP(
@@ -6274,8 +5839,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"JP ",
 			o1,
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xea:
 		o1 := c.MemoryAt(c.A16())
 		o2 := c.A
@@ -6288,8 +5852,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xee:
 		o1 := c.D8()
 		c.XOR(
@@ -6299,8 +5862,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"XOR ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xef:
 		o1 := 0x28
 		c.RST(
@@ -6310,15 +5872,13 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RST ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xf:
 		c.RRCA()
 		description := fmt.Sprint(
 			"RRCA ",
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xf0:
 		o1 := c.A
 		o2 := c.MemoryAt(c.A8())
@@ -6331,8 +5891,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0xf1:
 		o1 := c.AF
 		c.POP(
@@ -6342,8 +5901,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"POP ",
 			o1,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0xf2:
 		o1 := c.A
 		o2 := c.MemoryAtH(c.C)
@@ -6356,15 +5914,13 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xf3:
 		c.DI()
 		description := fmt.Sprint(
 			"DI ",
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xf5:
 		o1 := c.AF
 		c.PUSH(
@@ -6374,8 +5930,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"PUSH ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xf6:
 		o1 := c.D8()
 		c.OR(
@@ -6385,8 +5940,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"OR ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xf7:
 		o1 := 0x30
 		c.RST(
@@ -6396,8 +5950,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RST ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xf8:
 		o1 := c.SP
 		o2 := c.R8()
@@ -6410,8 +5963,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			12}, nil
+		return description, 12, nil
 	case 0xf9:
 		o1 := c.SP
 		o2 := c.HL
@@ -6424,8 +5976,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xfa:
 		o1 := c.A
 		o2 := c.MemoryAt(c.A16())
@@ -6438,15 +5989,13 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			o1,
 			o2,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	case 0xfb:
 		c.EI()
 		description := fmt.Sprint(
 			"EI ",
 		)
-		return description, []int{
-			4}, nil
+		return description, 4, nil
 	case 0xfe:
 		o1 := c.D8()
 		c.CP(
@@ -6456,8 +6005,7 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"CP ",
 			o1,
 		)
-		return description, []int{
-			8}, nil
+		return description, 8, nil
 	case 0xff:
 		o1 := 0x38
 		c.RST(
@@ -6467,9 +6015,8 @@ func unprefixedHandler(c *CPU, code Opcode) (string, []int, error) {
 			"RST ",
 			o1,
 		)
-		return description, []int{
-			16}, nil
+		return description, 16, nil
 	default:
-		return "", nil, fmt.Errorf("unknown opcode: 0x%X", code)
+		return "", 0, fmt.Errorf("unknown opcode: 0x%X", code)
 	}
 }

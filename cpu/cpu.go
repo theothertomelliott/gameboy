@@ -19,7 +19,8 @@ type CPU struct {
 	MMU *mmu.MMU
 
 	// Interrupt master enable
-	IME bool
+	IMEUpdate *IMEUpdate
+	IME       bool
 
 	// Registers
 	AF *RegisterPair
@@ -215,16 +216,27 @@ func (c *CPU) Step() (int, error) {
 	if err != nil {
 		return 0, errors.WithMessage(err, fmt.Sprintf("0x%04X", pcBefore))
 	}
+
+	// Set IME as needed
+	if c.IMEUpdate != nil {
+		if c.IMEUpdate.Delay == 0 {
+			c.IME = c.IMEUpdate.Value
+			c.IMEUpdate = nil
+		} else {
+			c.IMEUpdate.Delay--
+		}
+	}
+
 	if c.tracer != nil {
 		c.tracer.AddCPU(pcBefore, description)
 	}
 
-	return cycles[0], nil
+	return cycles, nil
 }
 
-func (c *CPU) ExecuteOperation() (string, []int, error) {
+func (c *CPU) ExecuteOperation() (string, int, error) {
 	c.CountSpeed()
-	var handler func(*CPU, Opcode) (string, []int, error)
+	var handler func(*CPU, Opcode) (string, int, error)
 	opcode := Opcode(c.MMU.Read8(c.PC.Read16()))
 	switch opcode {
 	case 0xCB:
