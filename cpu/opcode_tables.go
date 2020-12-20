@@ -624,7 +624,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, int, error) {
 			o1,
 			o2,
 		)
-		return description, 16, nil
+		return description, 12, nil
 	case 0x47:
 		o1 := 0
 		o2 := c.A
@@ -728,7 +728,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, int, error) {
 			o1,
 			o2,
 		)
-		return description, 16, nil
+		return description, 12, nil
 	case 0x4f:
 		o1 := 1
 		o2 := c.A
@@ -842,7 +842,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, int, error) {
 			o1,
 			o2,
 		)
-		return description, 16, nil
+		return description, 12, nil
 	case 0x57:
 		o1 := 2
 		o2 := c.A
@@ -946,7 +946,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, int, error) {
 			o1,
 			o2,
 		)
-		return description, 16, nil
+		return description, 12, nil
 	case 0x5f:
 		o1 := 3
 		o2 := c.A
@@ -1060,7 +1060,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, int, error) {
 			o1,
 			o2,
 		)
-		return description, 16, nil
+		return description, 12, nil
 	case 0x67:
 		o1 := 4
 		o2 := c.A
@@ -1164,7 +1164,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, int, error) {
 			o1,
 			o2,
 		)
-		return description, 16, nil
+		return description, 12, nil
 	case 0x6f:
 		o1 := 5
 		o2 := c.A
@@ -1278,7 +1278,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, int, error) {
 			o1,
 			o2,
 		)
-		return description, 16, nil
+		return description, 12, nil
 	case 0x77:
 		o1 := 6
 		o2 := c.A
@@ -1382,7 +1382,7 @@ func cbprefixedHandler(c *CPU, code Opcode) (string, int, error) {
 			o1,
 			o2,
 		)
-		return description, 16, nil
+		return description, 12, nil
 	case 0x7f:
 		o1 := 7
 		o2 := c.A

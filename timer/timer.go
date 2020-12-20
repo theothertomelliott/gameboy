@@ -7,9 +7,10 @@ import (
 )
 
 type Timer struct {
-	mmu        *mmu.MMU
-	interrupts *interrupts.InterruptScheduler
-	clock      int
+	mmu         *mmu.MMU
+	interrupts  *interrupts.InterruptScheduler
+	clock       int
+	divClocksum int
 }
 
 func New(mmu *mmu.MMU, interrupts *interrupts.InterruptScheduler) *Timer {
@@ -20,41 +21,43 @@ func New(mmu *mmu.MMU, interrupts *interrupts.InterruptScheduler) *Timer {
 }
 
 func (t *Timer) Increment(cycles int) {
-	t.clock += cycles
+	cycles = cycles / 4
 
-	var threshold int
-	div := t.mmu.Read8(ioports.DIVIDER)
-	timerControl := t.mmu.Read8(ioports.TIMCONT)
-	timerCount := t.mmu.Read8(ioports.TIMECNT)
-	modulo := t.mmu.Read8(ioports.TIMEMOD)
-
-	if (t.clock % 16) == 0 {
+	//	set divider
+	t.divClocksum += cycles
+	if t.divClocksum >= 256 {
+		t.divClocksum -= 256
+		div := t.mmu.Read8(ioports.DIVIDER)
 		t.mmu.Write8(ioports.DIVIDER, div+1)
 	}
 
-	if timerControl&4 == 0 {
-		return
-	}
+	//	check if timer is on
+	if ((t.mmu.Read8(ioports.TIMCONT) >> 2) & 0x1) != 0 {
+		//	increase helper counter
+		t.clock += cycles * 4
 
-	switch timerControl & 3 {
-	case 0:
-		threshold = 64
-	case 1:
-		threshold = 1
-	case 2:
-		threshold = 4
-	case 3:
-		threshold = 16
-	}
+		//	set frequency
+		freq := 4096                                 //	Hz
+		if (t.mmu.Read8(ioports.TIMCONT) & 3) == 1 { //	mask last 2 bits
+			freq = 262144
+		} else if (t.mmu.Read8(ioports.TIMCONT) & 3) == 2 { //	mask last 2 bits
+			freq = 65536
+		} else if (t.mmu.Read8(ioports.TIMCONT) & 3) == 3 { //	mask last 2 bits
+			freq = 16384
+		}
 
-	if t.clock > threshold {
-		t.clock = 0
-		t.mmu.Write8(ioports.TIMECNT, timerCount+1)
+		//	increment the timer according to the frequency (synched to the processed opcodes)
+		for t.clock >= (4194304 / freq) {
+			//	increase TIMA
+			t.mmu.Write8(ioports.TIMECNT, t.mmu.Read8(ioports.TIMECNT)+1)
+			//	check TIMA for overflow
+			if t.mmu.Read8(ioports.TIMECNT) == 0x00 {
+				//	set timer interrupt request
+				t.interrupts.ScheduleInterrupt(interrupts.InterruptTimerOverflow)
+				//	reset timer to timer modulo
+				t.mmu.Write8(ioports.TIMECNT, t.mmu.Read8(ioports.TIMEMOD))
+			}
+			t.clock -= (4194304 / freq)
+		}
 	}
-
-	if timerCount == 255 {
-		t.mmu.Write8(ioports.TIMECNT, modulo)
-		t.interrupts.ScheduleInterrupt(interrupts.InterruptTimerOverflow)
-	}
-
 }
