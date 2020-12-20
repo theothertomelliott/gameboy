@@ -1041,8 +1041,8 @@ func (c *CPU) RETC(params ...Param) bool {
 // RETI pops two bytes from stack & jumps to that address then
 // enables interrupts.
 func (c *CPU) RETI(...Param) {
-	c.RET()
 	c.EI()
+	c.RET()
 }
 
 // PREFIX is a placeholder for prefixing an opcode
