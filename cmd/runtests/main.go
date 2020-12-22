@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"strings"
 	"time"
 
-	"github.com/google/martian/log"
 	"github.com/theothertomelliott/gameboy"
 )
 
@@ -32,7 +32,7 @@ func main() {
 		fmt.Println(romDirPath)
 		files, err := ioutil.ReadDir(romDirPath)
 		if err != nil {
-			log.Errorf("%v", err)
+			log.Printf("%v", err)
 			return
 		}
 		for _, file := range files {
@@ -41,7 +41,7 @@ func main() {
 				pathToRom := path.Join(romDirPath, file.Name())
 				err := runTestRom(pathToRom)
 				if err != nil {
-					log.Errorf("%v", err)
+					log.Printf("%v", err)
 					failedRoms++
 					continue
 				}
