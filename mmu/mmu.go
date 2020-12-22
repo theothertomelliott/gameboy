@@ -1,7 +1,7 @@
 package mmu
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/theothertomelliott/gameboy/ioports"
 )
@@ -47,7 +47,7 @@ func (m *MMU) LoadROM(data []byte) {
 func (m *MMU) LoadCartridge(data []byte) {
 	// This prevents use of the combined blarg test roms
 	cartridgeType := data[0x0147]
-	fmt.Printf("Cartridge type: 0x%x\n", cartridgeType)
+	log.Printf("Cartridge type: 0x%x\n", cartridgeType)
 	// if cartridgeType != 0x00 && cartridgeType != 0x01 {
 	// 	panic("Cartridge type unsupported")
 	// }
@@ -75,7 +75,7 @@ func (m *MMU) LoadCartridge(data []byte) {
 		}
 		m.CartridgeBanks = append(m.CartridgeBanks, data[index:end])
 	}
-	fmt.Printf("Loaded %d cartridge banks\n", len(m.CartridgeBanks))
+	log.Printf("Loaded %d cartridge banks\n", len(m.CartridgeBanks))
 
 	// Add the first bank to RAM
 	m.switchBank(0)
@@ -87,7 +87,7 @@ func (m *MMU) ResetCartridge() {
 }
 
 func (m *MMU) switchBank(bank byte) {
-	fmt.Println("Switching to bank:", bank)
+	log.Println("Switching to bank:", bank)
 	for i := 0; i < len(m.CartridgeBanks[bank]); i++ {
 		m.RAM[0x4000+i] = m.CartridgeBanks[bank][i]
 	}
@@ -142,7 +142,6 @@ func (m *MMU) Write8(pos uint16, values ...byte) {
 	if pos == 0xFF02 && values[0] == 0x81 {
 		c := m.Read8(0xFF01)
 		m.testOutput = append(m.testOutput, c)
-		fmt.Print(string([]byte{c}))
 	}
 
 	for _, value := range values {

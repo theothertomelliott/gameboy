@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/theothertomelliott/gameboy"
@@ -29,7 +30,6 @@ func main() {
 	)
 	for _, dir := range romDirs {
 		romDirPath := path.Join(basePath, dir)
-		fmt.Println(romDirPath)
 		files, err := ioutil.ReadDir(romDirPath)
 		if err != nil {
 			log.Printf("%v", err)
@@ -39,9 +39,10 @@ func main() {
 			if strings.HasSuffix(file.Name(), ".gb") {
 				totalRoms++
 				pathToRom := path.Join(romDirPath, file.Name())
+				log.Println(pathToRom)
 				err := runTestRom(pathToRom)
 				if err != nil {
-					log.Printf("%v", err)
+					log.Printf("FAIL:\n\t%v", err)
 					failedRoms++
 					continue
 				}
@@ -52,8 +53,22 @@ func main() {
 	fmt.Printf("Ran %v ROMs, %v passed, %v failed.\n", totalRoms, (totalRoms - failedRoms), failedRoms)
 }
 
+func discardOuptut() func() {
+	var stdout, stderr = os.Stdout, os.Stderr
+	os.Stdout = os.NewFile(uintptr(syscall.Stdin), os.DevNull)
+	os.Stderr = os.NewFile(uintptr(syscall.Stdin), os.DevNull)
+	log.SetOutput(ioutil.Discard)
+	return func() {
+		os.Stdout = stdout
+		os.Stderr = stderr
+		log.SetOutput(stdout)
+	}
+}
+
 func runTestRom(pathToRom string) error {
-	fmt.Println(pathToRom)
+	// Don't log output from DMG
+	cleanup := discardOuptut()
+	defer cleanup()
 
 	romData, err := ioutil.ReadFile(pathToRom)
 	if err != nil {
@@ -65,7 +80,6 @@ func runTestRom(pathToRom string) error {
 	gb.MMU().LoadCartridge(romData)
 	gb.CPU().Init()
 
-	defer fmt.Println()
 	var cycles int
 
 	timeout := time.After(30 * time.Second)
