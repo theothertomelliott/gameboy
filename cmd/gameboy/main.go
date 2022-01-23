@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	_ "net/http/pprof"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -42,7 +44,7 @@ func main() {
 	}
 	bootROMFile := flag.Arg(1)
 
-	data, err := ioutil.ReadFile(cartridgeFile)
+	data, err := readCartridgeFile(cartridgeFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -77,6 +79,34 @@ func main() {
 	pixelgl.Run(func() {
 		run(gb)
 	})
+}
+
+func isValidUrl(toTest string) bool {
+	_, err := url.ParseRequestURI(toTest)
+	if err != nil {
+		return false
+	}
+
+	u, err := url.Parse(toTest)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return false
+	}
+
+	return true
+}
+
+func readCartridgeFile(file string) ([]byte, error) {
+	if !isValidUrl(file) {
+		// Not a URL, attempt to load as a file
+		return ioutil.ReadFile(file)
+	}
+
+	// Load contents of URL
+	resp, err := http.Get(file)
+	if err != nil {
+		return nil, err
+	}
+	return ioutil.ReadAll(resp.Body)
 }
 
 var _ flag.Value = &breakPoints{}
