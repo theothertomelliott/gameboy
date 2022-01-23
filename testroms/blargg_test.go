@@ -2,6 +2,7 @@ package testroms
 
 import (
 	"fmt"
+	"image/png"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -28,35 +29,35 @@ func TestBlarggCPU(t *testing.T) {
 		"09-op r,r":             "https://github.com/retrio/gb-test-roms/raw/master/cpu_instrs/individual/09-op%20r%2Cr.gb",
 		"10-bit ops":            "https://github.com/retrio/gb-test-roms/raw/master/cpu_instrs/individual/10-bit%20ops.gb",
 		"11-op a,(hl)":          "https://github.com/retrio/gb-test-roms/raw/master/cpu_instrs/individual/11-op%20a%2C(hl).gb",
-		"combined":              "https://github.com/retrio/gb-test-roms/raw/master/cpu_instrs/cpu_instrs.gb",
+		"cpu-combined":          "https://github.com/retrio/gb-test-roms/raw/master/cpu_instrs/cpu_instrs.gb",
 	}
 	runTestROMs(t, roms)
 }
 
 func TestBlarggInstructionTiming(t *testing.T) {
-	runTestROM(t, "https://github.com/retrio/gb-test-roms/raw/master/instr_timing/instr_timing.gb")
+	runTestROM(t, "inst_timing", "https://github.com/retrio/gb-test-roms/raw/master/instr_timing/instr_timing.gb")
 }
 
 func TestBlarggInterruptTime(t *testing.T) {
-	runTestROM(t, "https://github.com/retrio/gb-test-roms/raw/master/interrupt_time/interrupt_time.gb")
+	runTestROM(t, "interrupt_time", "https://github.com/retrio/gb-test-roms/raw/master/interrupt_time/interrupt_time.gb")
 }
 
 func TestBlarggMemTiming1(t *testing.T) {
 	var roms = map[string]string{
-		"01-read_timing":   "https://github.com/retrio/gb-test-roms/raw/master/mem_timing/individual/01-read_timing.gb",
-		"02-write_timing":  "https://github.com/retrio/gb-test-roms/raw/master/mem_timing/individual/02-write_timing.gb",
-		"03-modify_timing": "https://github.com/retrio/gb-test-roms/raw/master/mem_timing/individual/03-modify_timing.gb",
-		"combined":         "https://github.com/retrio/gb-test-roms/raw/master/mem_timing/mem_timing.gb",
+		"01-read_timing":      "https://github.com/retrio/gb-test-roms/raw/master/mem_timing/individual/01-read_timing.gb",
+		"02-write_timing":     "https://github.com/retrio/gb-test-roms/raw/master/mem_timing/individual/02-write_timing.gb",
+		"03-modify_timing":    "https://github.com/retrio/gb-test-roms/raw/master/mem_timing/individual/03-modify_timing.gb",
+		"memtiming1-combined": "https://github.com/retrio/gb-test-roms/raw/master/mem_timing/mem_timing.gb",
 	}
 	runTestROMs(t, roms)
 }
 
 func TestBlarggMemTiming2(t *testing.T) {
 	var roms = map[string]string{
-		"01-read_timing":   "https://github.com/retrio/gb-test-roms/raw/master/mem_timing-2/rom_singles/01-read_timing.gb",
-		"02-write_timing":  "https://github.com/retrio/gb-test-roms/raw/master/mem_timing-2/rom_singles/02-write_timing.gb",
-		"03-modify_timing": "https://github.com/retrio/gb-test-roms/raw/master/mem_timing-2/rom_singles/03-modify_timing.gb",
-		"combined":         "https://github.com/retrio/gb-test-roms/raw/master/mem_timing-2/mem_timing.gb",
+		"01-read_timing":      "https://github.com/retrio/gb-test-roms/raw/master/mem_timing-2/rom_singles/01-read_timing.gb",
+		"02-write_timing":     "https://github.com/retrio/gb-test-roms/raw/master/mem_timing-2/rom_singles/02-write_timing.gb",
+		"03-modify_timing":    "https://github.com/retrio/gb-test-roms/raw/master/mem_timing-2/rom_singles/03-modify_timing.gb",
+		"memtiming2-combined": "https://github.com/retrio/gb-test-roms/raw/master/mem_timing-2/mem_timing.gb",
 	}
 	runTestROMs(t, roms)
 }
@@ -71,7 +72,7 @@ func TestBlarggOAMBug(t *testing.T) {
 		"6-timing_no_bug":   "https://github.com/retrio/gb-test-roms/raw/master/oam_bug/rom_singles/6-timing_no_bug.gb",
 		"7-timing_effect":   "https://github.com/retrio/gb-test-roms/raw/master/oam_bug/rom_singles/7-timing_effect.gb",
 		"8-instr_effect":    "https://github.com/retrio/gb-test-roms/raw/master/oam_bug/rom_singles/8-instr_effect.gb",
-		"combined":          "https://github.com/retrio/gb-test-roms/raw/master/oam_bug/oam_bug.gb",
+		"oambug-combined":   "https://github.com/retrio/gb-test-roms/raw/master/oam_bug/oam_bug.gb",
 	}
 	runTestROMs(t, roms)
 }
@@ -90,7 +91,7 @@ func TestBlarggDMGSound(t *testing.T) {
 		"10-wave trigger while on": "https://github.com/retrio/gb-test-roms/raw/master/dmg_sound/rom_singles/10-wave%20trigger%20while%20on.gb",
 		"11-regs after power":      "https://github.com/retrio/gb-test-roms/raw/master/dmg_sound/rom_singles/11-regs%20after%20power.gb",
 		"12-wave write while on":   "https://github.com/retrio/gb-test-roms/raw/master/dmg_sound/rom_singles/12-wave%20write%20while%20on.gb",
-		"combined":                 "https://github.com/retrio/gb-test-roms/raw/master/dmg_sound/dmg_sound.gb",
+		"dmgsound-combined":        "https://github.com/retrio/gb-test-roms/raw/master/dmg_sound/dmg_sound.gb",
 	}
 	runTestROMs(t, roms)
 }
@@ -105,12 +106,12 @@ func runTestROMs(t *testing.T, roms map[string]string) {
 
 	for _, name := range names {
 		t.Run(name, func(t *testing.T) {
-			runTestROM(t, roms[name])
+			runTestROM(t, name, roms[name])
 		})
 	}
 }
 
-func runTestROM(t *testing.T, romFile string) {
+func runTestROM(t *testing.T, romName string, romFile string) {
 	if testing.Short() {
 		t.Skip()
 	}
@@ -124,7 +125,7 @@ func runTestROM(t *testing.T, romFile string) {
 		t.Fatalf("Could not read ROM data: %v", err)
 	}
 
-	err = runTestRom(romData)
+	err = runTestRom(romName, romData)
 	if err != nil {
 		t.Error(err)
 	}
@@ -142,7 +143,7 @@ func discardOuptut() func() {
 	}
 }
 
-func runTestRom(romData []byte) error {
+func runTestRom(romName string, romData []byte) error {
 	// Don't log output from DMG
 	cleanup := discardOuptut()
 	defer cleanup()
@@ -154,7 +155,7 @@ func runTestRom(romData []byte) error {
 
 	var cycles int
 
-	timeout := time.After(15 * time.Second)
+	timeout := time.After(1 * time.Second)
 	for {
 		err := gb.Step()
 		if err != nil {
@@ -174,7 +175,20 @@ func runTestRom(romData []byte) error {
 
 		select {
 		case <-timeout:
-			return fmt.Errorf("Timeout:\n%v", gb.MMU().TestOutput())
+			screen := gb.PPU().RenderScreen()
+			f, err := os.Create(fmt.Sprintf("screenshots/%v.png", romName))
+			if err != nil {
+				panic(err)
+			}
+			defer f.Close()
+
+			// Encode to `PNG` with `DefaultCompression` level
+			// then save to file
+			err = png.Encode(f, screen)
+			if err != nil {
+				panic(err)
+			}
+			return fmt.Errorf("Timeout after %d cycles:\n%v", cycles, gb.MMU().TestOutput())
 		default:
 		}
 	}
