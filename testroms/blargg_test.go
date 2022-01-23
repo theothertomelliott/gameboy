@@ -144,6 +144,9 @@ func discardOuptut() func() {
 }
 
 func runTestRom(t *testing.T, romData []byte) error {
+	screenshotFile := fmt.Sprintf("screenshots/%v.png", strings.ReplaceAll(t.Name(), "/", ""))
+	_ = os.Remove(screenshotFile)
+
 	// Don't log output from DMG
 	cleanup := discardOuptut()
 	defer cleanup()
@@ -176,7 +179,7 @@ func runTestRom(t *testing.T, romData []byte) error {
 		select {
 		case <-timeout:
 			screen := gb.PPU().RenderScreen()
-			f, err := os.Create(fmt.Sprintf("screenshots/%v.png", strings.ReplaceAll(t.Name(), "/", "")))
+			f, err := os.Create(screenshotFile)
 			if err != nil {
 				panic(err)
 			}
