@@ -1,6 +1,7 @@
 package mmu
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/theothertomelliott/gameboy/ioports"
@@ -44,13 +45,19 @@ func (m *MMU) LoadROM(data []byte) {
 }
 
 // LoadCartridge loads a Cartridge ROM into memory
-func (m *MMU) LoadCartridge(data []byte) {
+func (m *MMU) LoadCartridge(data []byte) error {
 	// This prevents use of the combined blarg test roms
 	cartridgeType := data[0x0147]
 	log.Printf("Cartridge type: 0x%x\n", cartridgeType)
 	// if cartridgeType != 0x00 && cartridgeType != 0x01 {
 	// 	panic("Cartridge type unsupported")
 	// }
+
+	// Check DMG/CGB header
+	needCGB := data[0x143] == 0xC0
+	if needCGB {
+		return fmt.Errorf("Cartridge expects Color Game Boy support")
+	}
 
 	m.CartridgeData = data
 	m.testOutput = nil
@@ -79,6 +86,8 @@ func (m *MMU) LoadCartridge(data []byte) {
 
 	// Add the first bank to RAM
 	m.switchBank(0)
+
+	return nil
 }
 
 // ResetCartridge resets the content of memory to the cartridge

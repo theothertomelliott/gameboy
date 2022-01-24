@@ -48,7 +48,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	gb.MMU().LoadCartridge(data)
+	err = gb.MMU().LoadCartridge(data)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if bootROMFile != "" {
 		data, err = ioutil.ReadFile(bootROMFile)

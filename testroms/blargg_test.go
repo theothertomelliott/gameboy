@@ -153,12 +153,15 @@ func runTestRom(t *testing.T, romData []byte) error {
 
 	gb := gameboy.NewDMGWithNoRateLimit()
 
-	gb.MMU().LoadCartridge(romData)
+	err := gb.MMU().LoadCartridge(romData)
+	if err != nil {
+		return err
+	}
 	gb.CPU().Init()
 
 	var cycles int
 
-	timeout := time.After(1 * time.Second)
+	timeout := time.After(10 * time.Second)
 	for {
 		err := gb.Step()
 		if err != nil {
