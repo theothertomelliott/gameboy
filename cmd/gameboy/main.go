@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/faiface/pixel/pixelgl"
 	"github.com/pkg/errors"
 	"github.com/theothertomelliott/gameboy"
 	"github.com/theothertomelliott/gameboy/cmd/gameboy/httpui"
@@ -79,9 +78,7 @@ func main() {
 	gb.Start()
 	defer gb.Stop()
 
-	pixelgl.Run(func() {
-		run(gb)
-	})
+	run(gb)
 }
 
 func isValidUrl(toTest string) bool {
