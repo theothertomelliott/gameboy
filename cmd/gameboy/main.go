@@ -79,8 +79,8 @@ func main() {
 	gb.Start()
 	defer gb.Stop()
 
-	ui := fyneui.NewUI()
-	ui.Run(gb)
+	ui := fyneui.NewUI(gb)
+	ui.Run()
 }
 
 func isValidUrl(toTest string) bool {
