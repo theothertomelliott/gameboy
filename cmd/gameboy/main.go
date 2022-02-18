@@ -14,6 +14,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/theothertomelliott/gameboy"
+	"github.com/theothertomelliott/gameboy/cmd/gameboy/fyneui"
 	"github.com/theothertomelliott/gameboy/cmd/gameboy/httpui"
 	"github.com/theothertomelliott/gameboy/tracer"
 )
@@ -78,7 +79,8 @@ func main() {
 	gb.Start()
 	defer gb.Stop()
 
-	run(gb)
+	ui := fyneui.NewUI()
+	ui.Run(gb)
 }
 
 func isValidUrl(toTest string) bool {
