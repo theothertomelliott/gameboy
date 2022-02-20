@@ -74,8 +74,8 @@ func (g *gbscreen) Refresh() {
 	}
 
 	g.imgMutex.Lock()
+	defer g.imgMutex.Unlock()
 	g.img = g.p.RenderScreen()
-	g.imgMutex.Unlock()
 }
 
 // Destroy is for internal use.
