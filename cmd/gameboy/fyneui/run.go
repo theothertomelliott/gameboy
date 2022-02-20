@@ -8,7 +8,7 @@ func (u *UI) Run() {
 	go func() {
 		for {
 			u.win.Content().Refresh()
-			u.updateDebugInfo()
+			u.registers.updateDebugInfo()
 
 			time.Sleep(time.Second / 60)
 		}

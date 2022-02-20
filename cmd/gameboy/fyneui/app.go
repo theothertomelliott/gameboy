@@ -22,7 +22,7 @@ func (u *UI) setupApp() {
 			Width:  600,
 			Height: 600,
 		}),
-		u.registerState(),
+		u.registers,
 	)
 	u.win.SetContent(c)
 }

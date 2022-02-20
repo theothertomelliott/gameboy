@@ -13,7 +13,6 @@ import (
 )
 
 var _ fyne.Widget = &gbscreen{}
-var _ fyne.CanvasObject = &gbscreen{}
 var _ fyne.WidgetRenderer = &gbscreenRenderer{}
 
 type gbscreen struct {
