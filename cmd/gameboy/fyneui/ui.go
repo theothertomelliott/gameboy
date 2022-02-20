@@ -1,9 +1,6 @@
 package fyneui
 
 import (
-	"image"
-	"sync"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
@@ -34,10 +31,8 @@ func NewUI(gb *gameboy.DMG) *UI {
 type UI struct {
 	gb *gameboy.DMG
 
-	win      fyne.Window
-	img      image.Image
-	app      fyne.App
-	imgMutex sync.Mutex
+	win fyne.Window
+	app fyne.App
 
 	// Register content
 	a binding.String

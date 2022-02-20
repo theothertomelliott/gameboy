@@ -17,8 +17,12 @@ func (u *UI) setupApp() {
 		),
 	))
 
-	raster := u.gbScreen()
-
-	c := container.NewHBox(raster, u.registerState())
+	c := container.NewHBox(
+		newScreen(u.gb, fyne.Size{
+			Width:  600,
+			Height: 600,
+		}),
+		u.registerState(),
+	)
 	u.win.SetContent(c)
 }
