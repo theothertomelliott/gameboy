@@ -7,6 +7,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
 	"github.com/theothertomelliott/gameboy"
 	"github.com/theothertomelliott/gameboy/ppu"
@@ -18,12 +19,9 @@ var _ fyne.WidgetRenderer = &gbscreenRenderer{}
 type gbscreen struct {
 	widget.BaseWidget
 
-	gb   *gameboy.DMG
-	p    *ppu.PPU
 	size fyne.Size
 
-	img      image.Image
-	imgMutex sync.Mutex
+	img ScreenBinding
 }
 
 func (g *gbscreen) Size() fyne.Size {
@@ -34,48 +32,35 @@ func (g *gbscreen) MinSize() fyne.Size {
 	return g.size
 }
 
-func newScreen(gb *gameboy.DMG, size fyne.Size) fyne.Widget {
+func newScreen(img ScreenBinding, size fyne.Size) fyne.Widget {
 	g := &gbscreen{
-		gb:   gb,
-		p:    gb.PPU(),
+		img:  img,
 		size: size,
 	}
 	return g
 }
 
 type gbscreenRenderer struct {
-	p *ppu.PPU
-
 	getImage func() image.Image
 
 	raster *canvas.Raster
 	size   fyne.Size
 }
 
+func (g *gbscreenRenderer) DataChanged() {
+	g.raster.Refresh()
+}
+
 func (g *gbscreen) CreateRenderer() fyne.WidgetRenderer {
 	gr := &gbscreenRenderer{
-		p:    g.gb.PPU(),
-		size: g.size,
-		getImage: func() image.Image {
-			g.imgMutex.Lock()
-			defer g.imgMutex.Unlock()
-			return g.img
-		},
+		size:     g.size,
+		getImage: g.img.Get,
 	}
 	gr.raster = canvas.NewRasterWithPixels(
 		gr.pixelColor,
 	)
+	g.img.AddListener(gr)
 	return gr
-}
-
-func (g *gbscreen) Refresh() {
-	if !ppu.GetLCDControl(g.p.MMU).LCDOperation() {
-		return
-	}
-
-	g.imgMutex.Lock()
-	defer g.imgMutex.Unlock()
-	g.img = g.p.RenderScreen()
 }
 
 // Destroy is for internal use.
@@ -110,4 +95,62 @@ func (g *gbscreenRenderer) pixelColor(x, y, w, h int) color.Color {
 	xPos := int((float64(x) / float64(w)) * float64(img.Bounds().Dx()))
 	yPos := int((float64(y) / float64(h)) * float64(img.Bounds().Dy()))
 	return img.At(xPos, yPos)
+}
+
+type ScreenBinding interface {
+	binding.DataItem
+	Get() image.Image
+	Set(gb *gameboy.DMG)
+}
+
+var _ ScreenBinding = &screenData{}
+
+func NewScreenBinding() ScreenBinding {
+	return &screenData{}
+}
+
+type screenData struct {
+	img image.Image
+
+	listenersMtx sync.Mutex
+	listeners    []binding.DataListener
+}
+
+func (s *screenData) Get() image.Image {
+	return s.img
+}
+
+func (s *screenData) Set(gb *gameboy.DMG) {
+	if !ppu.GetLCDControl(gb.MMU()).LCDOperation() {
+		return
+	}
+	s.img = gb.PPU().RenderScreen()
+
+	s.listenersMtx.Lock()
+	defer s.listenersMtx.Unlock()
+	for _, ln := range s.listeners {
+		ln.DataChanged()
+	}
+}
+
+func (s *screenData) AddListener(l binding.DataListener) {
+	s.listenersMtx.Lock()
+	defer s.listenersMtx.Unlock()
+
+	s.listeners = append(s.listeners, l)
+	l.DataChanged()
+}
+
+func (s *screenData) RemoveListener(l binding.DataListener) {
+	s.listenersMtx.Lock()
+	defer s.listenersMtx.Unlock()
+
+	var newListeners []binding.DataListener
+	for _, ln := range s.listeners {
+		if ln != l {
+			newListeners = append(newListeners, ln)
+		}
+	}
+
+	s.listeners = newListeners
 }

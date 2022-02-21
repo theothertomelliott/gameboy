@@ -7,7 +7,7 @@ import (
 func (u *UI) Run() {
 	go func() {
 		for {
-			u.win.Content().Refresh()
+			u.screenContent.Set(u.gb)
 			u.registers.updateDebugInfo()
 
 			time.Sleep(time.Second / 60)

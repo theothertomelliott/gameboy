@@ -11,7 +11,8 @@ func NewUI(gb *gameboy.DMG) *UI {
 	ui := &UI{
 		gb: gb,
 
-		registers: newRegisters(gb),
+		screenContent: NewScreenBinding(),
+		registers:     newRegisters(gb),
 	}
 
 	ui.setupApp()
@@ -25,7 +26,8 @@ type UI struct {
 	win fyne.Window
 	app fyne.App
 
-	registers *registers
+	screenContent ScreenBinding
+	registers     *registers
 }
 
 func stringBinding(starting string) binding.String {
