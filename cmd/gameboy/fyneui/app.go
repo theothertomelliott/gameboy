@@ -4,6 +4,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 )
 
 func (u *UI) setupApp() {
@@ -17,12 +18,18 @@ func (u *UI) setupApp() {
 		),
 	))
 
+	reg := newRegisters(u.data)
+	mem := newMemory(u.data)
+
 	c := container.NewHBox(
 		newScreen(u.data, fyne.Size{
 			Width:  600,
 			Height: 600,
 		}),
-		newRegisters(u.data),
+		container.New(
+			layout.NewBorderLayout(reg, nil, nil, nil),
+			reg, mem,
+		),
 	)
 	u.win.SetContent(c)
 }

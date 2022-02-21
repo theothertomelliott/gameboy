@@ -6,6 +6,7 @@ import (
 
 	"fyne.io/fyne/v2/data/binding"
 	"github.com/theothertomelliott/gameboy"
+	"github.com/theothertomelliott/gameboy/mmu"
 	"github.com/theothertomelliott/gameboy/ppu"
 )
 
@@ -44,6 +45,8 @@ type DataTransport interface {
 
 	SP() binding.Int
 	PC() binding.Int
+
+	Memory() []byte
 }
 
 var _ DataTransport = &dataTransport{}
@@ -55,6 +58,8 @@ type dataTransport struct {
 
 	listenersMtx sync.Mutex
 	listeners    []binding.DataListener
+
+	memory []byte
 
 	// Registers
 	a binding.Int
@@ -94,6 +99,11 @@ func (dt *dataTransport) Update() {
 
 	dt.sp.Set(int(dt.gb.CPU().SP.Read16()))
 	dt.pc.Set(int(dt.gb.CPU().PC.Read16()))
+
+	dt.memory = dt.gb.MMU().ReadRange(mmu.Range{
+		Start: 0x0000,
+		End:   0xFFFE,
+	})
 
 	dt.listenersMtx.Lock()
 	defer dt.listenersMtx.Unlock()
@@ -162,4 +172,8 @@ func (dt *dataTransport) SP() binding.Int {
 
 func (dt *dataTransport) PC() binding.Int {
 	return dt.pc
+}
+
+func (dt *dataTransport) Memory() []byte {
+	return dt.memory
 }
