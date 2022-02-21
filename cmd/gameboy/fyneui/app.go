@@ -18,11 +18,11 @@ func (u *UI) setupApp() {
 	))
 
 	c := container.NewHBox(
-		newScreen(u.screenContent, fyne.Size{
+		newScreen(u.data, fyne.Size{
 			Width:  600,
 			Height: 600,
 		}),
-		u.registers,
+		newRegisters(u.data),
 	)
 	u.win.SetContent(c)
 }

@@ -3,14 +3,10 @@ package fyneui
 import (
 	"image"
 	"image/color"
-	"sync"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
-	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
-	"github.com/theothertomelliott/gameboy"
-	"github.com/theothertomelliott/gameboy/ppu"
 )
 
 var _ fyne.Widget = &gbscreen{}
@@ -21,7 +17,7 @@ type gbscreen struct {
 
 	size fyne.Size
 
-	img ScreenBinding
+	data DataTransport
 }
 
 func (g *gbscreen) Size() fyne.Size {
@@ -32,9 +28,9 @@ func (g *gbscreen) MinSize() fyne.Size {
 	return g.size
 }
 
-func newScreen(img ScreenBinding, size fyne.Size) fyne.Widget {
+func newScreen(data DataTransport, size fyne.Size) fyne.Widget {
 	g := &gbscreen{
-		img:  img,
+		data: data,
 		size: size,
 	}
 	return g
@@ -54,12 +50,12 @@ func (g *gbscreenRenderer) DataChanged() {
 func (g *gbscreen) CreateRenderer() fyne.WidgetRenderer {
 	gr := &gbscreenRenderer{
 		size:     g.size,
-		getImage: g.img.Get,
+		getImage: g.data.Screen,
 	}
 	gr.raster = canvas.NewRasterWithPixels(
 		gr.pixelColor,
 	)
-	g.img.AddListener(gr)
+	g.data.AddListener(gr)
 	return gr
 }
 
@@ -95,62 +91,4 @@ func (g *gbscreenRenderer) pixelColor(x, y, w, h int) color.Color {
 	xPos := int((float64(x) / float64(w)) * float64(img.Bounds().Dx()))
 	yPos := int((float64(y) / float64(h)) * float64(img.Bounds().Dy()))
 	return img.At(xPos, yPos)
-}
-
-type ScreenBinding interface {
-	binding.DataItem
-	Get() image.Image
-	Set(gb *gameboy.DMG)
-}
-
-var _ ScreenBinding = &screenData{}
-
-func NewScreenBinding() ScreenBinding {
-	return &screenData{}
-}
-
-type screenData struct {
-	img image.Image
-
-	listenersMtx sync.Mutex
-	listeners    []binding.DataListener
-}
-
-func (s *screenData) Get() image.Image {
-	return s.img
-}
-
-func (s *screenData) Set(gb *gameboy.DMG) {
-	if !ppu.GetLCDControl(gb.MMU()).LCDOperation() {
-		return
-	}
-	s.img = gb.PPU().RenderScreen()
-
-	s.listenersMtx.Lock()
-	defer s.listenersMtx.Unlock()
-	for _, ln := range s.listeners {
-		ln.DataChanged()
-	}
-}
-
-func (s *screenData) AddListener(l binding.DataListener) {
-	s.listenersMtx.Lock()
-	defer s.listenersMtx.Unlock()
-
-	s.listeners = append(s.listeners, l)
-	l.DataChanged()
-}
-
-func (s *screenData) RemoveListener(l binding.DataListener) {
-	s.listenersMtx.Lock()
-	defer s.listenersMtx.Unlock()
-
-	var newListeners []binding.DataListener
-	for _, ln := range s.listeners {
-		if ln != l {
-			newListeners = append(newListeners, ln)
-		}
-	}
-
-	s.listeners = newListeners
 }

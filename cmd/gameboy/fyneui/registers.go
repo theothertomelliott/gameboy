@@ -5,7 +5,6 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
-	"github.com/theothertomelliott/gameboy"
 )
 
 var _ fyne.Widget = &registers{}
@@ -13,36 +12,12 @@ var _ fyne.Widget = &registers{}
 type registers struct {
 	widget.BaseWidget
 
-	gb *gameboy.DMG
-
-	// Register content
-	a binding.Int
-	f binding.Int
-	b binding.Int
-	c binding.Int
-	d binding.Int
-	e binding.Int
-	h binding.Int
-	l binding.Int
-
-	sp binding.Int
-	pc binding.Int
+	data DataTransport
 }
 
-func newRegisters(gb *gameboy.DMG) *registers {
+func newRegisters(data DataTransport) *registers {
 	r := &registers{
-		gb: gb,
-
-		a:  binding.NewInt(),
-		f:  binding.NewInt(),
-		b:  binding.NewInt(),
-		c:  binding.NewInt(),
-		d:  binding.NewInt(),
-		e:  binding.NewInt(),
-		h:  binding.NewInt(),
-		l:  binding.NewInt(),
-		sp: binding.NewInt(),
-		pc: binding.NewInt(),
+		data: data,
 	}
 	r.BaseWidget.ExtendBaseWidget(r)
 	return r
@@ -53,52 +28,35 @@ func (r *registers) CreateRenderer() fyne.WidgetRenderer {
 		newMonoLabel("Registers"),
 		container.NewHBox(
 			newMonoLabel("A"),
-			newByteLabel(r.a),
+			newByteLabel(r.data.A()),
 			newMonoLabel("F"),
-			newByteLabel(r.f),
+			newByteLabel(r.data.F()),
 		),
 		container.NewHBox(
 			newMonoLabel("B"),
-			newByteLabel(r.b),
+			newByteLabel(r.data.B()),
 			newMonoLabel("C"),
-			newByteLabel(r.c),
+			newByteLabel(r.data.C()),
 		),
 		container.NewHBox(
 			newMonoLabel("D"),
-			newByteLabel(r.d),
+			newByteLabel(r.data.D()),
 			newMonoLabel("E"),
-			newByteLabel(r.e),
+			newByteLabel(r.data.E()),
 		),
 		container.NewHBox(
 			newMonoLabel("H"),
-			newByteLabel(r.h),
+			newByteLabel(r.data.H()),
 			newMonoLabel("L"),
-			newByteLabel(r.l),
+			newByteLabel(r.data.L()),
 		),
 		container.NewHBox(
 			newMonoLabel("SP"),
-			newTwoByteLabel(r.sp),
+			newTwoByteLabel(r.data.SP()),
 			newMonoLabel("PC"),
-			newTwoByteLabel(r.pc),
+			newTwoByteLabel(r.data.PC()),
 		),
 	))
-}
-
-func (r *registers) updateDebugInfo() {
-	r.a.Set(int(r.gb.CPU().A.Read8()))
-	r.f.Set(int(r.gb.CPU().F.Read8()))
-
-	r.b.Set(int(r.gb.CPU().B.Read8()))
-	r.c.Set(int(r.gb.CPU().C.Read8()))
-
-	r.d.Set(int(r.gb.CPU().D.Read8()))
-	r.e.Set(int(r.gb.CPU().E.Read8()))
-
-	r.h.Set(int(r.gb.CPU().H.Read8()))
-	r.l.Set(int(r.gb.CPU().L.Read8()))
-
-	r.sp.Set(int(r.gb.CPU().SP.Read16()))
-	r.pc.Set(int(r.gb.CPU().PC.Read16()))
 }
 
 func newTwoByteLabel(b binding.Int) *widget.Label {

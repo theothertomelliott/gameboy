@@ -2,17 +2,17 @@ package fyneui
 
 import (
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
 	"github.com/theothertomelliott/gameboy"
 )
 
 func NewUI(gb *gameboy.DMG) *UI {
+	data := NewDataTransport(gb)
+
 	ui := &UI{
 		gb: gb,
 
-		screenContent: NewScreenBinding(),
-		registers:     newRegisters(gb),
+		data: data,
 	}
 
 	ui.setupApp()
@@ -26,24 +26,11 @@ type UI struct {
 	win fyne.Window
 	app fyne.App
 
-	screenContent ScreenBinding
-	registers     *registers
-}
-
-func stringBinding(starting string) binding.String {
-	b := binding.NewString()
-	b.Set("0x00")
-	return b
+	data DataTransport
 }
 
 func newMonoLabel(s string) *widget.Label {
 	l := widget.NewLabel(s)
-	l.TextStyle.Monospace = true
-	return l
-}
-
-func newMonoLabelWithData(b binding.String) *widget.Label {
-	l := widget.NewLabelWithData(b)
 	l.TextStyle.Monospace = true
 	return l
 }

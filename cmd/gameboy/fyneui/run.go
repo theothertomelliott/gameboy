@@ -7,8 +7,7 @@ import (
 func (u *UI) Run() {
 	go func() {
 		for {
-			u.screenContent.Set(u.gb)
-			u.registers.updateDebugInfo()
+			u.data.Update()
 
 			time.Sleep(time.Second / 60)
 		}
